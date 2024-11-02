@@ -5,15 +5,35 @@
 * Description:
 *-----------------------------------------------------------
     ORG    $1000
-START:                  ; first instruction of program
+    INCLUDE 'CONST.X68'
+    INCLUDE 'SYSCONST.X68'
+    INCLUDE 'SYSTEM.X68'
+START:                  
+;INIZIALIZACIÓN---------------------------------------------
+            JSR     SYSINIT
 
-* Put program code here
+.LOOP
 
-    SIMHALT             ; halt simulator
+;---ACTUALIZAR----------------------------------------------
 
-* Put variables and constants here
+;LEER INPUTS------------------------------------------------
 
-    END    START        ; last line of source
+;ACTUALIZAR LÓGICAS DEL JUEGO-------------------------------
+
+;---SINCRONIZACIÓN------------------------------------------
+
+;---DIBUJAR-------------------------------------------------
+
+
+            BRA     .LOOP
+
+    SIMHALT            
+    INCLUDE 'VARS.X68'
+    INCLUDE 'SYSVARS.X68'
+    
+    
+    END    START        
+
 
 
 *~Font name~Courier New~
