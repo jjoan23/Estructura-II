@@ -1,0 +1,27 @@
+00000000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 02/11/2024 17:45:27
+
+00000000                             1  ; ----------------------------------------------------------------------------
+00000000                             2  ; CONSTANTES DEL SISTEMA
+00000000                             3  ; ----------------------------------------------------------------------------
+00000000                             4  
+00000000                             5  ; ---CONSTANTES DE LA PANTALLA------------------------------------------------
+00000000                             6  
+00000000  =00000280                  7  PANWIDTH    EQU     640               ; ANCHO DE LA PANTALLA
+00000000  =000001E0                  8  PANHEIGH    EQU     480               ; ALTURA DE LA PANTALLA
+00000000  =00000001                  9  CDRMAT      EQU     1                 ; CUADRÍCULA DE LA MATRIZ
+00000000                            10  
+00000000                            11  
+Line 12 WARNING: END directive missing, starting address not set
+
+No errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CDRMAT              1
+PANHEIGH            1E0
+PANWIDTH            280

@@ -1,0 +1,161 @@
+00001002 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 02/11/2024 17:45:47
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : JUEGO
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  
+00001000                             8              ORG    $1000
+00001000                             9              
+00001000                            10              INCLUDE 'CONST.X68'
+00001000                            11  ; ----------------------------------------------------------------------------
+00001000                            12  ; CONSTANTES DEL JUEGO
+00001000                            13  ; ----------------------------------------------------------------------------
+00001000                            14     
+00001000                            15  ; --- CONSTANTES DE LA MANZANA -----------------------------------------------
+00001000                            16  
+00001000  =00000001                 17  MNZWIDTH    EQU     1                       ; ANCHURA DE LA MANZANA (a determinar)
+00001000  =00000001                 18  MNZHEIGH    EQU     1                       ; ALTURA DE LA MANZANA (a determinar)
+00001000  =00000001                 19  MNZPCOL     EQU     1                       ; COLOR CONTORNO MANZANA (a determinar)
+00001000  =00000001                 20  MNZFCOL     EQU     1                       ; COLOR RELLENO MANZANA (a determinar)
+00001000                            21  
+00001000                            22  ; --- CONSTANTES DE LA SERPIENTE ---------------------------------------------
+00001000                            23  
+00001000  =00000001                 24  MAXSGM      EQU     1                       ; TAMAÑO MÁXIMO DE SEGMENTOS (a determinar)
+00001000  =00000001                 25  LNGINI      EQU     1                       ; LONGITUD INICIAL SERPIENTE (a determinar)
+00001000  =00000001                 26  SGMWIDTH    EQU     1                       ; ANCHURA DE UN SEGMENTO (a determinar)
+00001000  =00000001                 27  SGMHEIGH    EQU     1                       ; ALTURA DE UN SEGMENTO (a determinar)
+00001000  =00000001                 28  CBZVEL      EQU     1                       ; VELOCIDAD DE LA CABEZA (a determinar)
+00001000  =00000001                 29  SGMPCOL     EQU     1                       ; COLOR CONTORNO SEGMENTO (a determinar)
+00001000  =00000001                 30  SGMFCOL     EQU     1                       ; COLOR RELLENO SEGMENTO (a determinar)
+00001000                            31  
+00001000                            32  ; --- CONSTANTES MARCADOR ----------------------------------------------------
+00001000                            33  
+00001000  =00000001                 34  PNTSFCOL    EQU     1                       ; COLOR FONDO MARCADOR (a determinar)
+00001000  =00000001                 35  PNTSTEXT    EQU     1                       ; COORDENADAS DEL MARCADOR (a determinar)
+00001000                            36  
+00001000                            37  
+00001000                            38  -------------------- end include --------------------
+00001000                            39              INCLUDE 'SYSCONST.X68'
+00001000                            40  ; ----------------------------------------------------------------------------
+00001000                            41  ; CONSTANTES DEL SISTEMA
+00001000                            42  ; ----------------------------------------------------------------------------
+00001000                            43  
+00001000                            44  ; ---CONSTANTES DE LA PANTALLA------------------------------------------------
+00001000                            45  
+00001000  =00000280                 46  PANWIDTH    EQU     640               ; ANCHO DE LA PANTALLA
+00001000  =000001E0                 47  PANHEIGH    EQU     480               ; ALTURA DE LA PANTALLA
+00001000  =00000001                 48  CDRMAT      EQU     1                 ; CUADRÍCULA DE LA MATRIZ
+00001000                            49  
+00001000                            50  
+00001000                            51  
+00001000                            52  -------------------- end include --------------------
+00001000                            53              INCLUDE 'SYSTEM.X68'
+00001000                            54   
+00001000                            55   
+00001000                            56  SYSINIT
+00001000                            57  ; INICIAR SISTEMA
+00001000                            58  ; INPUT    : NONE
+00001000                            59  ; OUTPUT   : NONE
+00001000                            60  ; MODIFIES : NONE
+00001000                            61  ; ------------------------------------------------------------------------------
+00001000  4E75                      62              RTS
+00001002                            63   
+00001002                            64  
+00001002                            65  -------------------- end include --------------------
+00001002                            66  START:                  
+00001002                            67  ;INIZIALIZACIÓN---------------------------------------------
+00001002  4EB8 1000                 68              JSR     SYSINIT
+00001006                            69  
+00001006                            70  .LOOP
+00001006                            71  
+00001006                            72  ;---ACTUALIZAR----------------------------------------------
+00001006                            73  
+00001006                            74  ;LEER INPUTS------------------------------------------------
+00001006                            75  
+00001006                            76  ;ACTUALIZAR LÓGICAS DEL JUEGO-------------------------------
+00001006                            77  
+00001006                            78  ;---SINCRONIZACIÓN------------------------------------------
+00001006                            79  
+00001006                            80  ;---DIBUJAR-------------------------------------------------
+00001006                            81  
+00001006                            82  
+00001006  60FE                      83              BRA     .LOOP
+00001008                            84  
+00001008  FFFF FFFF                 85              SIMHALT
+0000100C                            86              
+0000100C                            87              INCLUDE 'VARS.X68'
+0000100C                            88  ; ----------------------------------------------------------------------------
+0000100C                            89  ; VARIABLES DEL JUEGO
+0000100C                            90  ; ----------------------------------------------------------------------------
+0000100C                            91  
+0000100C                            92  ; --- VARIABLES DE LA MANZANA ------------------------------------------------
+0000100C                            93  
+0000100C                            94  MNZPOSX     DS.W    1                       ; COORDENADA X DE LA MANZANA
+0000100E                            95  MNZPOSY     DS.W    1                       ; COORDENADA Y DE LA MANZANA
+00001010                            96  
+00001010                            97  ; --- VARIABLES DE LA SERPIENTE ----------------------------------------------
+00001010                            98  
+00001010                            99  CBZPOSX     DS.W    1                       ; COORDENADA X CABEZA
+00001012                           100  CBZPOSY     DS.W    1                       ; COORDENADA Y CABEZA
+00001014                           101  CBZVELX     DS.W    1                       ; VELOCIDAD X CABEZA
+00001016                           102  CBZVELY     DS.W    1                       ; VELOCIDAD Y CABEZA
+00001018                           103  CLAPOSX     DS.W    1                       ; COORDENADA X COLA
+0000101A                           104  CLAPOSY     DS.W    1                       ; COORDENADA Y COLA
+0000101C                           105  SGMPOSX     DS.W    1                       ; COORDENADA X SEGMENTO
+0000101E                           106  SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
+00001020                           107  
+00001020                           108  ; --- VARIABLES DEL MARCADOR -------------------------------------------------
+00001020                           109  
+00001020                           110  JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
+00001022                           111  
+00001022                           112  -------------------- end include --------------------
+00001022                           113              INCLUDE 'SYSVARS.X68'
+00001022                           114  
+00001022                           115  
+00001022                           116  -------------------- end include --------------------
+00001022                           117      
+00001022                           118      
+00001022                           119              END    START        
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CBZPOSX             1010
+CBZPOSY             1012
+CBZVEL              1
+CBZVELX             1014
+CBZVELY             1016
+CDRMAT              1
+CLAPOSX             1018
+CLAPOSY             101A
+JGOPNTS             1020
+LNGINI              1
+MAXSGM              1
+MNZFCOL             1
+MNZHEIGH            1
+MNZPCOL             1
+MNZPOSX             100C
+MNZPOSY             100E
+MNZWIDTH            1
+PANHEIGH            1E0
+PANWIDTH            280
+PNTSFCOL            1
+PNTSTEXT            1
+SGMFCOL             1
+SGMHEIGH            1
+SGMPCOL             1
+SGMPOSX             101C
+SGMPOSY             101E
+SGMWIDTH            1
+START               1002
+START:LOOP          1006
+SYSINIT             1000
