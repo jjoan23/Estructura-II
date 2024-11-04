@@ -29,6 +29,9 @@ START:
 .LOOP
 
 ;---ACTUALIZAR----------------------------------------------------------------
+            JSR     HEADUPD
+            JSR     SEGUPD
+            JSR     TAILUPD                 
 
 ;LEER INPUTS------------------------------------------------------------------
 
@@ -37,8 +40,9 @@ START:
 ;---SINCRONIZACIÓN------------------------------------------------------------
 
 ;---DIBUJAR-------------------------------------------------------------------
-
-
+            JSR     HEADPLOT
+            JSR     SEGPLOT
+            JSR     TAILPLOT
             BRA     .LOOP
 
             SIMHALT
@@ -48,6 +52,7 @@ START:
     
     
             END    START        
+
 
 
 
