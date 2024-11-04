@@ -10,11 +10,21 @@
             INCLUDE 'CONST.X68'
             INCLUDE 'SYSCONST.X68'
             INCLUDE 'SYSTEM.X68'
+            INCLUDE 'HEADSRP.X68'
+            INCLUDE 'SEGSRP.X68'
+            INCLUDE 'TAILSRP.X68'
+            INCLUDE 'APPLE.X68'
+            INCLUDE 'SCORE.X68'
 START:
                 
 ;INIZIALIZACIÓN---------------------------------------------------------------
 
             JSR     SYSINIT
+            JSR     HEADINIT                
+            JSR     SEGINIT
+            JSR     TAILINIT
+            JSR     APPLEINIT
+            JSR     SCOINIT
 
 .LOOP
 
@@ -38,6 +48,7 @@ START:
     
     
             END    START        
+
 
 
 
