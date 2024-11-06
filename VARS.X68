@@ -23,6 +23,7 @@ SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
 JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
 
 
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~0~
