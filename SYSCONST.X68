@@ -15,6 +15,7 @@ NUMCLMNS    EQU     64                      ; COLUMNAS DE CELDAS (640/10)
 NUMFILAS    EQU     48                      ; FILAS DE CELDAS (480/10)
 TCELDAS     EQU     3072                    ; TOTAL DE CELDAS (64 * 48)
 
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~0~
