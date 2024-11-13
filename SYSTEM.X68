@@ -54,7 +54,8 @@ MCLDOCPD
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
 ; ----------------------------------------------------------------------------
 
-            MOVE.B #1, ESTDCLDS(D0) ; Marca la celda como ocupada
+            LEA ESTDCLDS, A0 ; Carga la dirección de la matriz en A0
+            MOVE.B #1, (A0, D0.W) ; Marca la celda correspondientes como vacía
             
             RTS
             
@@ -65,9 +66,11 @@ MCLDVCIA
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
 ; ----------------------------------------------------------------------------
 
-            MOVE.B #0, ESTDCLDS(D0) ; Marca la celda como vacía
+            LEA ESTCLDS, A0 ; Carga la direccion de la matriz en A0
+            MOVE.B #0, (A0, D0.W) ; Marca la celda como vacía
             
             RTS
+
 
 
 

@@ -1,0 +1,105 @@
+00000000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 13/11/2024 14:25:15
+
+00000000                             1  *-----------------------------------------------------------------------------
+00000000                             2  * SISTEMA
+00000000                             3  *-----------------------------------------------------------------------------
+00000000                             4   
+00000000                             5   
+00000000                             6  SYSINIT
+00000000                             7  ; INICIA EL  SISTEMA
+00000000                             8  ; INPUT    : NONE
+00000000                             9  ; OUTPUT   : NONE
+00000000                            10  ; MODIFIES : NONE
+00000000                            11  ; ----------------------------------------------------------------------------
+00000000  4E75                      12              RTS
+00000002                            13   
+00000002                            14  
+00000002                            15  MTZINIT
+00000002                            16  ; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
+00000002                            17  ; INPUT    : NONE
+00000002                            18  ; OUTPUT   : NONE
+00000002                            19  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+00000002                            20  ; ----------------------------------------------------------------------------
+00000002                            21              
+Line 22 ERROR: Undefined symbol
+00000002  41F9 004DBD16             22              LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
+Line 23 ERROR: Undefined symbol
+00000008  303C BD16                 23              MOVE.W #TCELDAS, D0    ; Número total de celdas
+0000000C                            24  
+0000000C                            25  CLNCLDS:
+0000000C  4218                      26              CLR.B (A0)+            ; Coloca 0 en cada celda
+0000000E  5340                      27              SUBI.W #1, D0          ; Decrementa el contador de celdas
+00000010  66FA                      28              BNE CLNCLDS            ; Repite hasta que esten vacías
+00000012                            29  
+00000012  4E75                      30              RTS
+00000014                            31  
+00000014                            32  ;-----------------------------------------------------------------------------
+00000014                            33  
+00000014                            34  CINDMTRZ
+00000014                            35  ; CALCULA EL ÍNDICE DE UNA CELDA
+00000014                            36  ; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
+00000014                            37  ; OUTPUT   : D0 = índice de la celda en ESTDCLDS
+00000014                            38  ; MODIFIES : NONE
+00000014                            39  ; ----------------------------------------------------------------------------
+00000014                            40  
+Line 41 ERROR: Undefined symbol
+00000014  82FC BD16                 41              DIVU #TCELDAS, D1       ; X/TCELDAS: D1 = columna de la celda
+Line 42 ERROR: Undefined symbol
+00000018  84FC BD16                 42              DIVU #TCELDAS, D2       ; Y/TCELDAS: D2 = fila de la celda
+0000001C                            43  
+0000001C  3002                      44              MOVE.W D2, D0           ; D0 = Y_CELDA
+Line 45 ERROR: Undefined symbol
+0000001E  C0FC BD16                 45              MULU #NUMCLMNS, D0      ; D0 = Y_CELDA * NUMCLMNS
+00000022  D041                      46              ADD.W D1, D0            ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
+00000024                            47  
+00000024  4E75                      48              RTS
+00000026                            49              
+00000026                            50  MCLDOCPD
+00000026                            51  ; MARCA UNA CELDA COMO OCUPADA
+00000026                            52  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+00000026                            53  ; OUTPUT   : NONE
+00000026                            54  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+00000026                            55  ; ----------------------------------------------------------------------------
+00000026                            56  
+Line 57 ERROR: Undefined symbol
+00000026  41F9 004DBD16             57              LEA ESTDCLDS, A0 ; Carga la dirección de la matriz en A0
+0000002C  11BC 0001 0000            58              MOVE.B #1, (A0, D0.W) ; Marca la celda correspondientes como vacía
+00000032                            59              
+00000032  4E75                      60              RTS
+00000034                            61              
+00000034                            62  MCLDVCIA
+00000034                            63  ; MARCA UNA CELDA COMO VACÍA
+00000034                            64  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+00000034                            65  ; OUTPUT   : NONE
+00000034                            66  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+00000034                            67  ; ----------------------------------------------------------------------------
+00000034                            68  
+Line 69 ERROR: Undefined symbol
+00000034  41F9 004DBD16             69              LEA ESTCLDS, A0 ; Carga la direccion de la matriz en A0
+0000003A  11BC 0000 0000            70              MOVE.B #0, (A0, D0.W) ; Marca la celda como vacía
+00000040                            71              
+00000040  4E75                      72              RTS
+00000042                            73  
+00000042                            74  
+00000042                            75  
+00000042                            76  
+00000042                            77  
+00000042                            78  
+00000042                            79  
+Line 80 WARNING: END directive missing, starting address not set
+
+7 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CINDMTRZ            14
+CLNCLDS             C
+MCLDOCPD            26
+MCLDVCIA            34
+MTZINIT             2
+SYSINIT             0
