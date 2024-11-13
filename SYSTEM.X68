@@ -9,9 +9,70 @@ SYSINIT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ----------------------------------------------------------------------------
-            RTS
- 
+            JSR     SCRINIT
+            
+            MOVE.L  #SCRPLOT,($80)
+            
+            MOVE.W  SR,-(A7)
+            ANDI.W  #$DFFF,(A7)
+            RTE
+            
+; ------------------------------------------------------------------------------
+SCRINIT
+; INIT SCREEN. SET SCREEN RESOLUTION, SET WINDOWED MODE, CLEAR SCREEN,
+; ENABLE DOUBLE BUFFER.
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
 
+            MOVEM.L D0-D1,-(A7)
+
+            ; SET SCREEN RESOLUTION
+            MOVE.B  #33,D0
+            MOVE.L  #PANWIDTH<<16|PANHEIGH,D1
+            TRAP    #15
+            
+            ; SET WINDOWED MODE
+            MOVE.L  #1,D1
+            TRAP    #15
+            
+            ; CLEAR SCREEN
+            MOVE.B  #11,D0
+            MOVE.W  #$FF00,D1
+            TRAP    #15
+            
+            ; ENABLE DOUBLE BUFFER
+            MOVE.B  #92,D0
+            MOVE.B  #17,D1
+            TRAP    #15
+            
+            MOVEM.L (A7)+,D0-D1
+            
+            RTS    
+
+; ------------------------------------------------------------------------------
+SCRPLOT
+; UPDATES DOUBLE BUFFER
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+            MOVEM.W D0-D1,-(A7)
+            ; SWITCH BUFFERS
+            MOVE.B  #94,D0
+            TRAP    #15
+            
+            ; CLEAR HIDDEN BUFFER
+            MOVE.B  #11,D0
+            MOVE.W  #$FF00,D1
+            TRAP    #15
+            MOVEM.W (A7)+,D0-D1
+            RTE
+        
+
+ 
+;-----------------------------------------------------------------------------
 MTZINIT
 ; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
 ; INPUT    : NONE
@@ -29,8 +90,8 @@ CLNCLDS:
 
             RTS
 
-;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
 CINDMTRZ
 ; CALCULA EL ÍNDICE DE UNA CELDA
 ; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
@@ -47,18 +108,20 @@ CINDMTRZ
 
             RTS
             
+;------------------------------------------------------------------------------            
 MCLDOCPD
 ; MARCA UNA CELDA COMO OCUPADA
 ; INPUT    : D0 = índice de la celda en ESTDCLDS
 ; OUTPUT   : NONE
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-; ----------------------------------------------------------------------------
+; -----------------------------------------------------------------------------
 
-            LEA ESTDCLDS, A0 ; Carga la dirección de la matriz en A0
-            MOVE.B #1, (A0, D0.W) ; Marca la celda correspondientes como vacía
+            LEA ESTDCLDS, A0                ; Carga la dirección de la matriz en A0
+            MOVE.B #1, (A0, D0.W)           ; Marca la celda correspondientes como vacía
             
             RTS
             
+;------------------------------------------------------------------------------            
 MCLDVCIA
 ; MARCA UNA CELDA COMO VACÍA
 ; INPUT    : D0 = índice de la celda en ESTDCLDS
@@ -66,10 +129,11 @@ MCLDVCIA
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
 ; ----------------------------------------------------------------------------
 
-            LEA ESTCLDS, A0 ; Carga la direccion de la matriz en A0
-            MOVE.B #0, (A0, D0.W) ; Marca la celda como vacía
+            LEA ESTDCLDS, A0                ; Carga la direccion de la matriz en A0
+            MOVE.B #0, (A0, D0.W)           ; Marca la celda como vacía
             
             RTS
+
 
 
 

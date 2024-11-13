@@ -4,10 +4,10 @@
    
 ; --- CONSTANTES DE LA MANZANA -----------------------------------------------
 
-MNZWIDTH    EQU     1                       ; ANCHURA DE LA MANZANA (a determinar)
-MNZHEIGH    EQU     1                       ; ALTURA DE LA MANZANA (a determinar)
-MNZPCOL     EQU     1                       ; COLOR CONTORNO MANZANA (a determinar)
-MNZFCOL     EQU     1                       ; COLOR RELLENO MANZANA (a determinar)
+MNZWIDTH    EQU     20                      ; ANCHURA DE LA MANZANA (a determinar)
+MNZHEIGH    EQU     20                      ; ALTURA DE LA MANZANA (a determinar)
+MNZPCOL     EQU     $0000AAFF               ; COLOR CONTORNO MANZANA (a determinar)
+MNZFCOL     EQU     $000000FF               ; COLOR RELLENO MANZANA (a determinar)
 
 ; --- CONSTANTES DE LA SERPIENTE ---------------------------------------------
 
@@ -18,20 +18,26 @@ SGMHEIGH    EQU     20                      ; ALTURA DE UN SEGMENTO (PROVISIONAL
 CBZVEL      EQU     1                       ; VELOCIDAD DE LA CABEZA (a determinar)
 SGMPCOL     EQU     $0000FF00               ; COLOR CONTORNO SEGMENTO (PROVISIONAL)
 SGMFCOL     EQU     $0000AA00               ; COLOR RELLENO SEGMENTO (PROVISIONAL)
-COLWIDTH    EQU     10                       ; ANCHURA DE LA COLA (PROVISIONAL)
-COLHEIGH    EQU     10                       ; ALTURA DE LA COLA (PROVISIONAL)
+COLWIDTH    EQU     10                      ; ANCHURA DE LA COLA (PROVISIONAL)
+COLHEIGH    EQU     10                      ; ALTURA DE LA COLA (PROVISIONAL)
 COLPCOL     EQU     $0000FF00               ; COLOR CONTORNO COLA (PROVISIONAL)
 COLFCOL     EQU     $0000AA00               ; COLOR RELLENO COLA (PROVISIONAL)
 CBZWIDTH    EQU     20                      ; ANCHURA DE LA CABEZA (PROVISIONAL)
 CBZHEIGH    EQU     20                      ; ALTURA DE LA CABEZA (PROVISIONAL)
 CBZPCOL     EQU     $0000FF00               ; COLOR CONTORNO CABEZA (PROVISIONAL)
 CBZFCOL     EQU     $0000AA00               ; COLOR RELLENO CABEZA (PROVISIONAL)
+OJOWIDTH    EQU     10                      ; ANCHURA DE OJO DE SERPIENTE
+OJOHEIGH    EQU     10                      ; ALTURA DE OJO DE SERPIENTE
+OJOPCOL     EQU     $00000000               ; COLOR CONTORNO OJO
+OJOFCOL     EQU     $00FFFFFF               ; COLOR RELLENO OJO
+
 
 
 ; --- CONSTANTES MARCADOR ----------------------------------------------------
 
 PNTSFCOL    EQU     1                       ; COLOR FONDO MARCADOR (a determinar)
 PNTSTEXT    EQU     1                       ; COORDENADAS DEL MARCADOR (a determinar)
+
 
 
 

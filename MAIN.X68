@@ -31,18 +31,29 @@ START:
 ;---ACTUALIZAR----------------------------------------------------------------
             JSR     HEADUPD
             JSR     SEGUPD
-            JSR     TAILUPD                 
+            JSR     TAILUPD 
+            JSR     APPLEUPD                
 
 ;LEER INPUTS------------------------------------------------------------------
 
 ;ACTUALIZAR LÓGICAS DEL JUEGO-------------------------------------------------
 
 ;---SINCRONIZACIÓN------------------------------------------------------------
+            ; THE FOLLOWING SYNC STRATEGY IS ****WRONG****
+            MOVE.B  #23,D0
+            MOVE.L  #1,D1
+            TRAP    #15
+
 
 ;---DIBUJAR-------------------------------------------------------------------
             JSR     HEADPLOT
             JSR     SEGPLOT
             JSR     TAILPLOT
+            JSR     APPLEPLOT
+            
+            TRAP    #0                      ; ACTUALIZA DOBLE BUFFER
+
+
             BRA     .LOOP
 
             SIMHALT
@@ -52,6 +63,7 @@ START:
     
     
             END    START        
+
 
 
 
