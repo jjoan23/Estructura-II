@@ -58,7 +58,9 @@ SCRPLOT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
+
             MOVEM.W D0-D1,-(A7)
+            
             ; SWITCH BUFFERS
             MOVE.B  #94,D0
             TRAP    #15
@@ -67,7 +69,9 @@ SCRPLOT
             MOVE.B  #11,D0
             MOVE.W  #$FF00,D1
             TRAP    #15
+            
             MOVEM.W (A7)+,D0-D1
+            
             RTE
         
 
@@ -80,6 +84,8 @@ MTZINIT
 ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
 ; ----------------------------------------------------------------------------
             
+            MOVEM.W D0/A0,-(A7)
+            
             LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
             MOVE.W #TCELDAS, D0    ; Número total de celdas
 
@@ -87,9 +93,10 @@ CLNCLDS:
             CLR.B (A0)+            ; Coloca 0 en cada celda
             SUBI.W #1, D0          ; Decrementa el contador de celdas
             BNE CLNCLDS            ; Repite hasta que esten vacías
+            
+            MOVEM.W (A7)+,D0/A0
 
             RTS
-
 
 ;-----------------------------------------------------------------------------
 CINDMTRZ
@@ -99,12 +106,31 @@ CINDMTRZ
 ; MODIFIES : NONE
 ; ----------------------------------------------------------------------------
 
-            DIVU #TCELDAS, D1       ; X/TCELDAS: D1 = columna de la celda
-            DIVU #TCELDAS, D2       ; Y/TCELDAS: D2 = fila de la celda
+            MOVEM.W D0-D3,-(A7)
 
+            ; Divide X por TCELDAS
+            LSR.W #8, D1           ; D1 = X / 256
+            LSR.W #2, D1           ; D1 = X / 1024 (256 * 4)
+            MOVE.W D1, D3           ; Copia D1 a D3 para dividir por 3
+DIV3X:      SUBQ.W #3, D3           ; Resta 3
+            ADDQ.W #1, D1           ; Cuenta cuántas veces restamos
+            BPL DIV3_X              ; Repite mientras sea positivo
+
+            ; Divide Y por TCELDAS
+            LSR.W #8, D2           ; D2 = Y / 256
+            LSR.W #2, D2           ; D2 = Y / 1024
+            MOVE.W D2, D3           ; Copiamos D2 a D3 para dividir por 3
+DIV3Y:      SUBQ.W #3, D3           ; Restamos 3
+            ADDQ.W #1, D2           ; Contamos cuántas veces restamos
+            BPL DIV3_Y              ; Repetimos mientras sea positivo
+
+            ; Calcula índice
             MOVE.W D2, D0           ; D0 = Y_CELDA
-            MULU #NUMCLMNS, D0      ; D0 = Y_CELDA * NUMCLMNS
+            ASL.W #6, D0            ; D0 = Y_CELDA * NUMCLMNS (64 = 2^6)
             ADD.W D1, D0            ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
+
+            MOVEM.W (A7)+,D0-D3
+
 
             RTS
             
@@ -133,6 +159,7 @@ MCLDVCIA
             MOVE.B #0, (A0, D0.W)           ; Marca la celda como vacía
             
             RTS
+
 
 
 

@@ -82,6 +82,7 @@ HEADPLOT
             ; DEFINIR COORDEANDAS IRIS
             MOVE.W  (CBZPOSX),D1
             MOVE.W  (CBZPOSY),D2
+            
             ; DIBUJAR IRIS
             MOVE.B  #82,D0
             TRAP    #15
@@ -89,6 +90,7 @@ HEADPLOT
             MOVEM.L (A7)+,D0-D4
 
             RTS
+
 
 
 
