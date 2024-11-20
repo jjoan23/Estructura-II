@@ -40,7 +40,7 @@ CINDMTRZ
             MOVE.W D1, D3           ; Copia D1 a D3 para dividir por 3
 DIV3X:      SUBQ.W #3, D3           ; Resta 3
             ADDQ.W #1, D1           ; Cuenta cuántas veces restamos
-            BPL DIV3_X              ; Repite mientras sea positivo
+            BPL DIV3X              ; Repite mientras sea positivo
 
             ; Divide Y por TCELDAS
             LSR.W #8, D2           ; D2 = Y / 256
@@ -48,7 +48,7 @@ DIV3X:      SUBQ.W #3, D3           ; Resta 3
             MOVE.W D2, D3           ; Copia D2 a D3 para dividir por 3
 DIV3Y:      SUBQ.W #3, D3           ; Resta 3
             ADDQ.W #1, D2           ; Cuenta cuántas veces restamos
-            BPL DIV3_Y              ; Repite mientras sea positivo
+            BPL DIV3Y              ; Repite mientras sea positivo
 
             ; Calcula el índice
             MOVE.W D2, D0           ; D0 = Y_CELDA
@@ -102,7 +102,7 @@ CNVICOOR
 ; MODIFIES : NONE
 ; ----------------------------------------------------------------------------
 
-            MOVEM.W D0-D2,-(A7)
+            MOVEM.W D0,-(A7)
 
             MOVE.W D0, D2        ; Copia el índice a D2 para calcular la fila
             LSR #6, D2           ; D2 = índice / NUM_COLUMNAS
@@ -111,9 +111,82 @@ CNVICOOR
             LSL #4, D1           ; D1 = columna * TAMANO_CELDA
             LSL #4, D2           ; D2 = fila * TAMANO_CELDA
 
-            MOVEM.W (A7)+,D0-D2
+            MOVEM.W (A7)+,D0
 
             RTS
+
+
+;-----------------------------------------------------------------------------
+MTZPLOT
+; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+; ----------------------------------------------------------------------------
+
+
+            LEA     ESTDCLDS, A0            ; Apunta al inicio de ESTDCLDS
+            MOVE.W  #TCELDAS, D0            ; Número total de celdas
+            MOVE.W  #0,D3                   ; LO UTILIZAMOS PARA SABER EL INDICE EN EL QUE NOS ENCONTRAMOS
+
+PLOTCLDS:
+            MOVE.B  (A0)+,D1                ; MOVEMOS EL VALOR DE LA CELDA A D1
+            CMP.B   #0,D1
+            BEQ     PLOTVAC                 ; SALTA A DIBUJAR POSICIÓN VACÍA
+            CMP.B   #1,D1 
+            BEQ     PLOTCBZ                 ; SALTA A DIBUJAR CABEZA
+            CMP.B   #2,D1
+            BEQ     PLOTCOL                 ; SALTA A DIBUJAR COLA
+            CMP.B   #3,D1
+            BEQ     PLOTSEG                 ; SALTA A DIBUJAR SEGMENTO
+            CMP.B   #4,D1                 
+            BEQ     PLOTMNZ                 ; SALTA A DIBUJAR MANZANA
+  
+DONEPLOT            
+            ADDQ    #1,D3                   ; AUMENTAMOS EL INDICE DE CELDA PARA LA SIGUIENTE
+            SUBI.W  #1, D0                  ; Decrementa el contador de celdas
+            BNE     PLOTCLDS                ; Repite hasta que esten vacías
+            RTS
+
+
+PLOTVAC:    
+            MOVE.W  D0,-(A7)
+            MOVE.W  D3,D0
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)
+            
+            MOVE.B  #80,D0
+            MOVE.L  #$00FFFFFF,D1            ; PONEMOS EL COLOR DE DIBUJADO A BLANCO(DE MOMENTO)
+            TRAP    #15
+            
+            MOVE.B  #81,D0
+            MOVE.L  #$00FFFFFF,D1            ; PONEMOS EL COLOR DE DIBUJADO A BLANCO(DE MOMENTO)
+            TRAP    #15
+            
+            MOVE.B  #87,D0
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
+            MOVE.W  D1,D3
+            ADD.W   #SIZECLDA,D3
+            MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+            ADD.W   #SIZECLDA,D4
+            TRAP    #15                     
+                        
+            MOVE.W  (A7)+,D3  
+            MOVE.W  (A7)+,D0
+            BRA     DONEPLOT                ; DIBUJADO HECHO 
+
+PLOTCBZ:    
+            BRA     DONEPLOT                ; DIBUJADO HECHO 
+            
+PLOTCOL:    
+            BRA     DONEPLOT                ; DIBUJADO HECHO 
+            
+PLOTSEG:    
+            BRA     DONEPLOT                ; DIBUJADO HECHO    
+
+PLOTMNZ:    
+            BRA     DONEPLOT                ; DIBUJADO HECHO          
 
 
 

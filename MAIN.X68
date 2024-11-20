@@ -15,6 +15,7 @@
             INCLUDE 'TAILSRP.X68'
             INCLUDE 'APPLE.X68'
             INCLUDE 'SCORE.X68'
+            INCLUDE 'MATRIZ.X68'
 START:
                 
 ;INIZIALIZACIÓN---------------------------------------------------------------
@@ -25,6 +26,7 @@ START:
             JSR     TAILINIT
             JSR     APPLEINIT
             JSR     SCOINIT
+            JSR     MTZINIT
 
 .LOOP
 
@@ -32,7 +34,8 @@ START:
             JSR     HEADUPD
             JSR     SEGUPD
             JSR     TAILUPD 
-            JSR     APPLEUPD                
+            JSR     APPLEUPD  
+                          
 
 ;LEER INPUTS------------------------------------------------------------------
 
@@ -46,10 +49,11 @@ START:
 
 
 ;---DIBUJAR-------------------------------------------------------------------
-            JSR     HEADPLOT
-            JSR     SEGPLOT
-            JSR     TAILPLOT
-            JSR     APPLEPLOT
+*            JSR     HEADPLOT
+*            JSR     SEGPLOT
+*            JSR     TAILPLOT
+*            JSR     APPLEPLOT
+            JSR     MTZPLOT
             
             TRAP    #0                      ; ACTUALIZA DOBLE BUFFER
 
@@ -63,6 +67,7 @@ START:
     
     
             END    START        
+
 
 
 
