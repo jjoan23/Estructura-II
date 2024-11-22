@@ -10,7 +10,7 @@ MTZINIT
 ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
 ; ----------------------------------------------------------------------------
             
-            MOVEM.W D0/A0,-(A7)
+            MOVEM.W D0-D2/A0,-(A7)
             
             LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
             MOVE.W #TCELDAS, D0    ; Número total de celdas
@@ -20,7 +20,14 @@ CLNCLDS:
             SUBI.W #1, D0          ; Decrementa el contador de celdas
             BNE CLNCLDS            ; Repite hasta que esten vacías
             
-            MOVEM.W (A7)+,D0/A0
+            MOVE.W  #CBZPOSX,D1             ; VEMOS LA POSICION DE LA CABEZA             
+            MOVE.W  #CBZPOSY,D2
+            JSR     CINDMTRZ
+            JSR     CBZOCPD
+            
+            
+            
+            MOVEM.W (A7)+,D0-D2/A0
 
             RTS
 
@@ -32,37 +39,43 @@ CINDMTRZ
 ; MODIFIES : NONE
 ; ----------------------------------------------------------------------------
 
-            MOVEM.W D0-D3,-(A7)
+            MOVEM.W D1-D3,-(A7)
 
-            ; Divide X por TCELDAS
-            LSR.W #8, D1           ; D1 = X / 256
-            LSR.W #2, D1           ; D1 = X / 1024 (256 * 4)
-            MOVE.W D1, D3           ; Copia D1 a D3 para dividir por 3
-DIV3X:      SUBQ.W #3, D3           ; Resta 3
-            ADDQ.W #1, D1           ; Cuenta cuántas veces restamos
-            BPL DIV3X              ; Repite mientras sea positivo
+            ; Divideix X per TCELDAS
+            MOVE.W  D1, D3           ; Copia X a D3
+            CLR.W   D1
+                                     ; Inicialitza el quocient
 
-            ; Divide Y por TCELDAS
-            LSR.W #8, D2           ; D2 = Y / 256
-            LSR.W #2, D2           ; D2 = Y / 1024
-            MOVE.W D2, D3           ; Copia D2 a D3 para dividir por 3
-DIV3Y:      SUBQ.W #3, D3           ; Resta 3
-            ADDQ.W #1, D2           ; Cuenta cuántas veces restamos
-            BPL DIV3Y              ; Repite mientras sea positivo
+DIVX:       CMP.W   #SIZECLDA, D3     ; Divideix per SIZECLDA
+            BLT     ENDDIVX
+            SUB.W   #SIZECLDA, D3
+            ADDQ.W  #1, D1
+            BRA     DIVX
+ENDDIVX:
 
+            ; Divideix Y per TCELDAS
+            MOVE.W  D2, D3           ; Copia Y a D3
+            CLR.W   D2               ; Inicialitza el quocient
+
+DIVY:       CMP.W   #SIZECLDA, D3     ; Divideix per SIZECLDA
+            BLT     ENDDIVY
+            SUB.W   #SIZECLDA, D3
+            ADDQ.W  #1, D2
+            BRA     DIVY
+ENDDIVY:
             ; Calcula el índice
-            MOVE.W D2, D0           ; D0 = Y_CELDA
-            ASL.W #6, D0            ; D0 = Y_CELDA * NUMCLMNS (64 = 2^6)
-            ADD.W D1, D0            ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
+            MOVE.W  D2, D0            ; D0 = Y_CELDA
+            ASL.W   #6, D0            ; D0 = Y_CELDA * NUMCLMNS (64 = 2^6)
+            ADD.W   D1, D0            ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
 
-            MOVEM.W (A7)+,D0-D3
+            MOVEM.W (A7)+,D1-D3
 
 
             RTS
             
 ;-----------------------------------------------------------------------------
-MCLDOCPD
-; MARCA UNA CELDA COMO OCUPADA
+CBZOCPD
+; MARCA UNA CELDA COMO OCUPADA POR LA CABEZA
 ; INPUT    : D0 = índice de la celda en ESTDCLDS
 ; OUTPUT   : NONE
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
@@ -102,16 +115,34 @@ CNVICOOR
 ; MODIFIES : NONE
 ; ----------------------------------------------------------------------------
 
-            MOVEM.W D0,-(A7)
+            MOVEM.W D0/D3-D4,-(A7)
 
-            MOVE.W D0, D2        ; Copia el índice a D2 para calcular la fila
-            LSR #6, D2           ; D2 = índice / NUM_COLUMNAS
-            MOVE.W D0, D1        ; Índice a D1 para calcular la columna
-            AND.W #$3F, D1       ; D1 = índice % NUM_COLUMNAS
-            LSL #4, D1           ; D1 = columna * TAMANO_CELDA
-            LSL #4, D2           ; D2 = fila * TAMANO_CELDA
+            MOVE.W D0, D2          ; Copia índice a D2 para calcular la fila
+            LSR.W   #6, D2         ; D2 = índice / NUM_COLUMNAS (64 = 2^6)
+            MOVE.W D0, D1          ; Copia índice a D1 para calcular la columna
+            AND.W   #$3F, D1       ; D1 = índice % NUM_COLUMNAS (63 = 0x3F)
 
-            MOVEM.W (A7)+,D0
+            ; Multiplica por TAMAÑO_CELDA = 10
+            MOVE.W  #SIZECLDA, D3
+            MOVE.W  D1,D4                   ; Copia D1 para multiplicar por 10
+            CLR.W D1                        ; Inicializa resultado
+
+
+MULTLOOPX: 
+            ADD.W D3, D1          ; Suma TAMANO_CELDA (10) repetidamente
+
+            SUBQ.W #1, D4          ; Cuenta las iteraciones restantes
+            BNE MULTLOOPX        ; Repite mientras no sea 0
+
+            MOVE.W D2, D4          ; Copia D2 para multiplicar por 10
+            CLR.W D2               ; Inicializa resultado
+
+MULTLOOPY: 
+            ADD.W D3, D2          ; Suma TAMANO_CELDA (10) repetidamente
+            SUBQ.W #1, D4          ; Cuenta las iteraciones restantes
+            BNE MULTLOOPY        ; Repite mientras no sea 0
+
+            MOVEM.W (A7)+,D0/D3-D4
 
             RTS
 
@@ -156,11 +187,11 @@ PLOTVAC:
             MOVE.L  D1,-(A7)
             
             MOVE.B  #80,D0
-            MOVE.L  #$00FFFFFF,D1            ; PONEMOS EL COLOR DE DIBUJADO A BLANCO(DE MOMENTO)
+            MOVE.L  #$00000000,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
             TRAP    #15
             
             MOVE.B  #81,D0
-            MOVE.L  #$00FFFFFF,D1            ; PONEMOS EL COLOR DE DIBUJADO A BLANCO(DE MOMENTO)
+            MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
             TRAP    #15
             
             MOVE.B  #87,D0
@@ -187,6 +218,7 @@ PLOTSEG:
 
 PLOTMNZ:    
             BRA     DONEPLOT                ; DIBUJADO HECHO          
+
 
 
 

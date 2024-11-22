@@ -2,7 +2,8 @@
 ; VARIABLES DEL SISTEMA
 ; ----------------------------------------------------------------------------
 
-ESTDCLDS       DS.B TCELDAS  ;ESTADO DE LAS CELDAS 0=VACÍO  1=SERPIENTE  2=COLA  3=MANZANA            
+ESTDCLDS       DS.B TCELDAS  ;ESTADO DE LAS CELDAS 0=VACÍO  1=CABEZA   2=COLA  3=SEGMENTO  4=MANZANA            
+
 
 
 
