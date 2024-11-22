@@ -56,12 +56,12 @@ HEADPLOT
             MOVE.B  #87,D0
             TRAP    #15
             
-            ; SET COLOR DEL CONTORNO CABEZA
+            ; SET COLOR DEL CONTORNO OJO
             MOVE.B  #80,D0
             MOVE.L  #OJOPCOL,D1
             TRAP    #15
             
-            ; SET COLOR DEL RELLENO CABEZA
+            ; SET COLOR DEL RELLENO OJO
             MOVE.B  #81,D0
             MOVE.L  #OJOFCOL,D1
             TRAP    #15
@@ -90,6 +90,7 @@ HEADPLOT
             MOVEM.L (A7)+,D0-D4
 
             RTS
+
 
 
 

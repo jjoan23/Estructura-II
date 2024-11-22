@@ -10,10 +10,11 @@ COLFND      EQU     $90EE90                 ; COLOR DEL FONDO DE LA PANTALLA
 
 ; ---CONSTANTES DE LA MATRIZ--------------------------------------------------
 
-SIZECLDA    EQU     10                      ; TAMAÑO DE CADA CELDA EN PIXELES
-NUMCLMNS    EQU     64                      ; COLUMNAS DE CELDAS (640/10)
-NUMFILAS    EQU     48                      ; FILAS DE CELDAS (480/10)
-TCELDAS     EQU     3072                    ; TOTAL DE CELDAS (64 * 48)
+SIZECLDA    EQU     20                      ; TAMAÑO DE CADA CELDA EN PIXELES
+NUMCLMNS    EQU     32                      ; COLUMNAS DE CELDAS (640/10)
+NUMFILAS    EQU     24                      ; FILAS DE CELDAS (480/10)
+TCELDAS     EQU     768                     ; TOTAL DE CELDAS (64 * 48)
+
 
 
 

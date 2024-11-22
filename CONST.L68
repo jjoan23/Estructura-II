@@ -1,0 +1,82 @@
+00001382 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 22/11/2024 17:56:59
+
+00000000                             1  ; ----------------------------------------------------------------------------
+00000000                             2  ; CONSTANTES DEL JUEGO
+00000000                             3  ; ----------------------------------------------------------------------------
+00000000                             4     
+00000000                             5  ; --- CONSTANTES DE LA MANZANA -----------------------------------------------
+00000000                             6  
+00000000  =00000014                  7  MNZWIDTH    EQU     20                      ; ANCHURA DE LA MANZANA (a determinar)
+00000000  =00000014                  8  MNZHEIGH    EQU     20                      ; ALTURA DE LA MANZANA (a determinar)
+00000000  =0000AAFF                  9  MNZPCOL     EQU     $0000AAFF               ; COLOR CONTORNO MANZANA (a determinar)
+00000000  =000000FF                 10  MNZFCOL     EQU     $000000FF               ; COLOR RELLENO MANZANA (a determinar)
+00000000                            11  
+00000000                            12  ; --- CONSTANTES DE LA SERPIENTE ---------------------------------------------
+00000000                            13  
+00000000  =00000001                 14  MAXSGM      EQU     1                       ; TAMAÑO MÁXIMO DE SEGMENTOS (a determinar)
+00000000  =00000001                 15  LNGINI      EQU     1                       ; LONGITUD INICIAL SERPIENTE (a determinar)
+00000000  =00000014                 16  SGMWIDTH    EQU     20                      ; ANCHURA DE UN SEGMENTO (PROVISIONAL)
+00000000  =00000014                 17  SGMHEIGH    EQU     20                      ; ALTURA DE UN SEGMENTO (PROVISIONAL)
+00000000  =00000001                 18  CBZVEL      EQU     1                       ; VELOCIDAD DE LA CABEZA (a determinar)
+00000000  =0000FF00                 19  SGMPCOL     EQU     $0000FF00               ; COLOR CONTORNO SEGMENTO (PROVISIONAL)
+00000000  =0000AA00                 20  SGMFCOL     EQU     $0000AA00               ; COLOR RELLENO SEGMENTO (PROVISIONAL)
+00000000  =0000000A                 21  COLWIDTH    EQU     10                      ; ANCHURA DE LA COLA (PROVISIONAL)
+00000000  =0000000A                 22  COLHEIGH    EQU     10                      ; ALTURA DE LA COLA (PROVISIONAL)
+00000000  =0000FF00                 23  COLPCOL     EQU     $0000FF00               ; COLOR CONTORNO COLA (PROVISIONAL)
+00000000  =0000AA00                 24  COLFCOL     EQU     $0000AA00               ; COLOR RELLENO COLA (PROVISIONAL)
+00000000  =00000014                 25  CBZWIDTH    EQU     20                      ; ANCHURA DE LA CABEZA (PROVISIONAL)
+00000000  =00000014                 26  CBZHEIGH    EQU     20                      ; ALTURA DE LA CABEZA (PROVISIONAL)
+00000000  =0000FF00                 27  CBZPCOL     EQU     $0000FF00               ; COLOR CONTORNO CABEZA (PROVISIONAL)
+00000000  =0000AA00                 28  CBZFCOL     EQU     $0000AA00               ; COLOR RELLENO CABEZA (PROVISIONAL)
+00000000  =0000000A                 29  OJOWIDTH    EQU     10                      ; ANCHURA DE OJO DE SERPIENTE
+00000000  =0000000A                 30  OJOHEIGH    EQU     10                      ; ALTURA DE OJO DE SERPIENTE
+00000000  =00000000                 31  OJOPCOL     EQU     $00000000               ; COLOR CONTORNO OJO
+00000000  =00FFFFFF                 32  OJOFCOL     EQU     $00FFFFFF               ; COLOR RELLENO OJO
+00000000                            33  
+00000000                            34  
+00000000                            35  
+00000000                            36  ; --- CONSTANTES MARCADOR ----------------------------------------------------
+00000000                            37  
+00000000  =00000001                 38  PNTSFCOL    EQU     1                       ; COLOR FONDO MARCADOR (a determinar)
+00000000  =00000001                 39  PNTSTEXT    EQU     1                       ; COORDENADAS DEL MARCADOR (a determinar)
+00000000                            40  
+00000000                            41  
+00000000                            42  
+00000000                            43  
+00000000                            44  
+Line 45 WARNING: END directive missing, starting address not set
+
+No errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CBZFCOL             AA00
+CBZHEIGH            14
+CBZPCOL             FF00
+CBZVEL              1
+CBZWIDTH            14
+COLFCOL             AA00
+COLHEIGH            A
+COLPCOL             FF00
+COLWIDTH            A
+LNGINI              1
+MAXSGM              1
+MNZFCOL             FF
+MNZHEIGH            14
+MNZPCOL             AAFF
+MNZWIDTH            14
+OJOFCOL             FFFFFF
+OJOHEIGH            A
+OJOPCOL             0
+OJOWIDTH            A
+PNTSFCOL            1
+PNTSTEXT            1
+SGMFCOL             AA00
+SGMHEIGH            14
+SGMPCOL             FF00
+SGMWIDTH            14

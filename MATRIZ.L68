@@ -1,6 +1,6 @@
-0000135A Starting Address
+0000140A Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 22/11/2024 12:21:29
+Created On: 22/11/2024 18:38:12
 
 00000000                             1  ; ----------------------------------------------------------------------------
 00000000                             2  ; MATRIZ
@@ -27,226 +27,328 @@ Line 16 ERROR: Undefined symbol
 00000012  66FA                      21              BNE CLNCLDS            ; Repite hasta que esten vacías
 00000014                            22              
 Line 23 ERROR: Undefined symbol
-00000014  323C BD16                 23              MOVE.W  #CBZPOSX,D1             ; VEMOS LA POSICION DE LA CABEZA             
+00000014  3239 004DBD16             23              MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION DE LA CABEZA             
 Line 24 ERROR: Undefined symbol
-00000018  343C BD16                 24              MOVE.W  #CBZPOSY,D2
-0000001C  4EB9 0000002E             25              JSR     CINDMTRZ
-00000022  4EB9 00000066             26              JSR     CBZOCPD
-00000028                            27              
-00000028                            28              
-00000028                            29              
-00000028  4C9F 0107                 30              MOVEM.W (A7)+,D0-D2/A0
-0000002C                            31  
-0000002C  4E75                      32              RTS
-0000002E                            33  
-0000002E                            34  ;-----------------------------------------------------------------------------
-0000002E                            35  CINDMTRZ
-0000002E                            36  ; CALCULA EL ÍNDICE DE UNA CELDA
-0000002E                            37  ; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
-0000002E                            38  ; OUTPUT   : D0 = índice de la celda en ESTDCLDS
-0000002E                            39  ; MODIFIES : NONE
-0000002E                            40  ; ----------------------------------------------------------------------------
-0000002E                            41  
-0000002E  48A7 7000                 42              MOVEM.W D1-D3,-(A7)
-00000032                            43  
-00000032                            44              ; Divideix X per TCELDAS
-00000032  3601                      45              MOVE.W  D1, D3           ; Copia X a D3
-00000034  4241                      46              CLR.W   D1
-00000036                            47                                       ; Inicialitza el quocient
-00000036                            48  
-Line 49 ERROR: Undefined symbol
-00000036  B67C BD16                 49  DIVX:       CMP.W   #SIZECLDA, D3     ; Divideix per SIZECLDA
-0000003A  6D00 000A                 50              BLT     ENDDIVX
-Line 51 ERROR: Undefined symbol
-0000003E  0443 BD16                 51              SUB.W   #SIZECLDA, D3
-00000042  5241                      52              ADDQ.W  #1, D1
-00000044  60F0                      53              BRA     DIVX
-00000046                            54  ENDDIVX:
-00000046                            55  
-00000046                            56              ; Divideix Y per TCELDAS
-00000046  3602                      57              MOVE.W  D2, D3           ; Copia Y a D3
-00000048  4242                      58              CLR.W   D2               ; Inicialitza el quocient
-0000004A                            59  
+0000001A  3439 004DBD16             24              MOVE.W  CBZPOSY, D2
+00000020  4EB9 00000032             25              JSR     CINDMTRZ
+00000026  4EB9 0000006A             26              JSR     CBZOCPD
+0000002C                            27              
+0000002C                            28              
+0000002C                            29              
+0000002C  4C9F 0107                 30              MOVEM.W (A7)+,D0-D2/A0
+00000030                            31  
+00000030  4E75                      32              RTS
+00000032                            33  
+00000032                            34  ;-----------------------------------------------------------------------------
+00000032                            35  CINDMTRZ
+00000032                            36  ; CALCULA EL ÍNDICE DE UNA CELDA
+00000032                            37  ; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
+00000032                            38  ; OUTPUT   : D0 = índice de la celda en ESTDCLDS
+00000032                            39  ; MODIFIES : NONE
+00000032                            40  ; ----------------------------------------------------------------------------
+00000032                            41  
+00000032  48A7 7000                 42               MOVEM.W D1-D3,-(A7)     ; Guarda los registros D1-D3 en la pila
+00000036                            43  
+00000036                            44              ; Divide X por SIZECLDA
+00000036  3601                      45              MOVE.W  D1, D3          ; Copia X a D3
+00000038  4241                      46              CLR.W   D1              ; Inicializa el cociente de X
+0000003A                            47  
+Line 48 ERROR: Undefined symbol
+0000003A  B67C BD16                 48  DIVX:       CMP.W   #SIZECLDA, D3    ; Compara D3 con SIZECLDA
+0000003E  6D00 000A                 49              BLT     ENDDIVX         ; Si D3 < SIZECLDA, salta a ENDDIVX
+Line 50 ERROR: Undefined symbol
+00000042  0443 BD16                 50              SUB.W   #SIZECLDA, D3   ; Resta SIZECLDA de D3
+00000046  5241                      51              ADDQ.W  #1, D1          ; Incrementa el cociente de X
+00000048  60F0                      52              BRA     DIVX            ; Repite el bucle
+0000004A                            53  
+0000004A                            54  ENDDIVX:
+0000004A                            55  
+0000004A                            56              ; Divide Y por SIZECLDA
+0000004A  3602                      57              MOVE.W  D2, D3          ; Copia Y a D3
+0000004C  4242                      58              CLR.W   D2              ; Inicializa el cociente de Y
+0000004E                            59  
 Line 60 ERROR: Undefined symbol
-0000004A  B67C BD16                 60  DIVY:       CMP.W   #SIZECLDA, D3     ; Divideix per SIZECLDA
-0000004E  6D00 000A                 61              BLT     ENDDIVY
+0000004E  B67C BD16                 60  DIVY:       CMP.W   #SIZECLDA, D3    ; Compara D3 con SIZECLDA
+00000052  6D00 000A                 61              BLT     ENDDIVY         ; Si D3 < SIZECLDA, salta a ENDDIVY
 Line 62 ERROR: Undefined symbol
-00000052  0443 BD16                 62              SUB.W   #SIZECLDA, D3
-00000056  5242                      63              ADDQ.W  #1, D2
-00000058  60F0                      64              BRA     DIVY
-0000005A                            65  ENDDIVY:
-0000005A                            66              ; Calcula el índice
-0000005A  3002                      67              MOVE.W  D2, D0            ; D0 = Y_CELDA
-0000005C  ED40                      68              ASL.W   #6, D0            ; D0 = Y_CELDA * NUMCLMNS (64 = 2^6)
-0000005E  D041                      69              ADD.W   D1, D0            ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
-00000060                            70  
-00000060  4C9F 000E                 71              MOVEM.W (A7)+,D1-D3
+00000056  0443 BD16                 62              SUB.W   #SIZECLDA, D3   ; Resta SIZECLDA de D3
+0000005A  5242                      63              ADDQ.W  #1, D2          ; Incrementa el cociente de Y
+0000005C  60F0                      64              BRA     DIVY            ; Repite el bucle
+0000005E                            65  
+0000005E                            66  ENDDIVY:
+0000005E                            67  
+0000005E                            68              ; Calcula el índice
+0000005E  3002                      69              MOVE.W  D2, D0          ; D0 = Y_CELDA
+00000060  EB40                      70              ASL.W   #5, D0          ; D0 = Y_CELDA * NUMCLMNS (32 = 2^5)
+00000062  D041                      71              ADD.W   D1, D0          ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
 00000064                            72  
-00000064                            73  
-00000064  4E75                      74              RTS
-00000066                            75              
-00000066                            76  ;-----------------------------------------------------------------------------
-00000066                            77  CBZOCPD
-00000066                            78  ; MARCA UNA CELDA COMO OCUPADA POR LA CABEZA
-00000066                            79  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-00000066                            80  ; OUTPUT   : NONE
-00000066                            81  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-00000066                            82  ; ----------------------------------------------------------------------------
-00000066                            83  
-00000066  48A7 0080                 84              MOVEM.W A0,-(A7)
-0000006A                            85  
-Line 86 ERROR: Undefined symbol
-0000006A  41F9 004DBD16             86              LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
-00000070  11BC 0001 0000            87              MOVE.B #1, (A0, D0.W)           ; Marca la celda como ocupada
-00000076                            88              
-00000076  4C9F 0100                 89              MOVEM.W (A7)+,A0
-0000007A                            90              
-0000007A  4E75                      91              RTS
-0000007C                            92              
-0000007C                            93  ;-----------------------------------------------------------------------------
-0000007C                            94  MCLDVCIA
-0000007C                            95  ; MARCA UNA CELDA COMO VACÍA
-0000007C                            96  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-0000007C                            97  ; OUTPUT   : NONE
-0000007C                            98  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-0000007C                            99  ; ----------------------------------------------------------------------------
-0000007C                           100  
-0000007C  48A7 0080                101              MOVEM.W A0,-(A7)
-00000080                           102  
-Line 103 ERROR: Undefined symbol
-00000080  41F9 004DBD16            103              LEA ESTDCLDS, A0                ; Direccion de la matriz en A0
-00000086  11BC 0000 0000           104              MOVE.B #0, (A0, D0.W)           ; Marca la celda como vacía
-0000008C                           105              
-0000008C  4C9F 0100                106              MOVEM.W (A7)+,A0
-00000090                           107              
-00000090  4E75                     108              RTS
-00000092                           109  
-00000092                           110  ;-----------------------------------------------------------------------------
-00000092                           111  CNVICOOR
-00000092                           112  ; Convierte un índice de celda a coordenadas de pantalla (X, Y)
-00000092                           113  ; INPUT    : D0 = índice de la celda en ESTADO_CELDAS
-00000092                           114  ; OUTPUT   : D1 = coordenada X, D2 = coordenada Y
-00000092                           115  ; MODIFIES : NONE
-00000092                           116  ; ----------------------------------------------------------------------------
-00000092                           117  
-00000092  48A7 8000                118              MOVEM.W D0,-(A7)
-00000096                           119  
-00000096  3400                     120              MOVE.W D0, D2        ; Copia el índice a D2 para calcular la fila
-00000098  EC4A                     121              LSR #6, D2           ; D2 = índice / NUM_COLUMNAS
-0000009A  3200                     122              MOVE.W D0, D1        ; Índice a D1 para calcular la columna
-0000009C  C27C 003F                123              AND.W #$3F, D1       ; D1 = índice % NUM_COLUMNAS
-000000A0  E949                     124              LSL #4, D1           ; D1 = columna * TAMANO_CELDA
-000000A2  E94A                     125              LSL #4, D2           ; D2 = fila * TAMANO_CELDA
-000000A4                           126  
-000000A4  4C9F 0001                127              MOVEM.W (A7)+,D0
-000000A8                           128  
-000000A8  4E75                     129              RTS
-000000AA                           130  
-000000AA                           131  
-000000AA                           132  ;-----------------------------------------------------------------------------
-000000AA                           133  MTZPLOT
-000000AA                           134  ; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
-000000AA                           135  ; INPUT    : NONE
-000000AA                           136  ; OUTPUT   : NONE
-000000AA                           137  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
-000000AA                           138  ; ----------------------------------------------------------------------------
-000000AA                           139  
-000000AA                           140  
-Line 141 ERROR: Undefined symbol
-000000AA  41F9 004DBD16            141              LEA     ESTDCLDS, A0            ; Apunta al inicio de ESTDCLDS
-Line 142 ERROR: Undefined symbol
-000000B0  303C BD16                142              MOVE.W  #TCELDAS, D0            ; Número total de celdas
-000000B4  363C 0000                143              MOVE.W  #0,D3                   ; LO UTILIZAMOS PARA SABER EL INDICE EN EL QUE NOS ENCONTRAMOS
-000000B8                           144  
-000000B8                           145  PLOTCLDS:
-000000B8  1218                     146              MOVE.B  (A0)+,D1                ; MOVEMOS EL VALOR DE LA CELDA A D1
-000000BA  B23C 0000                147              CMP.B   #0,D1
-000000BE  6700 002A                148              BEQ     PLOTVAC                 ; SALTA A DIBUJAR POSICIÓN VACÍA
-000000C2  B23C 0001                149              CMP.B   #1,D1 
-000000C6  6700 0060                150              BEQ     PLOTCBZ                 ; SALTA A DIBUJAR CABEZA
-000000CA  B23C 0002                151              CMP.B   #2,D1
-000000CE  6700 005A                152              BEQ     PLOTCOL                 ; SALTA A DIBUJAR COLA
-000000D2  B23C 0003                153              CMP.B   #3,D1
-000000D6  6700 0054                154              BEQ     PLOTSEG                 ; SALTA A DIBUJAR SEGMENTO
-000000DA  B23C 0004                155              CMP.B   #4,D1                 
-000000DE  6700 004E                156              BEQ     PLOTMNZ                 ; SALTA A DIBUJAR MANZANA
-000000E2                           157    
-000000E2                           158  DONEPLOT            
-000000E2  5243                     159              ADDQ    #1,D3                   ; AUMENTAMOS EL INDICE DE CELDA PARA LA SIGUIENTE
-000000E4  5340                     160              SUBI.W  #1, D0                  ; Decrementa el contador de celdas
-000000E6  66D0                     161              BNE     PLOTCLDS                ; Repite hasta que esten vacías
-000000E8  4E75                     162              RTS
-000000EA                           163  
-000000EA                           164  
-000000EA                           165  PLOTVAC:    
-000000EA  3F00                     166              MOVE.W  D0,-(A7)
-000000EC  3003                     167              MOVE.W  D3,D0
-000000EE  4EB8 0092                168              JSR     CNVICOOR
-000000F2  2F01                     169              MOVE.L  D1,-(A7)
-000000F4                           170              
-000000F4  103C 0050                171              MOVE.B  #80,D0
-Line 172 ERROR: Undefined symbol
-000000F8  223C 004DBD16            172              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A BLANCO(DE MOMENTO)
-000000FE  4E4F                     173              TRAP    #15
-00000100                           174              
-00000100  103C 0051                175              MOVE.B  #81,D0
-Line 176 ERROR: Undefined symbol
-00000104  223C 004DBD16            176              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A BLANCO(DE MOMENTO)
-0000010A  4E4F                     177              TRAP    #15
-0000010C                           178              
-0000010C  103C 0057                179              MOVE.B  #87,D0
-00000110  221F                     180              MOVE.L  (A7)+,D1
-00000112  3F03                     181              MOVE.W  D3,-(A7)
-00000114  3601                     182              MOVE.W  D1,D3
-Line 183 ERROR: Undefined symbol
-00000116  0643 BD16                183              ADD.W   #SIZECLDA,D3
-0000011A  3802                     184              MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
-Line 185 ERROR: Undefined symbol
-0000011C  0644 BD16                185              ADD.W   #SIZECLDA,D4
-00000120  4E4F                     186              TRAP    #15                     
-00000122                           187                          
-00000122  361F                     188              MOVE.W  (A7)+,D3  
-00000124  301F                     189              MOVE.W  (A7)+,D0
-00000126  60BA                     190              BRA     DONEPLOT                ; DIBUJADO HECHO 
-00000128                           191  
-00000128                           192  PLOTCBZ:    
-00000128  60B8                     193              BRA     DONEPLOT                ; DIBUJADO HECHO 
-0000012A                           194              
-0000012A                           195  PLOTCOL:    
-0000012A  60B6                     196              BRA     DONEPLOT                ; DIBUJADO HECHO 
-0000012C                           197              
-0000012C                           198  PLOTSEG:    
-0000012C  60B4                     199              BRA     DONEPLOT                ; DIBUJADO HECHO    
-0000012E                           200  
-0000012E                           201  PLOTMNZ:    
-0000012E  60B2                     202              BRA     DONEPLOT                ; DIBUJADO HECHO          
-00000130                           203  
-00000130                           204  
-00000130                           205  
-Line 206 WARNING: END directive missing, starting address not set
+00000064  4C9F 000E                 73              MOVEM.W (A7)+,D1-D3     ; Restaura los registros D1-D3 desde la pila
+00000068                            74  
+00000068  4E75                      75              RTS  
+0000006A                            76              
+0000006A                            77  ;-----------------------------------------------------------------------------
+0000006A                            78  CBZOCPD
+0000006A                            79  ; MARCA UNA CELDA COMO OCUPADA POR LA CABEZA
+0000006A                            80  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+0000006A                            81  ; OUTPUT   : NONE
+0000006A                            82  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+0000006A                            83  ; ----------------------------------------------------------------------------
+0000006A                            84  
+0000006A  48A7 0080                 85              MOVEM.W A0,-(A7)
+0000006E                            86  
+Line 87 ERROR: Undefined symbol
+0000006E  41F9 004DBD16             87              LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
+00000074  11BC 0001 0000            88              MOVE.B #1, (A0, D0.W)           ; Marca la celda como ocupada
+0000007A                            89              
+0000007A  4C9F 0100                 90              MOVEM.W (A7)+,A0
+0000007E                            91              
+0000007E  4E75                      92              RTS
+00000080                            93              
+00000080                            94  ;-----------------------------------------------------------------------------
+00000080                            95  MCLDVCIA
+00000080                            96  ; MARCA UNA CELDA COMO VACÍA
+00000080                            97  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+00000080                            98  ; OUTPUT   : NONE
+00000080                            99  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+00000080                           100  ; ----------------------------------------------------------------------------
+00000080                           101  
+00000080  48A7 0080                102              MOVEM.W A0,-(A7)
+00000084                           103  
+Line 104 ERROR: Undefined symbol
+00000084  41F9 004DBD16            104              LEA ESTDCLDS, A0                ; Direccion de la matriz en A0
+0000008A  11BC 0000 0000           105              MOVE.B #0, (A0, D0.W)           ; Marca la celda como vacía
+00000090                           106              
+00000090  4C9F 0100                107              MOVEM.W (A7)+,A0
+00000094                           108              
+00000094  4E75                     109              RTS
+00000096                           110  
+00000096                           111  ;-----------------------------------------------------------------------------
+00000096                           112  CNVICOOR
+00000096                           113  ; Convierte un índice de celda a coordenadas de pantalla (X, Y)
+00000096                           114  ; INPUT    : D0 = índice de la celda en ESTADO_CELDAS
+00000096                           115  ; OUTPUT   : D1 = coordenada X, D2 = coordenada Y
+00000096                           116  ; MODIFIES : NONE
+00000096                           117  ; ----------------------------------------------------------------------------
+00000096                           118  
+00000096  48A7 9800                119              MOVEM.W D0/D3-D4,-(A7)
+0000009A                           120  
+0000009A  3400                     121              MOVE.W  D0,D2          ; Copia índice a D2 para calcular la fila
+0000009C  EA4A                     122              LSR.W   #5,D2         ; D2 = índice / NUM_COLUMNAS (32 = 2^5)
+0000009E  3200                     123              MOVE.W  D0,D1          ; Copia índice a D1 para calcular la columna
+000000A0  C27C 001F                124              AND.W   #$1F,D1       ; D1 = índice % NUM_COLUMNAS (31 = 0x1F) (CREO)
+000000A4                           125  
+000000A4                           126              ; Multiplica por TAMAÑO_CELDA = 10
+Line 127 ERROR: Undefined symbol
+000000A4  363C BD16                127              MOVE.W  #SIZECLDA, D3
+000000A8  3801                     128              MOVE.W  D1,D4                   ; Copia D1 para multiplicar por 10
+000000AA  4241                     129              CLR.W   D1                        ; Inicializa resultado
+000000AC                           130  
+000000AC                           131  
+000000AC                           132  MULTLOOPX: 
+000000AC  B87C 0000                133              CMP.W   #0, D4        ; ¿Quedan iteraciones?
+000000B0  6700 0008                134              BEQ     ENDMULTX
+000000B4  D243                     135              ADD.W   D3,D1           ; Suma TAMANO_CELDA (10) repetidamente
+000000B6                           136  
+000000B6  5344                     137              SUBQ.W  #1,D4          ; Cuenta las iteraciones restantes
+000000B8  60F2                     138              BRA     MULTLOOPX          ; Repite mientras no sea 0
+000000BA                           139  ENDMULTX: 
+000000BA  3802                     140              MOVE.W  D2,D4          ; Copia D2 para multiplicar por 10
+000000BC  4242                     141              CLR.W   D2               ; Inicializa resultado
+000000BE                           142  
+000000BE                           143  MULTLOOPY: 
+000000BE  B87C 0000                144              CMP.W   #0, D4        ; ¿Quedan iteraciones?
+000000C2  6700 0008                145              BEQ     ENDMULTY
+000000C6  D443                     146              ADD.W   D3,D2           ; Suma TAMANO_CELDA (10) repetidamente
+000000C8  5344                     147              SUBQ.W  #1,D4          ; Cuenta las iteraciones restantes
+000000CA  60F2                     148              BRA     MULTLOOPY          ; Repite mientras no sea 0
+000000CC                           149  ENDMULTY:
+000000CC  4C9F 0019                150              MOVEM.W (A7)+,D0/D3-D4
+000000D0                           151  
+000000D0  4E75                     152              RTS
+000000D2                           153  
+000000D2                           154  
+000000D2                           155  ;-----------------------------------------------------------------------------
+000000D2                           156  MTZPLOT
+000000D2                           157  ; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
+000000D2                           158  ; INPUT    : NONE
+000000D2                           159  ; OUTPUT   : NONE
+000000D2                           160  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+000000D2                           161  ; ----------------------------------------------------------------------------
+000000D2                           162  
+000000D2                           163  
+Line 164 ERROR: Undefined symbol
+000000D2  41F9 004DBD16            164              LEA     ESTDCLDS, A0            ; Apunta al inicio de ESTDCLDS
+Line 165 ERROR: Undefined symbol
+000000D8  303C BD16                165              MOVE.W  #TCELDAS, D0            ; Número total de celdas
+000000DC  363C 0000                166              MOVE.W  #0,D3                   ; LO UTILIZAMOS PARA SABER EL INDICE EN EL QUE NOS ENCONTRAMOS
+000000E0                           167  
+000000E0                           168  PLOTCLDS:
+000000E0  1218                     169              MOVE.B  (A0)+,D1                ; MOVEMOS EL VALOR DE LA CELDA A D1
+000000E2  B23C 0000                170              CMP.B   #0,D1
+000000E6  6700 002A                171              BEQ     PLOTVAC                 ; SALTA A DIBUJAR POSICIÓN VACÍA
+000000EA  B23C 0001                172              CMP.B   #1,D1 
+000000EE  6700 0060                173              BEQ     PLOTCBZ                 ; SALTA A DIBUJAR CABEZA
+000000F2  B23C 0002                174              CMP.B   #2,D1
+000000F6  6700 00E4                175              BEQ     PLOTCOL                 ; SALTA A DIBUJAR COLA
+000000FA  B23C 0003                176              CMP.B   #3,D1
+000000FE  6700 00E0                177              BEQ     PLOTSEG                 ; SALTA A DIBUJAR SEGMENTO
+00000102  B23C 0004                178              CMP.B   #4,D1                 
+00000106  6700 00DC                179              BEQ     PLOTMNZ                 ; SALTA A DIBUJAR MANZANA
+0000010A                           180    
+0000010A                           181  DONEPLOT            
+0000010A  5243                     182              ADDQ    #1,D3                   ; AUMENTAMOS EL INDICE DE CELDA PARA LA SIGUIENTE
+0000010C  5340                     183              SUBI.W  #1, D0                  ; Decrementa el contador de celdas
+0000010E  66D0                     184              BNE     PLOTCLDS                ; Repite hasta que esten vacías
+00000110  4E75                     185              RTS
+00000112                           186  
+00000112                           187  
+00000112                           188  PLOTVAC:    
+00000112  3F00                     189              MOVE.W  D0,-(A7)
+00000114  3003                     190              MOVE.W  D3,D0
+00000116  4EB8 0096                191              JSR     CNVICOOR
+0000011A  2F01                     192              MOVE.L  D1,-(A7)
+0000011C                           193              
+0000011C  103C 0050                194              MOVE.B  #80,D0
+Line 195 ERROR: Undefined symbol
+00000120  223C 004DBD16            195              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
+00000126  4E4F                     196              TRAP    #15
+00000128                           197              
+00000128  103C 0051                198              MOVE.B  #81,D0
+Line 199 ERROR: Undefined symbol
+0000012C  223C 004DBD16            199              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
+00000132  4E4F                     200              TRAP    #15
+00000134                           201              
+00000134  103C 0057                202              MOVE.B  #87,D0
+00000138  221F                     203              MOVE.L  (A7)+,D1
+0000013A  3F03                     204              MOVE.W  D3,-(A7)
+0000013C  3601                     205              MOVE.W  D1,D3
+Line 206 ERROR: Undefined symbol
+0000013E  0643 BD16                206              ADD.W   #SIZECLDA,D3
+00000142  3802                     207              MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+Line 208 ERROR: Undefined symbol
+00000144  0644 BD16                208              ADD.W   #SIZECLDA,D4
+00000148  4E4F                     209              TRAP    #15                     
+0000014A                           210                          
+0000014A  361F                     211              MOVE.W  (A7)+,D3  
+0000014C  301F                     212              MOVE.W  (A7)+,D0
+0000014E  60BA                     213              BRA     DONEPLOT                ; DIBUJADO HECHO 
+00000150                           214  
+00000150                           215  PLOTCBZ:    
+00000150  3F00                     216              MOVE.W  D0,-(A7)                ; GUARDAMOS D0
+00000152  3003                     217              MOVE.W  D3,D0                   ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
+00000154  4EB8 0096                218              JSR     CNVICOOR
+00000158  2F01                     219              MOVE.L  D1,-(A7)
+0000015A                           220              
+0000015A                           221              ; SET COLOR DEL CONTORNO CABEZA
+0000015A  103C 0050                222              MOVE.B  #80,D0
+Line 223 ERROR: Undefined symbol
+0000015E  223C 004DBD16            223              MOVE.L  #CBZPCOL,D1
+00000164  4E4F                     224              TRAP    #15
+00000166                           225              
+00000166                           226              ; SET COLOR DEL RELLENO CABEZA
+00000166  103C 0051                227              MOVE.B  #81,D0
+Line 228 ERROR: Undefined symbol
+0000016A  223C 004DBD16            228              MOVE.L  #CBZFCOL,D1
+00000170  4E4F                     229              TRAP    #15
+00000172                           230              ; DIBUJAR CABEZA
+00000172  103C 0057                231              MOVE.B  #87,D0
+00000176  221F                     232              MOVE.L  (A7)+,D1
+00000178  3F03                     233              MOVE.W  D3,-(A7)
+0000017A  3601                     234              MOVE.W  D1,D3
+Line 235 ERROR: Undefined symbol
+0000017C  0643 BD16                235              ADD.W   #CBZWIDTH,D3
+00000180  3802                     236              MOVE.W  D2,D4
+Line 237 ERROR: Undefined symbol
+00000182  0644 BD16                237              ADD.W   #CBZHEIGH,D4
+00000186  4E4F                     238              TRAP    #15
+00000188                           239              
+00000188  2F01                     240              MOVE.L  D1,-(A7)
+0000018A                           241              ; SET COLOR DEL CONTORNO OJO
+0000018A  103C 0050                242              MOVE.B  #80,D0
+Line 243 ERROR: Undefined symbol
+0000018E  223C 004DBD16            243              MOVE.L  #OJOPCOL,D1
+00000194  4E4F                     244              TRAP    #15
+00000196                           245              
+00000196                           246              ; SET COLOR DEL RELLENO OJO
+00000196  103C 0051                247              MOVE.B  #81,D0
+Line 248 ERROR: Undefined symbol
+0000019A  223C 004DBD16            248              MOVE.L  #OJOFCOL,D1
+000001A0  4E4F                     249              TRAP    #15
+000001A2                           250              ; DIBUJAR OJO
+000001A2  103C 0058                251              MOVE.B  #88,D0
+000001A6  221F                     252              MOVE.L  (A7)+,D1
+000001A8  2F01                     253              MOVE.L  D1,-(A7)
+000001AA  2F02                     254              MOVE.L  D2,-(A7)
+Line 255 ERROR: Comma expected
+000001AC                           255              ADD.W   #OJOWIDTH/2,D1            
+000001AC  3601                     256              MOVE.W  D1,D3
+Line 257 ERROR: Undefined symbol
+000001AE  0643 BD16                257              ADD.W   #OJOWIDTH,D3
+Line 258 ERROR: Comma expected
+000001B2                           258              ADD.W   #OJOHEIGH/2,D2
+000001B2  3802                     259              MOVE.W  D2,D4
+Line 260 ERROR: Undefined symbol
+000001B4  0644 BD16                260              ADD.W   #OJOHEIGH,D4
+000001B8  4E4F                     261              TRAP    #15
+000001BA                           262  
+000001BA                           263              ; DEFINIR COORDENADAS IRIS
+000001BA  241F                     264              MOVE.L  (A7)+,D2
+000001BC  221F                     265              MOVE.L  (A7)+,D1
+Line 266 ERROR: Undefined symbol
+000001BE  0641 BD16                266              ADD.W   #OJOWIDTH,D1
+Line 267 ERROR: Undefined symbol
+000001C2  0642 BD16                267              ADD.W   #OJOHEIGH,D2
+000001C6  103C 0052                268              MOVE.B  #82,D0
+000001CA  4E4F                     269              TRAP    #15
+000001CC                           270              
+000001CC                           271              
+000001CC  361F                     272              MOVE.W  (A7)+,D3
+000001CE  301F                     273              MOVE.W  (A7)+,D0
+000001D0  6000 FF38                274              BRA     DONEPLOT                ; DIBUJADO HECHO 
+000001D4                           275              
+Line 276 ERROR: Symbol value differs between first and second pass
+000001D4                           276  PLOTCOL:    
+000001D4  6000 FF34                277              BRA     DONEPLOT                ; DIBUJADO HECHO 
+000001D8                           278              
+Line 279 ERROR: Symbol value differs between first and second pass
+000001D8                           279  PLOTSEG:    
+000001D8  6000 FF30                280              BRA     DONEPLOT                ; DIBUJADO HECHO    
+000001DC                           281  
+Line 282 ERROR: Symbol value differs between first and second pass
+000001DC                           282  PLOTMNZ:    
+000001DC  6000 FF2C                283              BRA     DONEPLOT                ; DIBUJADO HECHO          
+000001E0                           284  
+000001E0                           285  
+000001E0                           286  
+000001E0                           287  
+Line 288 WARNING: END directive missing, starting address not set
 
-16 errors detected
+32 errors detected
 1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-CBZOCPD             66
-CINDMTRZ            2E
+CBZOCPD             6A
+CINDMTRZ            32
 CLNCLDS             E
-CNVICOOR            92
-DIVX                36
-DIVY                4A
-DONEPLOT            E2
-ENDDIVX             46
-ENDDIVY             5A
-MCLDVCIA            7C
+CNVICOOR            96
+DIVX                3A
+DIVY                4E
+DONEPLOT            10A
+ENDDIVX             4A
+ENDDIVY             5E
+ENDMULTX            BA
+ENDMULTY            CC
+MCLDVCIA            80
 MTZINIT             0
-MTZPLOT             AA
-PLOTCBZ             128
-PLOTCLDS            B8
-PLOTCOL             12A
-PLOTMNZ             12E
-PLOTSEG             12C
-PLOTVAC             EA
+MTZPLOT             D2
+MULTLOOPX           AC
+MULTLOOPY           BE
+PLOTCBZ             150
+PLOTCLDS            E0
+PLOTCOL             1DC
+PLOTMNZ             1E4
+PLOTSEG             1E0
+PLOTVAC             112
