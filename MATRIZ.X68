@@ -20,10 +20,27 @@ CLNCLDS:
             SUBI.W #1, D0          ; Decrementa el contador de celdas
             BNE CLNCLDS            ; Repite hasta que esten vacías
             
-            MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION DE LA CABEZA             
+            
+            
+            MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION INICIAL DE LA CABEZA             
             MOVE.W  CBZPOSY, D2
             JSR     CINDMTRZ
-            JSR     CBZOCPD
+            JSR     CBZOCPD                 ; MARCAMOS LA POSICIÓN COMO CABEZA
+            
+            MOVE.W  SGMPOSX, D1
+            MOVE.W  SGMPOSY, D2             ; VEMOS LA POSICIÓN INICIAL DEL SEGMENTO
+            JSR     CINDMTRZ
+            JSR     SGMOCPD                 ; MARCAMOS LA POSICIÓN DEL SEGMENTO
+            
+            MOVE.W  COLPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA COLA
+            MOVE.W  COLPOSY, D2
+            JSR     CINDMTRZ
+            JSR     COLOCPD                 ; MARCAMOS LA POSICIÓN DE LA COLA
+            
+            MOVE.W  MNZPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA MANZANA
+            MOVE.W  MNZPOSY, D2
+            JSR     CINDMTRZ
+            JSR     MNZOCPD                 ; MARCAMOS LA POSICIÓN DE LA MANZANA
             
             
             
@@ -108,6 +125,59 @@ MCLDVCIA
             
             RTS
 
+;-----------------------------------------------------------------------------
+SGMOCPD
+; MARCA UNA CELDA COMO OCUPADA POR EL SEGMENTO
+; INPUT    : D0 = índice de la celda en ESTDCLDS
+; OUTPUT   : NONE
+; MODIFIES : Estado de la celda en la variable ESTDCLDS
+; ----------------------------------------------------------------------------
+
+            MOVEM.W A0,-(A7)
+
+            LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
+            MOVE.B #3, (A0, D0.W)           ; Marca la celda como ocupada
+            
+            MOVEM.W (A7)+,A0
+            
+            RTS
+            
+;-----------------------------------------------------------------------------
+COLOCPD
+; MARCA UNA CELDA COMO OCUPADA POR LA COLA
+; INPUT    : D0 = índice de la celda en ESTDCLDS
+; OUTPUT   : NONE
+; MODIFIES : Estado de la celda en la variable ESTDCLDS
+; ----------------------------------------------------------------------------
+
+            MOVEM.W A0,-(A7)
+
+            LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
+            MOVE.B #2, (A0, D0.W)           ; Marca la celda como ocupada
+            
+            MOVEM.W (A7)+,A0
+            
+            RTS
+
+
+;-----------------------------------------------------------------------------
+MNZOCPD
+; MARCA UNA CELDA COMO OCUPADA POR LA COLA
+; INPUT    : D0 = índice de la celda en ESTDCLDS
+; OUTPUT   : NONE
+; MODIFIES : Estado de la celda en la variable ESTDCLDS
+; ----------------------------------------------------------------------------
+
+            MOVEM.W A0,-(A7)
+
+            LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
+            MOVE.B #4, (A0, D0.W)           ; Marca la celda como ocupada
+            
+            MOVEM.W (A7)+,A0
+            
+            RTS
+
+            
 ;-----------------------------------------------------------------------------
 CNVICOOR
 ; Convierte un índice de celda a coordenadas de pantalla (X, Y)
@@ -273,14 +343,117 @@ PLOTCBZ:
             MOVE.W  (A7)+,D0
             BRA     DONEPLOT                ; DIBUJADO HECHO 
             
-PLOTCOL:    
+PLOTCOL:   
+            MOVE.W  D0,-(A7)
+            MOVE.W  D3,D0
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)
+            
+            MOVE.B  #80,D0
+            MOVE.L  #COLPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA COLA
+            TRAP    #15
+            
+            MOVE.B  #81,D0
+            MOVE.L  #COLFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA COLA
+            TRAP    #15
+            
+            MOVE.B  #87,D0
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
+            MOVE.W  D1,D3
+            ADD.W   #SIZECLDA,D3
+            MOVE.W  D2,D4                    
+            ADD.W   #SIZECLDA,D4
+            TRAP    #15                    ; DIBUJAMOS EL CUADRADO 
+                        
+            MOVE.W  (A7)+,D3  
+            MOVE.W  (A7)+,D0
+ 
             BRA     DONEPLOT                ; DIBUJADO HECHO 
             
 PLOTSEG:    
-            BRA     DONEPLOT                ; DIBUJADO HECHO    
+            MOVE.W  D0,-(A7)
+            MOVE.W  D3,D0
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)
+            
+            MOVE.B  #80,D0
+            MOVE.L  #SGMPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DEL SEGMENTO
+            TRAP    #15
+            
+            MOVE.B  #81,D0
+            MOVE.L  #SGMFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DEL SEGMENTO
+            TRAP    #15
+            
+            MOVE.B  #87,D0
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
+            MOVE.W  D1,D3
+            ADD.W   #SIZECLDA,D3
+            MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+            ADD.W   #SIZECLDA,D4
+            TRAP    #15                     
+                        
+            MOVE.W  (A7)+,D3  
+            MOVE.W  (A7)+,D0
+            BRA     DONEPLOT 
+                                            ; DIBUJADO HECHO    
 
 PLOTMNZ:    
+
+
+            MOVE.W  D0,-(A7)
+            MOVE.W  D3,D0
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)                ; PRIMERO DEBEMOS DIBUJAR EL FONDO Y LUEGO LA MANZANA
+            
+            MOVE.B  #80,D0
+            MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
+            TRAP    #15
+            
+            MOVE.B  #81,D0
+            MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
+            TRAP    #15
+            
+            MOVE.B  #87,D0
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
+            MOVE.W  D1,D3
+            ADD.W   #SIZECLDA,D3
+            MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+            ADD.W   #SIZECLDA,D4
+            TRAP    #15                     
+                        
+            MOVE.W  (A7)+,D3  
+            MOVE.W  (A7)+,D0
+
+            MOVE.W  D0,-(A7)
+            MOVE.W  D3,D0
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)
+            
+            MOVE.B  #80,D0
+            MOVE.L  #MNZPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA MANZANA
+            TRAP    #15
+            
+            MOVE.B  #81,D0
+            MOVE.L  #MNZFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA MANZANA
+            TRAP    #15
+            
+            MOVE.B  #88,D0
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
+            MOVE.W  D1,D3
+            ADD.W   #SIZECLDA,D3
+            MOVE.W  D2,D4                    ; DIBUJAMOS EL CIRCULO
+            ADD.W   #SIZECLDA,D4
+            TRAP    #15                     
+                        
+            MOVE.W  (A7)+,D3  
+            MOVE.W  (A7)+,D0
+
             BRA     DONEPLOT                ; DIBUJADO HECHO          
+
 
 
 
