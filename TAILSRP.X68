@@ -26,40 +26,38 @@ TAILUPD
             
 ; ------------------------------------------------------------------------------
 TAILPLOT
-; DIBUJAR COLA.
+; DIBUJAR COLA
 ; INPUT    : NONE 
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            MOVEM.L D0-D4,-(A7)
-
-            ; SET COLOR DEL CONTORNO
+            MOVE.W  D0,-(A7)
+            MOVE.W  D3,D0
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)
+            
             MOVE.B  #80,D0
-            MOVE.L  #COLPCOL,D1
+            MOVE.L  #COLPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA COLA
             TRAP    #15
             
-            ; SET COLOR DEL RELLENO
             MOVE.B  #81,D0
-            MOVE.L  #COLFCOL,D1
+            MOVE.L  #COLFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA COLA
             TRAP    #15
             
-            ; DEFINIR COORDENADAS
-            MOVE.W  (COLPOSX),D1
-            SUB.W   #COLWIDTH/2,D1
-            MOVE.W  D1,D3
-            ADD.W   #COLWIDTH,D3
-            MOVE.W  (COLPOSY),D2
-            SUB.W   #COLHEIGH/2,D2
-            MOVE.W  D2,D4
-            ADD.W   #COLHEIGH,D4
-            
-            ; DIBUJAR RECTANGULO
             MOVE.B  #87,D0
-            TRAP    #15
-            
-            MOVEM.L (A7)+,D0-D4
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
+            MOVE.W  D1,D3
+            ADD.W   #SIZECLDA,D3
+            MOVE.W  D2,D4                    
+            ADD.W   #SIZECLDA,D4
+            TRAP    #15                    ; DIBUJAMOS EL CUADRADO 
+                        
+            MOVE.W  (A7)+,D3  
+            MOVE.W  (A7)+,D0
 
             RTS
+
 
 
 

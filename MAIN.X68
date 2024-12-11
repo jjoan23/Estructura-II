@@ -24,9 +24,9 @@ START:
             JSR     HEADINIT                
             JSR     SEGINIT
             JSR     TAILINIT
-            JSR     APPLEINIT
             JSR     SCOINIT
             JSR     MTZINIT
+            JSR     APPLEINIT
             
 
 .LOOP
@@ -68,6 +68,7 @@ START:
     
     
             END    START        
+
 
 
 

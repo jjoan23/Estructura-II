@@ -83,33 +83,56 @@ APPLEPLOT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            MOVEM.L D0-D4,-(A7)
-
-            ; SET COLOR DEL CONTORNO
+           MOVE.W  D0,-(A7)
+            MOVE.W  D3,D0
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)                ; PRIMERO DEBEMOS DIBUJAR EL FONDO Y LUEGO LA MANZANA
+            
             MOVE.B  #80,D0
-            MOVE.L  #MNZPCOL,D1
+            MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
             TRAP    #15
             
-            ; SET COLOR DEL RELLENO
             MOVE.B  #81,D0
-            MOVE.L  #MNZFCOL,D1
+            MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
             TRAP    #15
             
-            ; DEFINIR COORDENADAS
-            MOVE.W  (MNZPOSX),D1
-            SUB.W   #MNZWIDTH/2,D1
+            MOVE.B  #87,D0
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
             MOVE.W  D1,D3
-            ADD.W   #MNZWIDTH,D3
-            MOVE.W  (MNZPOSY),D2
-            SUB.W   #MNZHEIGH/2,D2
-            MOVE.W  D2,D4
-            ADD.W   #MNZHEIGH,D4
+            ADD.W   #SIZECLDA,D3
+            MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+            ADD.W   #SIZECLDA,D4
+            TRAP    #15                     
+                        
+            MOVE.W  (A7)+,D3  
+            MOVE.W  (A7)+,D0
+
+            MOVE.W  D0,-(A7)
+            MOVE.W  D3,D0
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)
             
-            ; DIBUJAR CÍRCULO
-            MOVE.B  #88,D0
+            MOVE.B  #80,D0
+            MOVE.L  #MNZPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA MANZANA
             TRAP    #15
             
-            MOVEM.L (A7)+,D0-D4
+            MOVE.B  #81,D0
+            MOVE.L  #MNZFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA MANZANA
+            TRAP    #15
+            
+            MOVE.B  #88,D0
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
+            MOVE.W  D1,D3
+            ADD.W   #SIZECLDA,D3
+            MOVE.W  D2,D4                    ; DIBUJAMOS EL CIRCULO
+            ADD.W   #SIZECLDA,D4
+            TRAP    #15                     
+                        
+            MOVE.W  (A7)+,D3  
+            MOVE.W  (A7)+,D0
+
 
             RTS
 
@@ -117,11 +140,11 @@ APPLEPLOT
 GENPOSMNZ
 ; Genera una posición aleatoria para la manzana
 ; INPUT: NONE
-; OUTPUT: NONE
+; OUTPUT: D1 = MNZPOSX , D2 = MNZPOSY
 ; MODIFIES: MNZPOSX, MNZPOSY
 ; ----------------------------------------------------------------------------
 
-            MOVEM.L D0-D1, -(A7)
+            MOVE.L D0, -(A7)
 
             ; Genera una coordenada X aleatoria
             MOVE.W  #NUMCLMNS, D0          ; Número total de columnas
@@ -136,18 +159,19 @@ GENPOSMNZ
             ; Genera una coordenada Y aleatoria
             MOVE.W  #NUMFILAS, D0          ; Número total de filas
             LEA     COUNTER, A1            ; Reutiliza la dirección de la semilla
-            ADD.W   (A1),D1                ; Incrementa el valor de la semilla
-            MOVE.W  D1, (A1)               ; Guarda el nuevo valor de la semilla
-            AND.W   #$FFFF, D1             ; Asegura que D1 esté dentro del rango
-            LSR.W   #4, D1                 ; Desplaza a la derecha para obtener un valor dentro del rango
-            AND.W   #$1F, D1               ; Máscara que asegura que el número esté dentro de 0-31
-            MOVE.W  D1, MNZPOSY            ; Almacena la coordenada Y de la manzana
+            ADD.W   (A1),D2                ; Incrementa el valor de la semilla
+            MOVE.W  D2, (A1)               ; Guarda el nuevo valor de la semilla
+            AND.W   #$FFFF, D2             ; Asegura que D1 esté dentro del rango
+            LSR.W   #4, D2                 ; Desplaza a la derecha para obtener un valor dentro del rango
+            AND.W   #$1F, D2               ; Máscara que asegura que el número esté dentro de 0-31
+            MOVE.W  D2, MNZPOSY            ; Almacena la coordenada Y de la manzana
 
-            MOVEM.L (A7)+, D0-D1
+            MOVE.L (A7)+, D0
             RTS 
 
 ; Semilla para el generador de números aleatorios (contador)
 COUNTER     DS.W    1
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~0~

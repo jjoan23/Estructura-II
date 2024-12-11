@@ -30,8 +30,11 @@ HEADPLOT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            MOVEM.L D0-D4,-(A7)
-
+           MOVE.W  D0,-(A7)                ; GUARDAMOS D0
+            MOVE.W  D3,D0                   ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)
+            
             ; SET COLOR DEL CONTORNO CABEZA
             MOVE.B  #80,D0
             MOVE.L  #CBZPCOL,D1
@@ -42,19 +45,17 @@ HEADPLOT
             MOVE.L  #CBZFCOL,D1
             TRAP    #15
             
-            ; DEFINIR COORDENADAS CABEZA GRANDE
-            MOVE.W  (CBZPOSX),D1
-            SUB.W   #CBZWIDTH/2,D1
-            MOVE.W  D1,D3
-            ADD.W   #CBZWIDTH,D3
-            MOVE.W  (CBZPOSY),D2
-            SUB.W   #CBZHEIGH/2,D2
-            MOVE.W  D2,D4
-            ADD.W   #CBZHEIGH,D4
-            
             ; DIBUJAR CABEZA
             MOVE.B  #87,D0
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
+            MOVE.W  D1,D3
+            ADD.W   #CBZWIDTH,D3
+            MOVE.W  D2,D4
+            ADD.W   #CBZHEIGH,D4
             TRAP    #15
+            
+            MOVE.L  D1,-(A7)
             
             ; SET COLOR DEL CONTORNO OJO
             MOVE.B  #80,D0
@@ -66,31 +67,34 @@ HEADPLOT
             MOVE.L  #OJOFCOL,D1
             TRAP    #15
             
-            ; DEFINIR COORDENADAS OJO
-            MOVE.W  (CBZPOSX),D1
-            SUB.W   #OJOWIDTH/2,D1
-            MOVE.W  D1,D3
-            ADD.W   #OJOWIDTH,D3
-            MOVE.W  (CBZPOSY),D2
-            SUB.W   #OJOHEIGH/2,D2
-            MOVE.W  D2,D4
-            ADD.W   #OJOHEIGH,D4
-            
             ; DIBUJAR OJO
             MOVE.B  #88,D0
+            MOVE.L  (A7)+,D1
+            MOVE.L  D1,-(A7)
+            MOVE.L  D2,-(A7)
+            ADD.W   #OJOWIDTH/2,D1            
+            MOVE.W  D1,D3
+            ADD.W   #OJOWIDTH,D3
+            ADD.W   #OJOHEIGH/2,D2
+            MOVE.W  D2,D4
+            ADD.W   #OJOHEIGH,D4
             TRAP    #15
-            
-            ; DEFINIR COORDEANDAS IRIS
-            MOVE.W  (CBZPOSX),D1
-            MOVE.W  (CBZPOSY),D2
-            
-            ; DIBUJAR IRIS
+
+            ; DEFINIR COORDENADAS IRIS
+            MOVE.L  (A7)+,D2
+            MOVE.L  (A7)+,D1
+            ADD.W   #OJOWIDTH,D1
+            ADD.W   #OJOHEIGH,D2
             MOVE.B  #82,D0
             TRAP    #15
             
-            MOVEM.L (A7)+,D0-D4
+            
+            MOVE.W  (A7)+,D3
+            MOVE.W  (A7)+,D0
+
 
             RTS
+
 
 
 
