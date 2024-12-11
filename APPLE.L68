@@ -1,0 +1,135 @@
+00001584 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 11/12/2024 13:56:26
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * MANEJO DE LA MANZANA
+00000000                             3  *-----------------------------------------------------------
+00000000                             4     
+00000000                             5  ; ------------------------------------------------------------------------------
+00000000                             6  APPLEINIT
+00000000                             7  ; Genera una posición aleatoria para la manzana y verifica que la celda esté vacía
+00000000                             8  ; INPUT    : NONE 
+00000000                             9  ; OUTPUT   : NONE
+00000000                            10  ; MODIFIES : MNZPOSX, MNZPOSY, ESTDCLDS
+00000000                            11  ; ------------------------------------------------------------------------------
+00000000                            12  
+00000000  48E7 C000                 13              MOVEM.L D0-D1, -(A7)       ; Guardamos los registros
+00000004                            14  
+00000004                            15              ; Genera una coordenada X aleatoria
+Line 16 ERROR: Undefined symbol
+00000004  303C BD16                 16              MOVE.W  #NUMCLMNS, D0      ; Número total de columnas
+Line 17 ERROR: Invalid opcode
+00000008                            17              RNDW    D0, D1             ; D1 = coordenada X aleatoria en el rango [0, NUMCLMNS-1]
+00000008                            18              ; Multiplicar por el tamaño de la celda para obtener la coordenada en píxeles
+Line 19 ERROR: Undefined symbol
+00000008  C3FC BD16                 19              MULS.W  #SIZECLDA, D1      ; D1 = coordenada X en píxeles
+Line 20 ERROR: Undefined symbol
+0000000C  33C1 005455D8             20              MOVE.W  D1, MNZPOSX        ; Almacenamos la coordenada X de la manzana
+00000012                            21  
+00000012                            22              ; Generar coordenada Y aleatoria
+Line 23 ERROR: Undefined symbol
+00000012  303C BD16                 23              MOVE.W  #NUMFILAS, D0      ; Número total de filas
+Line 24 ERROR: Invalid opcode
+00000016                            24              RNDW    D0, D1             ; D1 = coordenada Y aleatoria en el rango [0, NUMFILAS-1]
+00000016                            25              ; Multiplicar por el tamaño de la celda para obtener la coordenada en píxeles
+Line 26 ERROR: Undefined symbol
+00000016  C3FC BD16                 26              MULS.W  #SIZECLDA, D1      ; D1 = coordenada Y en píxeles
+Line 27 ERROR: Undefined symbol
+0000001A  33C1 005455D8             27              MOVE.W  D1, MNZPOSY        ; Almacenamos la coordenada Y de la manzana
+00000020                            28  
+00000020                            29              ; Usar CINDMTRZ para obtener el índice de la celda
+Line 30 ERROR: Invalid opcode
+00000020                            30              CALL    CINDMTRZ            ; Usamos CINDMTRZ para obtener el índice en D0
+00000020                            31  
+00000020                            32              ; Comprobar si la celda está vacía (0)
+Line 33 ERROR: Undefined symbol
+00000020  41F9 004DBD16             33              LEA     ESTDCLDS, A0        ; Cargar la dirección de la matriz ESTDCLDS
+00000026  1230 0000                 34              MOVE.B  (A0, D0.W), D1      ; Cargar el estado de la celda en D1
+0000002A  B23C 0000                 35              CMP.B   #0, D1              ; Comparar si está vacía (0)
+0000002E  6700 0008                 36              BEQ     CELDA_VACIA         ; Si está vacía, continuar
+00000032  303C 0001                 37              MOVE.W  #1, D0              ; Si está ocupada (1, 2, 3, 4), devolver 1
+00000036  4E75                      38              RTS
+00000038                            39  
+00000038                            40  CELDA_VACIA:
+00000038  303C 0000                 41              MOVE.W  #0, D0              ; Si está vacía, devolver 0
+0000003C  4E75                      42              RTS
+0000003E                            43  
+0000003E                            44  
+0000003E                            45  
+0000003E                            46  
+0000003E                            47  
+0000003E                            48              ;MOVE.W  #30,(MNZPOSX)   ;DE MOMENTO PONGO X E Y ELEGIDAS MANUALMENTE, EN TEORÍA DEBE SER ALEATORIO
+0000003E                            49              ;MOVE.W  #30,(MNZPOSY)
+0000003E  4E75                      50              RTS
+00000040                            51  
+00000040                            52              
+00000040                            53  ; ------------------------------------------------------------------------------
+00000040                            54  APPLEUPD
+00000040                            55  ; ACTUALIZAR MANZANA.
+00000040                            56  ; INPUT    : NONE 
+00000040                            57  ; OUTPUT   : NONE
+00000040                            58  ; MODIFIES : NONE
+00000040                            59  ; ------------------------------------------------------------------------------
+00000040  4E75                      60              RTS
+00000042                            61              
+00000042                            62  ; ------------------------------------------------------------------------------
+00000042                            63  APPLEPLOT
+00000042                            64  ; DIBUJAR MANZANA.
+00000042                            65  ; INPUT    : NONE 
+00000042                            66  ; OUTPUT   : NONE
+00000042                            67  ; MODIFIES : NONE
+00000042                            68  ; ------------------------------------------------------------------------------
+00000042  48E7 F800                 69              MOVEM.L D0-D4,-(A7)
+00000046                            70  
+00000046                            71              ; SET COLOR DEL CONTORNO
+00000046  103C 0050                 72              MOVE.B  #80,D0
+Line 73 ERROR: Undefined symbol
+0000004A  223C 004DBD16             73              MOVE.L  #MNZPCOL,D1
+00000050  4E4F                      74              TRAP    #15
+00000052                            75              
+00000052                            76              ; SET COLOR DEL RELLENO
+00000052  103C 0051                 77              MOVE.B  #81,D0
+Line 78 ERROR: Undefined symbol
+00000056  223C 004DBD16             78              MOVE.L  #MNZFCOL,D1
+0000005C  4E4F                      79              TRAP    #15
+0000005E                            80              
+0000005E                            81              ; DEFINIR COORDENADAS
+Line 82 ERROR: Undefined symbol
+0000005E  3239 004DBD16             82              MOVE.W  (MNZPOSX),D1
+Line 83 ERROR: Comma expected
+00000064                            83              SUB.W   #MNZWIDTH/2,D1
+00000064  3601                      84              MOVE.W  D1,D3
+Line 85 ERROR: Undefined symbol
+00000066  0643 BD16                 85              ADD.W   #MNZWIDTH,D3
+Line 86 ERROR: Undefined symbol
+0000006A  3439 004DBD16             86              MOVE.W  (MNZPOSY),D2
+Line 87 ERROR: Comma expected
+00000070                            87              SUB.W   #MNZHEIGH/2,D2
+00000070  3802                      88              MOVE.W  D2,D4
+Line 89 ERROR: Undefined symbol
+00000072  0644 BD16                 89              ADD.W   #MNZHEIGH,D4
+00000076                            90              
+00000076                            91              ; DIBUJAR CÍRCULO
+00000076  103C 0058                 92              MOVE.B  #88,D0
+0000007A  4E4F                      93              TRAP    #15
+0000007C                            94              
+0000007C  4CDF 001F                 95              MOVEM.L (A7)+,D0-D4
+00000080                            96  
+00000080  4E75                      97              RTS
+00000082                            98     
+00000082                            99  
+00000082                           100  
+Line 101 WARNING: END directive missing, starting address not set
+
+18 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+APPLEINIT           0
+APPLEPLOT           42
+APPLEUPD            40
+CELDA_VACIA         38

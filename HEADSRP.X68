@@ -65,6 +65,7 @@ HEADPLOT
             MOVE.B  #81,D0
             MOVE.L  #OJOFCOL,D1
             TRAP    #15
+            
             ; DEFINIR COORDENADAS OJO
             MOVE.W  (CBZPOSX),D1
             SUB.W   #OJOWIDTH/2,D1
@@ -90,6 +91,7 @@ HEADPLOT
             MOVEM.L (A7)+,D0-D4
 
             RTS
+
 
 
 

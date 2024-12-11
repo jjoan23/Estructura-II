@@ -21,7 +21,6 @@ CLNCLDS:
             BNE CLNCLDS            ; Repite hasta que esten vacías
             
             
-            
             MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION INICIAL DE LA CABEZA             
             MOVE.W  CBZPOSY, D2
             JSR     CINDMTRZ
@@ -41,7 +40,6 @@ CLNCLDS:
             MOVE.W  MNZPOSY, D2
             JSR     CINDMTRZ
             JSR     MNZOCPD                 ; MARCAMOS LA POSICIÓN DE LA MANZANA
-            
             
             
             MOVEM.W (A7)+,D0-D2/A0
@@ -162,7 +160,7 @@ COLOCPD
 
 ;-----------------------------------------------------------------------------
 MNZOCPD
-; MARCA UNA CELDA COMO OCUPADA POR LA COLA
+; MARCA UNA CELDA COMO OCUPADA POR LA MANZANA
 ; INPUT    : D0 = índice de la celda en ESTDCLDS
 ; OUTPUT   : NONE
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
@@ -188,36 +186,56 @@ CNVICOOR
 
             MOVEM.W D0/D3-D4,-(A7)
 
-            MOVE.W  D0,D2          ; Copia índice a D2 para calcular la fila
+            MOVE.W  D0,D2         ; Copia índice a D2 para calcular la fila
             LSR.W   #5,D2         ; D2 = índice / NUM_COLUMNAS (32 = 2^5)
-            MOVE.W  D0,D1          ; Copia índice a D1 para calcular la columna
+            MOVE.W  D0,D1         ; Copia índice a D1 para calcular la columna
             AND.W   #$1F,D1       ; D1 = índice % NUM_COLUMNAS (31 = 0x1F) (CREO)
 
             ; Multiplica por TAMAÑO_CELDA = 10
             MOVE.W  #SIZECLDA, D3
-            MOVE.W  D1,D4                   ; Copia D1 para multiplicar por 10
-            CLR.W   D1                        ; Inicializa resultado
+            MOVE.W  D1,D4         ; Copia D1 para multiplicar por 10
+            CLR.W   D1            ; Inicializa resultado
 
 
 MULTLOOPX: 
             CMP.W   #0, D4        ; ¿Quedan iteraciones?
             BEQ     ENDMULTX
-            ADD.W   D3,D1           ; Suma TAMANO_CELDA (10) repetidamente
+            ADD.W   D3,D1         ; Suma TAMANO_CELDA (10) repetidamente
 
-            SUBQ.W  #1,D4          ; Cuenta las iteraciones restantes
-            BRA     MULTLOOPX          ; Repite mientras no sea 0
+            SUBQ.W  #1,D4         ; Cuenta las iteraciones restantes
+            BRA     MULTLOOPX     ; Repite mientras no sea 0
 ENDMULTX: 
-            MOVE.W  D2,D4          ; Copia D2 para multiplicar por 10
-            CLR.W   D2               ; Inicializa resultado
+            MOVE.W  D2,D4         ; Copia D2 para multiplicar por 10
+            CLR.W   D2            ; Inicializa resultado
 
 MULTLOOPY: 
             CMP.W   #0, D4        ; ¿Quedan iteraciones?
             BEQ     ENDMULTY
-            ADD.W   D3,D2           ; Suma TAMANO_CELDA (10) repetidamente
-            SUBQ.W  #1,D4          ; Cuenta las iteraciones restantes
-            BRA     MULTLOOPY          ; Repite mientras no sea 0
+            ADD.W   D3,D2         ; Suma TAMANO_CELDA (10) repetidamente
+            SUBQ.W  #1,D4         ; Cuenta las iteraciones restantes
+            BRA     MULTLOOPY     ; Repite mientras no sea 0
 ENDMULTY:
             MOVEM.W (A7)+,D0/D3-D4
+
+            RTS
+
+; ----------------------------------------------------------------------------
+CHECKCLD
+; INPUT: D0 = índice de la celda
+; OUTPUT: D0 = 0 si está vacía, 1 si está ocupada
+; MODIFIES: Ninguno
+; ----------------------------------------------------------------------------
+
+            LEA     ESTDCLDS, A0    ; Carga la dirección de la matriz ESTDCLDS
+            MOVE.B  (A0, D0.W),D1   ; Carga el estado de la celda en D1
+            CMP.B   #0, D1          ; Compara si está vacía (0)
+            BEQ     CLDFREE         ; Si está vacía
+            MOVE.W  #1, D0          ; Si está ocupada, devuelve 1 (ocupada)
+
+            RTS
+
+CLDFREE:
+            MOVE.W  #0, D0                 ; Devuelve 0 (libre)
 
             RTS
 
@@ -297,6 +315,7 @@ PLOTCBZ:
             MOVE.B  #81,D0
             MOVE.L  #CBZFCOL,D1
             TRAP    #15
+            
             ; DIBUJAR CABEZA
             MOVE.B  #87,D0
             MOVE.L  (A7)+,D1
@@ -308,6 +327,7 @@ PLOTCBZ:
             TRAP    #15
             
             MOVE.L  D1,-(A7)
+            
             ; SET COLOR DEL CONTORNO OJO
             MOVE.B  #80,D0
             MOVE.L  #OJOPCOL,D1
@@ -317,6 +337,7 @@ PLOTCBZ:
             MOVE.B  #81,D0
             MOVE.L  #OJOFCOL,D1
             TRAP    #15
+            
             ; DIBUJAR OJO
             MOVE.B  #88,D0
             MOVE.L  (A7)+,D1
@@ -453,6 +474,8 @@ PLOTMNZ:
             MOVE.W  (A7)+,D0
 
             BRA     DONEPLOT                ; DIBUJADO HECHO          
+
+
 
 
 

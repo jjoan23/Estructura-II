@@ -54,7 +54,7 @@ START:
 *            JSR     SEGPLOT
 *            JSR     TAILPLOT
 *            JSR     APPLEPLOT
-            JSR     MTZPLOT
+             JSR     MTZPLOT
             
             TRAP    #0                      ; ACTUALIZA DOBLE BUFFER
 
@@ -68,6 +68,8 @@ START:
     
     
             END    START        
+
+
 
 
 
