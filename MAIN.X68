@@ -35,7 +35,8 @@ START:
             JSR     HEADUPD
             JSR     SEGUPD
             JSR     TAILUPD 
-            JSR     APPLEUPD  
+           ; JSR     APPLEUPD  
+            JSR     MTZUPD
                           
 
 ;LEER INPUTS------------------------------------------------------------------
@@ -68,6 +69,7 @@ START:
     
     
             END    START        
+
 
 
 

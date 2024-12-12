@@ -99,8 +99,8 @@ CBZOCPD
 
             MOVEM.W A0,-(A7)
 
-            LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
-            MOVE.B #1, (A0, D0.W)           ; Marca la celda como ocupada
+            LEA     ESTDCLDS, A0                ; Dirección de la matriz en A0
+            MOVE.B  TRZPLOT, (A0, D0.W)           ; Marca la celda como ocupada
             
             MOVEM.W (A7)+,A0
             
@@ -134,7 +134,7 @@ SGMOCPD
             MOVEM.W A0,-(A7)
 
             LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
-            MOVE.B #3, (A0, D0.W)           ; Marca la celda como ocupada
+            MOVE.B #2, (A0, D0.W)           ; Marca la celda como ocupada
             
             MOVEM.W (A7)+,A0
             
@@ -151,7 +151,7 @@ COLOCPD
             MOVEM.W A0,-(A7)
 
             LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
-            MOVE.B #2, (A0, D0.W)           ; Marca la celda como ocupada
+            MOVE.B #1, (A0, D0.W)           ; Marca la celda como ocupada
             
             MOVEM.W (A7)+,A0
             
@@ -275,6 +275,54 @@ FONPLOT
             RTS         
 
 
+
+;-----------------------------------------------------------------------------
+MTZUPD
+; DIBUJA LA MATRIZ CASILLA A CASILLA
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+; ----------------------------------------------------------------------------
+
+
+            MOVEM.W D0-D2/A0,-(A7)
+            
+            LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
+            MOVE.W #TCELDAS, D0    ; Número total de celdas
+
+.CLNCLDS:
+            CLR.B (A0)+            ; Coloca 0 en cada celda
+            SUBI.W #1, D0          ; Decrementa el contador de celdas
+            BNE .CLNCLDS            ; Repite hasta que esten vacías
+            
+            
+            MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION INICIAL DE LA CABEZA             
+            MOVE.W  CBZPOSY, D2
+            JSR     CINDMTRZ
+            JSR     CBZOCPD                 ; MARCAMOS LA POSICIÓN COMO CABEZA
+            
+            MOVE.W  SGMPOSX, D1
+            MOVE.W  SGMPOSY, D2             ; VEMOS LA POSICIÓN INICIAL DEL SEGMENTO
+            JSR     CINDMTRZ
+            JSR     SGMOCPD                 ; MARCAMOS LA POSICIÓN DEL SEGMENTO
+            
+            MOVE.W  COLPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA COLA
+            MOVE.W  COLPOSY, D2
+            JSR     CINDMTRZ
+            JSR     COLOCPD                 ; MARCAMOS LA POSICIÓN DE LA COLA
+            
+            MOVE.W  MNZPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA MANZANA
+            MOVE.W  MNZPOSY, D2
+            JSR     CINDMTRZ
+            JSR     MNZOCPD                 ; MARCAMOS LA POSICIÓN DE LA MANZANA
+            
+            
+            MOVEM.W (A7)+,D0-D2/A0
+
+            RTS
+
+
+
 ;-----------------------------------------------------------------------------
 MTZPLOT
 ; DIBUJA LA MATRIZ CASILLA A CASILLA
@@ -293,11 +341,11 @@ PLOTCLDS:
             CMP.B   #0,D1
             BEQ     PLOTVAC                 ; SALTA A DIBUJAR POSICIÓN VACÍA
             CMP.B   #1,D1 
-            BEQ     PLOTCBZ                 ; SALTA A DIBUJAR CABEZA
-            CMP.B   #2,D1
             BEQ     PLOTCOL                 ; SALTA A DIBUJAR COLA
-            CMP.B   #3,D1
-            BEQ     PLOTSEG                 ; SALTA A DIBUJAR SEGMENTO
+            CMP.B   #2,D1
+            BEQ     PLOTSEG                  ; SALTA A DIBUJAR SEGMENTO
+            CMP.B   TRZPLOT,D1
+            BEQ     PLOTCBZ                 ; SALTA A DIBUJAR CABEZA
             CMP.B   #4,D1                 
             JSR     APPLEPLOT               ; SALTA A DIBUJAR MANZANA
   
@@ -321,6 +369,7 @@ PLOTCOL:
 PLOTSEG:    
             JSR     SEGPLOT
             BRA     DONEPLOT                ; DIBUJADO HECHO    
+
 
 
 

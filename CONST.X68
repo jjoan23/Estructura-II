@@ -15,7 +15,7 @@ MAXSGM      EQU     1                       ; TAMAÑO MÁXIMO DE SEGMENTOS (a dete
 LNGINI      EQU     1                       ; LONGITUD INICIAL SERPIENTE (a determinar)
 SGMWIDTH    EQU     20                      ; ANCHURA DE UN SEGMENTO (PROVISIONAL)
 SGMHEIGH    EQU     20                      ; ALTURA DE UN SEGMENTO (PROVISIONAL)
-CBZVEL      EQU     1                       ; VELOCIDAD DE LA CABEZA (a determinar)
+CBZVEL      EQU     10                      ; VELOCIDAD DE LA CABEZA (a determinar)
 SGMPCOL     EQU     $0000FF00               ; COLOR CONTORNO SEGMENTO (PROVISIONAL)
 SGMFCOL     EQU     $0000AA00               ; COLOR RELLENO SEGMENTO (PROVISIONAL)
 COLWIDTH    EQU     10                      ; ANCHURA DE LA COLA (PROVISIONAL)
@@ -37,6 +37,7 @@ OJOFCOL     EQU     $00FFFFFF               ; COLOR RELLENO OJO
 
 PNTSFCOL    EQU     1                       ; COLOR FONDO MARCADOR (a determinar)
 PNTSTEXT    EQU     1                       ; COORDENADAS DEL MARCADOR (a determinar)
+
 
 
 

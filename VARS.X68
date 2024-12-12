@@ -17,10 +17,12 @@ COLPOSX     DS.W    1                       ; COORDENADA X COLA
 COLPOSY     DS.W    1                       ; COORDENADA Y COLA
 SGMPOSX     DS.W    1                       ; COORDENADA X SEGMENTO
 SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
+TRZPLOT     DS.B    1                       ; NÚMERO DE TROZOS A DIBUJAR
 
 ; --- VARIABLES DEL MARCADOR -------------------------------------------------
 
 JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
+
 
 
 
