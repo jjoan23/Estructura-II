@@ -20,7 +20,12 @@ SEGUPD
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            ADD.W   #CBZVEL,SGMPOSX
+            MOVEM.W D1-D2,-(A7)
+            MOVE.W  SGMPOSX,D1
+            MOVE.W  SGMPOSY,D2
+            JSR     CINDMTRZ
+            JSR     RSTCLD
+            MOVEM.W (A7)+,D1-D2            
             RTS
             
 ; ------------------------------------------------------------------------------
@@ -57,6 +62,7 @@ SEGPLOT
 
 
             RTS
+
 
 
 

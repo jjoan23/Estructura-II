@@ -81,6 +81,7 @@ DIVY:       CMP.W   #SIZECLDA, D3    ; Compara D3 con SIZECLDA
 ENDDIVY:
 
             ; Calcula el índice
+            CLR.W   D0
             MOVE.W  D2, D0          ; D0 = Y_CELDA
             ASL.W   #5, D0          ; D0 = Y_CELDA * NUMCLMNS (32 = 2^5)
             ADD.W   D1, D0          ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
@@ -106,6 +107,25 @@ CBZOCPD
             
             RTS
             
+            
+            
+;-----------------------------------------------------------------------------
+RSTCLD
+; RESTA 1 A LA CELDA PASADA POR PARÁMETRO
+; INPUT    : D0 = índice de la celda en ESTDCLDS
+; OUTPUT   : NONE
+; MODIFIES : Estado de la celda en la variable ESTDCLDS
+; ----------------------------------------------------------------------------
+
+            MOVEM.W A0,-(A7)
+
+            LEA     ESTDCLDS, A0                ; Dirección de la matriz en A0
+            SUBQ.B   #1, (A0, D0.W)           ; Marca la celda como ocupada
+            
+            MOVEM.W (A7)+,A0
+            
+            RTS
+           
 ;-----------------------------------------------------------------------------
 MCLDVCIA
 ; MARCA UNA CELDA COMO VACÍA
@@ -278,7 +298,7 @@ FONPLOT
 
 ;-----------------------------------------------------------------------------
 MTZUPD
-; DIBUJA LA MATRIZ CASILLA A CASILLA
+; ACTUALIZA LA MATRIZ CASILLA A CASILLA
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
@@ -369,6 +389,7 @@ PLOTCOL:
 PLOTSEG:    
             JSR     SEGPLOT
             BRA     DONEPLOT                ; DIBUJADO HECHO    
+
 
 
 
