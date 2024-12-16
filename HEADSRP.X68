@@ -22,7 +22,9 @@ HEADUPD
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            MOVEM.W D1-D2,-(A7)
+            MOVEM.W D0-D2,-(A7)
+            CLR.W   D1
+            CLR.W   D2
             MOVE.W  CBZPOSX,D1
             MOVE.W  CBZPOSY,D2
             JSR     CINDMTRZ
@@ -30,7 +32,7 @@ HEADUPD
             ADD.W   #CBZVEL,CBZPOSX              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE (FALTA MIRAR HACIA DONDE APUNTA LA CABEZA)
             JSR     CINDMTRZ
             JSR     CBZOCPD  
-            MOVEM.W (A7)+,D1-D2
+            MOVEM.W (A7)+,D0-D2
             RTS
             
 ; ------------------------------------------------------------------------------
@@ -104,6 +106,7 @@ HEADPLOT
 
 
             RTS
+
 
 
 
