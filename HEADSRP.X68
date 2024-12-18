@@ -26,7 +26,9 @@ HEADUPD
             CLR.W   D1
             CLR.W   D2
             MOVE.W  CBZPOSX,D1
+            MOVE.W  D1,SGMPOSX
             MOVE.W  CBZPOSY,D2
+            MOVE.W  D2,SGMPOSY
             JSR     CINDMTRZ
             JSR     RSTCLD
             ADD.W   #CBZVEL,CBZPOSX              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE (FALTA MIRAR HACIA DONDE APUNTA LA CABEZA)
@@ -106,6 +108,7 @@ HEADPLOT
 
 
             RTS
+
 
 
 

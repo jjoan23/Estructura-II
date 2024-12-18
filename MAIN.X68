@@ -35,11 +35,11 @@ START:
 
 ;---ACTUALIZAR----------------------------------------------------------------
             
-            JSR     HEADUPD
-            JSR     SEGUPD
             JSR     TAILUPD 
-            JSR     APPLEUPD  
-            JSR     MTZUPD           
+            JSR     SEGUPD 
+            JSR     HEADUPD
+            *JSR     APPLEUPD  
+            JSR     MTZUPD          
             
                           
 
@@ -74,6 +74,7 @@ START:
     
     
             END    START        
+
 
 
 *~Font name~Courier New~
