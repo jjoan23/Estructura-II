@@ -10,6 +10,7 @@
             INCLUDE 'CONST.X68'
             INCLUDE 'SYSCONST.X68'
             INCLUDE 'SYSTEM.X68'
+            INCLUDE 'LIB/UTLCODE.X68'
             INCLUDE 'HEADSRP.X68'
             INCLUDE 'SEGSRP.X68'
             INCLUDE 'TAILSRP.X68'
@@ -21,22 +22,24 @@ START:
 ;INIZIALIZACIÓN---------------------------------------------------------------
 
             JSR     SYSINIT
+            JSR     UTLINIT
+            JSR     MTZINIT
             JSR     HEADINIT                
             JSR     SEGINIT
             JSR     TAILINIT
             JSR     SCOINIT
-            JSR     MTZINIT
             JSR     APPLEINIT
             
 
 .LOOP
 
 ;---ACTUALIZAR----------------------------------------------------------------
+            
             JSR     HEADUPD
             JSR     SEGUPD
             JSR     TAILUPD 
-           ; JSR     APPLEUPD  
-           ; JSR     MTZUPD           
+            JSR     APPLEUPD  
+            JSR     MTZUPD           
             
                           
 
@@ -52,10 +55,10 @@ START:
 
 
 ;---DIBUJAR-------------------------------------------------------------------
-*            JSR     HEADPLOT
-*            JSR     SEGPLOT
-*            JSR     TAILPLOT
-*            JSR     APPLEPLOT
+             JSR     HEADPLOT
+             JSR     SEGPLOT
+             JSR     TAILPLOT
+             JSR     APPLEPLOT
              JSR     MTZPLOT
             
             TRAP    #0                      ; ACTUALIZA DOBLE BUFFER
@@ -66,27 +69,11 @@ START:
             SIMHALT
             
             INCLUDE 'VARS.X68'
+            INCLUDE 'LIB/UTLVARS.X68'
             INCLUDE 'SYSVARS.X68'
     
     
             END    START        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 *~Font name~Courier New~
 *~Font size~10~

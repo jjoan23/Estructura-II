@@ -313,7 +313,7 @@ MTZUPD
 .CLNCLDS:
             CLR.B (A0)+            ; Coloca 0 en cada celda
             SUBI.W #1, D0          ; Decrementa el contador de celdas
-            BNE .CLNCLDS            ; Repite hasta que esten vacías
+            BNE .CLNCLDS           ; Repite hasta que esten vacías
             
             
             MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION INICIAL DE LA CABEZA             
@@ -399,6 +399,7 @@ PLOTSEG:
 PLOTAPPLE:
             JSR     APPLEPLOT
             BRA     DONEPLOT            
+
 
 
 
