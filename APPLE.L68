@@ -1,6 +1,6 @@
-00001712 Starting Address
+0000173A Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 18/12/2024 16:55:56
+Created On: 18/12/2024 17:27:37
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * MANEJO DE LA MANZANA
@@ -97,7 +97,7 @@ Line 72 ERROR: Undefined symbol
 00000070                            83  ; OUTPUT   : NONE
 00000070                            84  ; MODIFIES : NONE
 00000070                            85  ; ------------------------------------------------------------------------------
-00000070  3F00                      86              MOVE.W  D0, -(A7)
+00000070  3F00                      86              MOVE.W  D0,-(A7)
 00000072  3003                      87              MOVE.W  D3,D0
 Line 88 ERROR: Undefined symbol
 00000074  4EB9 004DBD16             88              JSR     CNVICOOR
@@ -163,7 +163,7 @@ Line 130 ERROR: Undefined symbol
 000000EE                           139  GENPOSMNZ
 000000EE                           140  ; Genera una posición aleatoria para la manzana
 000000EE                           141  ; INPUT: NONE
-000000EE                           142  ; OUTPUT: D1 = coordenada X, D2 = coordenada Y
+000000EE                           142  ; OUTPUT:
 000000EE                           143  ; MODIFIES: MNZPOSX, MNZPOSY
 000000EE                           144  ; ----------------------------------------------------------------------------
 000000EE                           145  
@@ -174,23 +174,31 @@ Line 149 ERROR: Undefined symbol
 000000F2  4EB9 004DBD16            149              JSR     UTLRAND
 Line 150 ERROR: Comma expected
 000000F8                           150              ANDI.W  #NUMCLMNS-1, D0       ; Asegura que esté en [0, NUMCLMNS-1]
-000000F8  3200                     151              MOVE.W  D0, D1
-000000FA                           152  
-000000FA                           153              ; Generar coordenada Y aleatoria
-Line 154 ERROR: Undefined symbol
-000000FA  4EB9 004DBD16            154              JSR     UTLRAND
-Line 155 ERROR: Comma expected
-00000100                           155              ANDI.W  #NUMFILAS-1, D0       ; Asegura que esté en el rango [0, NUMFILAS-1]
-00000100  3400                     156              MOVE.W  D0,D2
-00000102                           157  
-00000102  4CDF 0001                158              MOVEM.L (A7)+,D0
-00000106  4E75                     159              RTS 
-00000108                           160  
-00000108                           161  
-00000108                           162  
-Line 163 WARNING: END directive missing, starting address not set
+Line 151 ERROR: Undefined symbol
+000000F8  C0FC BD16                151              MULU    #SIZECLDA, D0         ; Escala al tamaño real de las celdas
+000000FC  3200                     152              MOVE.W  D0,D1
+Line 153 ERROR: Undefined symbol
+000000FE  33C0 005455D0            153              MOVE.W  D0, MNZPOSX           ; Guarda la coordenada X generada
+00000104                           154              
+00000104                           155              ; Generar coordenada Y aleatoria
+Line 156 ERROR: Undefined symbol
+00000104  4EB9 004DBD16            156              JSR     UTLRAND
+Line 157 ERROR: Comma expected
+0000010A                           157              ANDI.W  #NUMFILAS-1, D0       ; Asegura que esté en el rango [0, NUMFILAS-1]
+Line 158 ERROR: Undefined symbol
+0000010A  C0FC BD16                158              MULU    #SIZECLDA, D0         ; Escala al tamaño real de las celdas
+0000010E  3400                     159              MOVE.W  D0,D2
+Line 160 ERROR: Undefined symbol
+00000110  33C0 005455D0            160              MOVE.W  D0, MNZPOSY           ; Guarda la coordenada Y generada
+00000116                           161              
+00000116  4CDF 0001                162              MOVEM.L (A7)+,D0
+0000011A  4E75                     163              RTS 
+0000011C                           164  
+0000011C                           165  
+0000011C                           166  
+Line 167 WARNING: END directive missing, starting address not set
 
-24 errors detected
+28 errors detected
 1 warning generated
 
 

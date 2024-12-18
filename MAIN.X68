@@ -19,7 +19,7 @@
             INCLUDE 'MATRIZ.X68'
 START:
                 
-;INIZIALIZACIÓN---------------------------------------------------------------
+; --- INIZIALIZACIÓN ---------------------------------------------------------
 
             JSR     SYSINIT
             JSR     UTLINIT
@@ -33,21 +33,21 @@ START:
 
 .LOOP
 
-;---ACTUALIZAR----------------------------------------------------------------
-            
-            JSR     TAILUPD 
-            JSR     SEGUPD 
+; --- ACTUALIZAR -------------------------------------------------------------
+
+; LEER DISPOSITIVOS DE ENTRADA
+
+            ;TRAP    #1
+
+; ACTUALIZAR LÓGICA DEL JUEGO
+
+            JSR     TAILUPD
+            JSR     SEGUPD
             JSR     HEADUPD
-            *JSR     APPLEUPD  
-            JSR     MTZUPD          
+            ;JSR     APPLEUPD  
+            JSR     MTZUPD           
             
-                          
-
-;LEER INPUTS------------------------------------------------------------------
-
-;ACTUALIZAR LÓGICAS DEL JUEGO-------------------------------------------------
-
-;---SINCRONIZACIÓN------------------------------------------------------------
+; --- SINCRONIZACIÓN ---------------------------------------------------------
             ; THE FOLLOWING SYNC STRATEGY IS ****WRONG****
             MOVE.B  #23,D0
             MOVE.L  #1,D1
@@ -74,6 +74,10 @@ START:
     
     
             END    START        
+
+
+
+
 
 
 

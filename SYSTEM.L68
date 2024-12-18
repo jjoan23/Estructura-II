@@ -1,6 +1,6 @@
-0000126E Starting Address
+00001782 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 20/11/2024 11:24:23
+Created On: 18/12/2024 18:39:22
 
 00000000                             1  *-----------------------------------------------------------------------------
 00000000                             2  * SISTEMA
@@ -82,127 +82,110 @@ Line 55 ERROR: Symbol value differs between first and second pass
 00000058                            76          
 00000058                            77  
 00000058                            78   
-00000058                            79  ;-----------------------------------------------------------------------------
-Line 80 ERROR: Symbol value differs between first and second pass
-00000058                            80  MTZINIT
-00000058                            81  ; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
-00000058                            82  ; INPUT    : NONE
-00000058                            83  ; OUTPUT   : NONE
-00000058                            84  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
-00000058                            85  ; ----------------------------------------------------------------------------
-00000058                            86              
-00000058  48A7 8080                 87              MOVEM.W D0/A0,-(A7)
-0000005C                            88              
-Line 89 ERROR: Undefined symbol
-0000005C  41F9 004DBD16             89              LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
-Line 90 ERROR: Undefined symbol
-00000062  303C BD16                 90              MOVE.W #TCELDAS, D0    ; Número total de celdas
-00000066                            91  
-Line 92 ERROR: Symbol value differs between first and second pass
-00000066                            92  CLNCLDS:
-00000066  4218                      93              CLR.B (A0)+            ; Coloca 0 en cada celda
-00000068  5340                      94              SUBI.W #1, D0          ; Decrementa el contador de celdas
-0000006A  6600 0000                 95              BNE CLNCLDS            ; Repite hasta que esten vacías
-0000006E                            96              
-0000006E  4C9F 0101                 97              MOVEM.W (A7)+,D0/A0
-00000072                            98  
-00000072  4E75                      99              RTS
-00000074                           100  
-00000074                           101  ;-----------------------------------------------------------------------------
-Line 102 ERROR: Symbol value differs between first and second pass
-00000074                           102  CINDMTRZ
-00000074                           103  ; CALCULA EL ÍNDICE DE UNA CELDA
-00000074                           104  ; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
-00000074                           105  ; OUTPUT   : D0 = índice de la celda en ESTDCLDS
-00000074                           106  ; MODIFIES : NONE
-00000074                           107  ; ----------------------------------------------------------------------------
-00000074                           108  
-00000074  48A7 F000                109              MOVEM.W D0-D3,-(A7)
-00000078                           110  
-00000078                           111              ; Divide X por TCELDAS
-00000078  E049                     112              LSR.W #8, D1           ; D1 = X / 256
-0000007A  E449                     113              LSR.W #2, D1           ; D1 = X / 1024 (256 * 4)
-0000007C  3601                     114              MOVE.W D1, D3           ; Copia D1 a D3 para dividir por 3
-Line 115 ERROR: Symbol value differs between first and second pass
-0000007E                           115  DIV3X:      SUBQ.W #3, D3           ; Resta 3
-0000007E  5241                     116              ADDQ.W #1, D1           ; Cuenta cuántas veces restamos
-Line 117 ERROR: Undefined symbol
-00000080  6A00 BC94                117              BPL DIV3_X              ; Repite mientras sea positivo
-00000084                           118  
-00000084                           119              ; Divide Y por TCELDAS
-00000084  E04A                     120              LSR.W #8, D2           ; D2 = Y / 256
-00000086  E44A                     121              LSR.W #2, D2           ; D2 = Y / 1024
-00000088  3602                     122              MOVE.W D2, D3           ; Copiamos D2 a D3 para dividir por 3
-Line 123 ERROR: Symbol value differs between first and second pass
-0000008A                           123  DIV3Y:      SUBQ.W #3, D3           ; Restamos 3
-0000008A  5242                     124              ADDQ.W #1, D2           ; Contamos cuántas veces restamos
-Line 125 ERROR: Undefined symbol
-0000008C  6A00 BC88                125              BPL DIV3_Y              ; Repetimos mientras sea positivo
-00000090                           126  
-00000090                           127              ; Calcula índice
-00000090  3002                     128              MOVE.W D2, D0           ; D0 = Y_CELDA
-00000092  ED40                     129              ASL.W #6, D0            ; D0 = Y_CELDA * NUMCLMNS (64 = 2^6)
-00000094  D041                     130              ADD.W D1, D0            ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
-00000096                           131  
-00000096  4C9F 000F                132              MOVEM.W (A7)+,D0-D3
-0000009A                           133  
-0000009A                           134  
-0000009A  4E75                     135              RTS
-0000009C                           136              
-0000009C                           137  ;------------------------------------------------------------------------------            
-Line 138 ERROR: Symbol value differs between first and second pass
-0000009C                           138  MCLDOCPD
-0000009C                           139  ; MARCA UNA CELDA COMO OCUPADA
-0000009C                           140  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-0000009C                           141  ; OUTPUT   : NONE
-0000009C                           142  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-0000009C                           143  ; -----------------------------------------------------------------------------
-0000009C                           144  
-Line 145 ERROR: Undefined symbol
-0000009C  41F9 004DBD16            145              LEA ESTDCLDS, A0                ; Carga la dirección de la matriz en A0
-000000A2  11BC 0001 0000           146              MOVE.B #1, (A0, D0.W)           ; Marca la celda correspondientes como vacía
-000000A8                           147              
-000000A8  4E75                     148              RTS
-000000AA                           149              
-000000AA                           150  ;------------------------------------------------------------------------------            
-Line 151 ERROR: Symbol value differs between first and second pass
-000000AA                           151  MCLDVCIA
-000000AA                           152  ; MARCA UNA CELDA COMO VACÍA
-000000AA                           153  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-000000AA                           154  ; OUTPUT   : NONE
-000000AA                           155  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-000000AA                           156  ; ----------------------------------------------------------------------------
-000000AA                           157  
-Line 158 ERROR: Undefined symbol
-000000AA  41F9 004DBD16            158              LEA ESTDCLDS, A0                ; Carga la direccion de la matriz en A0
-000000B0  11BC 0000 0000           159              MOVE.B #0, (A0, D0.W)           ; Marca la celda como vacía
-000000B6                           160              
-000000B6  4E75                     161              RTS
-000000B8                           162  
-000000B8                           163  
-000000B8                           164  
-000000B8                           165  
-000000B8                           166  
-000000B8                           167  
-000000B8                           168  
-000000B8                           169  
-000000B8                           170  
-Line 171 WARNING: END directive missing, starting address not set
+00000058                            79  *;-----------------------------------------------------------------------------
+00000058                            80  *MTZINIT
+00000058                            81  *; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
+00000058                            82  *; INPUT    : NONE
+00000058                            83  *; OUTPUT   : NONE
+00000058                            84  *; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+00000058                            85  *; ----------------------------------------------------------------------------
+00000058                            86  *            
+00000058                            87  *            MOVEM.W D0/A0,-(A7)
+00000058                            88  *            
+00000058                            89  *            LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
+00000058                            90  *            MOVE.W #TCELDAS, D0    ; Número total de celdas
+00000058                            91  *
+00000058                            92  *CLNCLDS:
+00000058                            93  *            CLR.B (A0)+            ; Coloca 0 en cada celda
+00000058                            94  *            SUBI.W #1, D0          ; Decrementa el contador de celdas
+00000058                            95  *            BNE CLNCLDS            ; Repite hasta que esten vacías
+00000058                            96  *            
+00000058                            97  *            MOVEM.W (A7)+,D0/A0
+00000058                            98  *
+00000058                            99  *            RTS
+00000058                           100  *
+00000058                           101  *;-----------------------------------------------------------------------------
+00000058                           102  *CINDMTRZ
+00000058                           103  *; CALCULA EL ÍNDICE DE UNA CELDA
+00000058                           104  *; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
+00000058                           105  *; OUTPUT   : D0 = índice de la celda en ESTDCLDS
+00000058                           106  *; MODIFIES : NONE
+00000058                           107  *; ----------------------------------------------------------------------------
+00000058                           108  *
+00000058                           109  *            MOVEM.W D0-D3,-(A7)
+00000058                           110  *
+00000058                           111  *            ; Divide X por TCELDAS
+00000058                           112  *            LSR.W #8, D1           ; D1 = X / 256
+00000058                           113  *            LSR.W #2, D1           ; D1 = X / 1024 (256 * 4)
+00000058                           114  *            MOVE.W D1, D3           ; Copia D1 a D3 para dividir por 3
+00000058                           115  *DIV3X:      SUBQ.W #3, D3           ; Resta 3
+00000058                           116  *            ADDQ.W #1, D1           ; Cuenta cuántas veces restamos
+00000058                           117  *            BPL DIV3X              ; Repite mientras sea positivo
+00000058                           118  *
+00000058                           119  *            ; Divide Y por TCELDAS
+00000058                           120  *            LSR.W #8, D2           ; D2 = Y / 256
+00000058                           121  *            LSR.W #2, D2           ; D2 = Y / 1024
+00000058                           122  *            MOVE.W D2, D3           ; Copiamos D2 a D3 para dividir por 3
+00000058                           123  *DIV3Y:      SUBQ.W #3, D3           ; Restamos 3
+00000058                           124  *            ADDQ.W #1, D2           ; Contamos cuántas veces restamos
+00000058                           125  *            BPL DIV3Y              ; Repetimos mientras sea positivo
+00000058                           126  *
+00000058                           127  *            ; Calcula índice
+00000058                           128  *            MOVE.W D2, D0           ; D0 = Y_CELDA
+00000058                           129  *            ASL.W #6, D0            ; D0 = Y_CELDA * NUMCLMNS (64 = 2^6)
+00000058                           130  *            ADD.W D1, D0            ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
+00000058                           131  *
+00000058                           132  *            MOVEM.W (A7)+,D0-D3
+00000058                           133  *
+00000058                           134  *
+00000058                           135  *            RTS
+00000058                           136  *            
+00000058                           137  *;------------------------------------------------------------------------------            
+00000058                           138  *MCLDOCPD
+00000058                           139  *; MARCA UNA CELDA COMO OCUPADA
+00000058                           140  *; INPUT    : D0 = índice de la celda en ESTDCLDS
+00000058                           141  *; OUTPUT   : NONE
+00000058                           142  *; MODIFIES : Estado de la celda en la variable ESTDCLDS
+00000058                           143  *; -----------------------------------------------------------------------------
+00000058                           144  *
+00000058                           145  *            LEA ESTDCLDS, A0                ; Carga la dirección de la matriz en A0
+00000058                           146  *            MOVE.B #1, (A0, D0.W)           ; Marca la celda correspondientes como vacía
+00000058                           147  *            
+00000058                           148  *            RTS
+00000058                           149  *            
+00000058                           150  *;------------------------------------------------------------------------------            
+00000058                           151  *MCLDVCIA
+00000058                           152  *; MARCA UNA CELDA COMO VACÍA
+00000058                           153  *; INPUT    : D0 = índice de la celda en ESTDCLDS
+00000058                           154  *; OUTPUT   : NONE
+00000058                           155  *; MODIFIES : Estado de la celda en la variable ESTDCLDS
+00000058                           156  *; ----------------------------------------------------------------------------
+00000058                           157  *
+00000058                           158  *            LEA ESTDCLDS, A0                ; Carga la direccion de la matriz en A0
+00000058                           159  *            MOVE.B #0, (A0, D0.W)           ; Marca la celda como vacía
+00000058                           160  *            
+00000058                           161  *            RTS
+00000058                           162  *
+00000058                           163  *
+00000058                           164  *
+00000058                           165  
+00000058                           166  
+00000058                           167  
+00000058                           168  
+00000058                           169  
+00000058                           170  
+00000058                           171  
+00000058                           172  
+00000058                           173  
+Line 174 WARNING: END directive missing, starting address not set
 
-15 errors detected
+2 errors detected
 1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-CINDMTRZ            78
-CLNCLDS             6C
-DIV3X               82
-DIV3Y               90
-MCLDOCPD            A4
-MCLDVCIA            B2
-MTZINIT             5E
 SCRINIT             16
 SCRPLOT             44
 SYSINIT             0

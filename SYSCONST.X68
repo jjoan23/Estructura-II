@@ -15,6 +15,14 @@ NUMCLMNS    EQU     32                      ; COLUMNAS DE CELDAS (640/10)
 NUMFILAS    EQU     24                      ; FILAS DE CELDAS (480/10)
 TCELDAS     EQU     768                     ; TOTAL DE CELDAS (64 * 48)
 
+; ---CÓDIGOS DE TECLADO-------------------------------------------------------
+
+KBDLEFT     EQU     $25
+KBDUP       EQU     $26
+KBDRIGHT    EQU     $27
+KBDDOWN     EQU     $28
+
+
 
 
 
