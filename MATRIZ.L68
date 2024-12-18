@@ -1,6 +1,6 @@
-00000000 Starting Address
+000016DC Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 18/12/2024 15:17:48
+Created On: 18/12/2024 16:54:08
 
 00000000                             1  ; ----------------------------------------------------------------------------
 00000000                             2  ; MATRIZ
@@ -346,7 +346,7 @@ Line 311 ERROR: Undefined symbol
 000001DE                           313  .CLNCLDS:
 000001DE  4218                     314              CLR.B (A0)+            ; Coloca 0 en cada celda
 000001E0  5340                     315              SUBI.W #1, D0          ; Decrementa el contador de celdas
-000001E2  66FA                     316              BNE .CLNCLDS            ; Repite hasta que esten vacías
+000001E2  66FA                     316              BNE .CLNCLDS           ; Repite hasta que esten vacías
 000001E4                           317              
 000001E4                           318              
 Line 319 ERROR: Undefined symbol
@@ -458,7 +458,8 @@ Line 400 ERROR: Undefined symbol
 000002B2                           410  
 000002B2                           411  
 000002B2                           412  
-Line 413 WARNING: END directive missing, starting address not set
+000002B2                           413  
+Line 414 WARNING: END directive missing, starting address not set
 
 44 errors detected
 1 warning generated

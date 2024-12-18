@@ -83,7 +83,7 @@ APPLEPLOT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-           MOVE.W  D0,-(A7)
+            MOVE.W  D0,-(A7)
             MOVE.W  D3,D0
             JSR     CNVICOOR
             MOVE.L  D1,-(A7)                ; PRIMERO DEBEMOS DIBUJAR EL FONDO Y LUEGO LA MANZANA
@@ -135,42 +135,34 @@ APPLEPLOT
 
 
             RTS
-
 ; ----------------------------------------------------------------------------
 GENPOSMNZ
 ; Genera una posición aleatoria para la manzana
 ; INPUT: NONE
-; OUTPUT: D1 = MNZPOSX , D2 = MNZPOSY
+; OUTPUT:
 ; MODIFIES: MNZPOSX, MNZPOSY
 ; ----------------------------------------------------------------------------
 
-            MOVE.L D0, -(A7)
+            MOVEM.L D0,-(A7)
 
-            ; Genera una coordenada X aleatoria
-            MOVE.W  #NUMCLMNS, D0          ; Número total de columnas
-            LEA     COUNTER, A1            ; Carga la dirección de la "semilla" (contador)
-            ADD.W   (A1),D1                ; Incrementa el valor de la semilla
-            MOVE.W  D1, (A1)               ; Guarda el nuevo valor de la semilla
-            AND.W   #$FFFF, D1             ; Asegura que D1 esté dentro del rango
-            LSR.W   #4, D1                 ; Desplaza a la derecha para obtener un valor dentro del rango
-            AND.W   #$1F, D1               ; Máscara que asegura que el número esté dentro de 0-31
-            MOVE.W  D1, MNZPOSX            ; Almacena la coordenada X de la manzana
-
-            ; Genera una coordenada Y aleatoria
-            MOVE.W  #NUMFILAS, D0          ; Número total de filas
-            LEA     COUNTER, A1            ; Reutiliza la dirección de la semilla
-            ADD.W   (A1),D2                ; Incrementa el valor de la semilla
-            MOVE.W  D2, (A1)               ; Guarda el nuevo valor de la semilla
-            AND.W   #$FFFF, D2             ; Asegura que D1 esté dentro del rango
-            LSR.W   #4, D2                 ; Desplaza a la derecha para obtener un valor dentro del rango
-            AND.W   #$1F, D2               ; Máscara que asegura que el número esté dentro de 0-31
-            MOVE.W  D2, MNZPOSY            ; Almacena la coordenada Y de la manzana
-
-            MOVE.L (A7)+, D0
+            ; Genera la coordenada X aleatoria
+            JSR     UTLRAND
+            ANDI.W  #NUMCLMNS-1, D0       ; Asegura que esté en [0, NUMCLMNS-1]
+            MULU    #SIZECLDA, D0         ; Escala al tamaño real de las celdas
+            MOVE.W  D0,D1
+            MOVE.W  D0, MNZPOSX           ; Guarda la coordenada X generada
+            
+            ; Generar coordenada Y aleatoria
+            JSR     UTLRAND
+            ANDI.W  #NUMFILAS-1, D0       ; Asegura que esté en el rango [0, NUMFILAS-1]
+            MULU    #SIZECLDA, D0         ; Escala al tamaño real de las celdas
+            MOVE.W  D0,D2
+            MOVE.W  D0, MNZPOSY           ; Guarda la coordenada Y generada
+            
+            MOVEM.L (A7)+,D0
             RTS 
 
-; Semilla para el generador de números aleatorios (contador)
-COUNTER     DS.W    1
+
 
 *~Font name~Courier New~
 *~Font size~10~
