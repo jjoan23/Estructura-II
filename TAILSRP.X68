@@ -22,10 +22,12 @@ TAILUPD
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             MOVEM.W D1-D2,-(A7)
+            
             MOVE.W  COLPOSX,D1
             MOVE.W  COLPOSY,D2
             JSR     CINDMTRZ
             JSR     RSTCLD 
+            
             MOVEM.W (A7)+,D1-D2            
             RTS
             
@@ -62,6 +64,7 @@ TAILPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
 
 
 

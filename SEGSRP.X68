@@ -21,12 +21,14 @@ SEGUPD
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             MOVEM.W D1-D2,-(A7)
+            
             MOVE.W  SGMPOSX,D1
             MOVE.W  D1,COLPOSX
             MOVE.W  SGMPOSY,D2
             MOVE.W  D2,COLPOSY
             JSR     CINDMTRZ
             JSR     RSTCLD
+            
             MOVEM.W (A7)+,D1-D2            
             RTS
             
@@ -64,6 +66,7 @@ SEGPLOT
 
 
             RTS
+
 
 
 

@@ -119,7 +119,7 @@ RSTCLD
 
             MOVEM.W A0,-(A7)
 
-            LEA     ESTDCLDS, A0                ; Dirección de la matriz en A0
+            LEA     ESTDCLDS, A0              ; Dirección de la matriz en A0
             SUBQ.B   #1, (A0, D0.W)           ; Marca la celda como ocupada
             
             MOVEM.W (A7)+,A0
@@ -399,6 +399,7 @@ PLOTSEG:
 PLOTAPPLE:
             JSR     APPLEPLOT
             BRA     DONEPLOT            
+
 
 
 

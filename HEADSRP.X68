@@ -87,7 +87,7 @@ HEADPLOT
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
            MOVE.W  D0,-(A7)                ; GUARDAMOS D0
-            MOVE.W  D3,D0                   ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
+            MOVE.W  D3,D0                  ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
             JSR     CNVICOOR
             MOVE.L  D1,-(A7)
             
@@ -150,6 +150,7 @@ HEADPLOT
 
 
             RTS
+
 
 
 

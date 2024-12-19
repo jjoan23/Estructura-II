@@ -41,12 +41,12 @@ START:
             TRAP    #1
 
 ; ACTUALIZAR LÓGICA DEL JUEGO
-
+            
             JSR     TAILUPD
             JSR     SEGUPD
             JSR     HEADUPD
             ;JSR     APPLEUPD  
-            JSR     MTZUPD           
+            JSR     MTZUPD
             
 ; --- SINCRONIZACIÓN ---------------------------------------------------------
             ; THE FOLLOWING SYNC STRATEGY IS ****WRONG****
@@ -75,6 +75,8 @@ START:
     
     
             END    START        
+
+
 
 
 

@@ -23,11 +23,6 @@ KBDRIGHT    EQU     $27
 KBDDOWN     EQU     $28
 
 
-
-
-
-
-
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~0~
