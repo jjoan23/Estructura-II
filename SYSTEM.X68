@@ -109,7 +109,8 @@ KBDUPD
             MOVE.B  #19,D0
             MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
             TRAP    #15
-            
+            MOVE.L  D1,(LASTKEY)
+          
             ; CONVERT TO DESIRED FORMAT
             MOVE.W  #3,D3
 .LOOP       LSL.L   #8,D1
@@ -125,9 +126,37 @@ KBDUPD
             ; STORE KBDVAL
             MOVE.B  D2,(KBDVAL)
             
+            CLR.W   D0
+            MOVE.L  (LASTKEY),D0
+            CMP.L   #$000000FF,D0
+            BEQ     IZQ
+            CMP.L   #$0000FF00,D0
+            BEQ     ARR
+            CMP.L   #$00FF0000,D0
+            BEQ     DER
+            CMP.L   #$FF000000,D0
+            BEQ     ABA
+            
+DER:        MOVE.W  #0,ESTDCBZ
+            BRA     CONTINU
+            
+ARR:        MOVE.W  #1,ESTDCBZ
+            BRA     CONTINU
+
+IZQ:        MOVE.W  #2,ESTDCBZ
+            BRA     CONTINU                    
+
+ABA:        MOVE.W  #3,ESTDCBZ
+            BRA     CONTINU
+
+
+    
+CONTINU:
+            
             MOVEM.L (A7)+,D0-D3
 
             RTE
+
 
 
 *~Font name~Courier New~

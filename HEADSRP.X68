@@ -13,6 +13,8 @@ HEADINIT
             MOVE.W  #PANHEIGH/2,(CBZPOSY)
             CLR     TRZPLOT
             MOVE.B  #3,TRZPLOT
+            CLR.W   ESTDCBZ
+            MOVE.W  #0,ESTDCBZ
             RTS
             
 ; ------------------------------------------------------------------------------
@@ -23,6 +25,8 @@ HEADUPD
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             MOVEM.W D0-D2,-(A7)
+                     
+            CLR.W   D0
             CLR.W   D1
             CLR.W   D2
             MOVE.W  CBZPOSX,D1
@@ -31,9 +35,47 @@ HEADUPD
             MOVE.W  D2,SGMPOSY
             JSR     CINDMTRZ
             JSR     RSTCLD
-            ADD.W   #CBZVEL,CBZPOSX              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE (FALTA MIRAR HACIA DONDE APUNTA LA CABEZA)
+            
+            CLR.W   D0
+            MOVE.W  ESTDCBZ,D0
+            CMP.W   #0,D0
+            BEQ     SIGDER
+            CMP.W   #1,D0
+            BEQ     SIGARR
+            CMP.W   #2,D0
+            BEQ     SIGIZQ
+            CMP.W   #3,D0
+            BEQ     SIGABA
+            
+SIGDER:     ADD.W   #CBZVEL,CBZPOSX               ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE 
+            MOVE.W  CBZPOSX,D1
+            MOVE.W  CBZPOSY,D2
             JSR     CINDMTRZ
             JSR     CBZOCPD  
+            BRA     FIN
+            
+SIGARR:     SUB.W   #CBZVEL,CBZPOSY              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE
+            MOVE.W  CBZPOSX,D1
+            MOVE.W  CBZPOSY,D2 
+            JSR     CINDMTRZ
+            JSR     CBZOCPD  
+            BRA     FIN   
+  
+SIGIZQ:     SUB.W   #CBZVEL,CBZPOSX              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE 
+            MOVE.W  CBZPOSX,D1
+            MOVE.W  CBZPOSY,D2
+            JSR     CINDMTRZ
+            JSR     CBZOCPD  
+            BRA     FIN      
+
+SIGABA:     ADD.W   #CBZVEL,CBZPOSY               ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE 
+            MOVE.W  CBZPOSX,D1
+            MOVE.W  CBZPOSY,D2
+            JSR     CINDMTRZ 
+            JSR     CBZOCPD  
+            BRA     FIN      
+            
+FIN:            
             MOVEM.W (A7)+,D0-D2
             RTS
             
@@ -108,6 +150,7 @@ HEADPLOT
 
 
             RTS
+
 
 
 

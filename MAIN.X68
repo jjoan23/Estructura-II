@@ -23,6 +23,7 @@ START:
 
             JSR     SYSINIT
             JSR     UTLINIT
+            JSR     KBDINIT
             JSR     MTZINIT
             JSR     HEADINIT                
             JSR     SEGINIT
@@ -74,6 +75,7 @@ START:
     
     
             END    START        
+
 
 
 

@@ -1,6 +1,6 @@
-0000160E Starting Address
+0000189A Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 15/12/2024 18:00:57
+Created On: 19/12/2024 10:26:50
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * MANEJO DE LA CABEZA DE LA SERPIENTE
@@ -21,139 +21,252 @@ Line 14 ERROR: Undefined symbol
 00000000  4279 004DBD16             14              CLR     TRZPLOT
 Line 15 ERROR: Undefined symbol
 00000006  13FC 0003 005455B8        15              MOVE.B  #3,TRZPLOT
-0000000E  4E75                      16              RTS
-00000010                            17              
-00000010                            18  ; ------------------------------------------------------------------------------
-Line 19 ERROR: Symbol value differs between first and second pass
-00000010                            19  HEADUPD
-00000010                            20  ; ACTUALIZAR CABEZA.
-00000010                            21  ; INPUT    : NONE 
-00000010                            22  ; OUTPUT   : NONE
-00000010                            23  ; MODIFIES : NONE
-00000010                            24  ; ------------------------------------------------------------------------------
-00000010  48A7 6000                 25              MOVEM.W D1-D2,-(A7)
-Line 26 ERROR: Undefined symbol
-00000014  3239 004DBD16             26              MOVE.W  CBZPOSX,D1
-Line 27 ERROR: Undefined symbol
-0000001A  3439 004DBD16             27              MOVE.W  CBZPOSY,D2
-Line 28 ERROR: Undefined symbol
-00000020  4EB9 004DBD16             28              JSR     CINDMTRZ
+Line 16 ERROR: Undefined symbol
+0000000E  4279 004DBD16             16              CLR.W   ESTDCBZ
+Line 17 ERROR: Undefined symbol
+00000014  33FC 0000 005455B8        17              MOVE.W  #0,ESTDCBZ
+0000001C  4E75                      18              RTS
+0000001E                            19              
+0000001E                            20  ; ------------------------------------------------------------------------------
+Line 21 ERROR: Symbol value differs between first and second pass
+0000001E                            21  HEADUPD
+0000001E                            22  ; ACTUALIZAR CABEZA.
+0000001E                            23  ; INPUT    : NONE 
+0000001E                            24  ; OUTPUT   : NONE
+0000001E                            25  ; MODIFIES : NONE
+0000001E                            26  ; ------------------------------------------------------------------------------
+0000001E  48A7 E000                 27              MOVEM.W D0-D2,-(A7)
+00000022  4240                      28              CLR.W   D0
 Line 29 ERROR: Undefined symbol
-00000026  4EB9 004DBD16             29              JSR     RSTCLD
-Line 30 ERROR: Undefined symbol
-0000002C  0679 BD16 005455D4        30              ADD.W   #CBZVEL,CBZPOSX              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE (FALTA MIRAR HACIA DONDE APUNTA LA CABEZA)
-Line 31 ERROR: Undefined symbol
-00000034  4EB9 004DBD16             31              JSR     CINDMTRZ
-Line 32 ERROR: Undefined symbol
-0000003A  4EB9 004DBD16             32              JSR     CBZOCPD  
-00000040  4C9F 0006                 33              MOVEM.W (A7)+,D1-D2
-00000044  4E75                      34              RTS
-00000046                            35              
-00000046                            36  ; ------------------------------------------------------------------------------
-Line 37 ERROR: Symbol value differs between first and second pass
-00000046                            37  HEADPLOT
-00000046                            38  ; DIBUJAR CABEZA.
-00000046                            39  ; INPUT    : NONE 
-00000046                            40  ; OUTPUT   : NONE
-00000046                            41  ; MODIFIES : NONE
-00000046                            42  ; ------------------------------------------------------------------------------
-00000046  3F00                      43             MOVE.W  D0,-(A7)                ; GUARDAMOS D0
-00000048  3003                      44              MOVE.W  D3,D0                   ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
-Line 45 ERROR: Undefined symbol
-0000004A  4EB9 004DBD16             45              JSR     CNVICOOR
-00000050  2F01                      46              MOVE.L  D1,-(A7)
-00000052                            47              
-00000052                            48              ; SET COLOR DEL CONTORNO CABEZA
-00000052  103C 0050                 49              MOVE.B  #80,D0
-Line 50 ERROR: Undefined symbol
-00000056  223C 004DBD16             50              MOVE.L  #CBZPCOL,D1
-0000005C  4E4F                      51              TRAP    #15
-0000005E                            52              
-0000005E                            53              ; SET COLOR DEL RELLENO CABEZA
-0000005E  103C 0051                 54              MOVE.B  #81,D0
-Line 55 ERROR: Undefined symbol
-00000062  223C 004DBD16             55              MOVE.L  #CBZFCOL,D1
-00000068  4E4F                      56              TRAP    #15
-0000006A                            57              
-0000006A                            58              ; DIBUJAR CABEZA
-0000006A  103C 0057                 59              MOVE.B  #87,D0
-0000006E  221F                      60              MOVE.L  (A7)+,D1
-00000070  3F03                      61              MOVE.W  D3,-(A7)
-00000072  3601                      62              MOVE.W  D1,D3
-Line 63 ERROR: Undefined symbol
-00000074  0643 BD16                 63              ADD.W   #CBZWIDTH,D3
-00000078  3802                      64              MOVE.W  D2,D4
+00000024  1039 004DBD16             29              MOVE.B  (KBDVAL),D0
+0000002A  B03C 0000                 30              CMP.B   #0,D0
+0000002E  6700 0042                 31              BEQ     IZQ
+00000032  B03C 0001                 32              CMP.B   #1,D0
+00000036  6700 002E                 33              BEQ     ARR
+0000003A  B03C 0002                 34              CMP.B   #2,D0
+0000003E  6700 001A                 35              BEQ     DER
+00000042  B03C 0003                 36              CMP.B   #3,D0
+00000046  6700 0036                 37              BEQ     ABA
+0000004A                            38              
+Line 39 ERROR: Symbol value differs between first and second pass
+0000004A                            39  DER:        MOVE.W  #0,ESTDCBZ
+0000004A  6000 003E                 40              BRA     CONTINU
+0000004E                            41              
+Line 42 ERROR: Symbol value differs between first and second pass
+0000004E                            42  ARR:        MOVE.W  #1,ESTDCBZ
+0000004E  6000 003A                 43              BRA     CONTINU
+00000052                            44  
+Line 45 ERROR: Symbol value differs between first and second pass
+00000052                            45  IZQ:        MOVE.W  #2,ESTDCBZ
+00000052  6000 0036                 46              BRA     CONTINU                    
+00000056                            47  
+Line 48 ERROR: Symbol value differs between first and second pass
+00000056                            48  ABA:        MOVE.W  #3,ESTDCBZ
+00000056  6000 0032                 49              BRA     CONTINU
+0000005A                            50  
+0000005A                            51  
+0000005A                            52      
+Line 53 ERROR: Symbol value differs between first and second pass
+0000005A                            53  CONTINU:            
+0000005A  4240                      54              CLR.W   D0
+0000005C  4241                      55              CLR.W   D1
+0000005E  4242                      56              CLR.W   D2
+Line 57 ERROR: Undefined symbol
+00000060  3239 004DBD16             57              MOVE.W  CBZPOSX,D1
+Line 58 ERROR: Undefined symbol
+00000066  33C1 005455B8             58              MOVE.W  D1,SGMPOSX
+Line 59 ERROR: Undefined symbol
+0000006C  3439 004DBD16             59              MOVE.W  CBZPOSY,D2
+Line 60 ERROR: Undefined symbol
+00000072  33C2 005455B8             60              MOVE.W  D2,SGMPOSY
+Line 61 ERROR: Undefined symbol
+00000078  4EB9 004DBD16             61              JSR     CINDMTRZ
+Line 62 ERROR: Undefined symbol
+0000007E  4EB9 004DBD16             62              JSR     RSTCLD
+00000084                            63              
+00000084  4240                      64              CLR.W   D0
 Line 65 ERROR: Undefined symbol
-0000007A  0644 BD16                 65              ADD.W   #CBZHEIGH,D4
-0000007E  4E4F                      66              TRAP    #15
-00000080                            67              
-00000080  2F01                      68              MOVE.L  D1,-(A7)
-00000082                            69              
-00000082                            70              ; SET COLOR DEL CONTORNO OJO
-00000082  103C 0050                 71              MOVE.B  #80,D0
-Line 72 ERROR: Undefined symbol
-00000086  223C 004DBD16             72              MOVE.L  #OJOPCOL,D1
-0000008C  4E4F                      73              TRAP    #15
-0000008E                            74              
-0000008E                            75              ; SET COLOR DEL RELLENO OJO
-0000008E  103C 0051                 76              MOVE.B  #81,D0
+00000086  3039 004DBD16             65              MOVE.W  ESTDCBZ,D0
+0000008C  B07C 0000                 66              CMP.W   #0,D0
+00000090  6700 004A                 67              BEQ     SIGDER
+00000094  B07C 0001                 68              CMP.W   #1,D0
+00000098  6700 0066                 69              BEQ     SIGARR
+0000009C  B07C 0002                 70              CMP.W   #2,D0
+000000A0  6700 0082                 71              BEQ     SIGIZQ
+000000A4  B07C 0003                 72              CMP.W   #3,D0
+000000A8  6700 009E                 73              BEQ     SIGABA
+000000AC                            74              
+Line 75 ERROR: Symbol value differs between first and second pass
+000000AC                            75  SIGDER:     ADD.W   #CBZVEL,CBZPOSX               ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE 
+Line 76 ERROR: Undefined symbol
+000000AC  3239 004DBD16             76              MOVE.W  CBZPOSX,D1
 Line 77 ERROR: Undefined symbol
-00000092  223C 004DBD16             77              MOVE.L  #OJOFCOL,D1
-00000098  4E4F                      78              TRAP    #15
-0000009A                            79              
-0000009A                            80              ; DIBUJAR OJO
-0000009A  103C 0058                 81              MOVE.B  #88,D0
-0000009E  221F                      82              MOVE.L  (A7)+,D1
-000000A0  2F01                      83              MOVE.L  D1,-(A7)
-000000A2  2F02                      84              MOVE.L  D2,-(A7)
-Line 85 ERROR: Comma expected
-000000A4                            85              ADD.W   #OJOWIDTH/2,D1            
-000000A4  3601                      86              MOVE.W  D1,D3
-Line 87 ERROR: Undefined symbol
-000000A6  0643 BD16                 87              ADD.W   #OJOWIDTH,D3
-Line 88 ERROR: Comma expected
-000000AA                            88              ADD.W   #OJOHEIGH/2,D2
-000000AA  3802                      89              MOVE.W  D2,D4
+000000B2  3439 004DBD16             77              MOVE.W  CBZPOSY,D2
+Line 78 ERROR: Undefined symbol
+000000B8  4EB9 004DBD16             78              JSR     CINDMTRZ
+Line 79 ERROR: Undefined symbol
+000000BE  4EB9 004DBD16             79              JSR     CBZOCPD  
+000000C4  6000 00A6                 80              BRA     FIN
+000000C8                            81              
+Line 82 ERROR: Symbol value differs between first and second pass
+000000C8                            82  SIGARR:     ADD.W   #-CBZVEL,CBZPOSY              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE
+Line 83 ERROR: Undefined symbol
+000000C8  3239 004DBD16             83              MOVE.W  CBZPOSX,D1
+Line 84 ERROR: Undefined symbol
+000000CE  3439 004DBD16             84              MOVE.W  CBZPOSY,D2 
+Line 85 ERROR: Undefined symbol
+000000D4  4EB9 004DBD16             85              JSR     CINDMTRZ
+Line 86 ERROR: Undefined symbol
+000000DA  4EB9 004DBD16             86              JSR     CBZOCPD  
+000000E0  6000 008A                 87              BRA     FIN   
+000000E4                            88    
+Line 89 ERROR: Symbol value differs between first and second pass
+000000E4                            89  SIGIZQ:     ADD.W   #-CBZVEL,CBZPOSX              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE 
 Line 90 ERROR: Undefined symbol
-000000AC  0644 BD16                 90              ADD.W   #OJOHEIGH,D4
-000000B0  4E4F                      91              TRAP    #15
-000000B2                            92  
-000000B2                            93              ; DEFINIR COORDENADAS IRIS
-000000B2  241F                      94              MOVE.L  (A7)+,D2
-000000B4  221F                      95              MOVE.L  (A7)+,D1
-Line 96 ERROR: Undefined symbol
-000000B6  0641 BD16                 96              ADD.W   #OJOWIDTH,D1
+000000E4  3239 004DBD16             90              MOVE.W  CBZPOSX,D1
+Line 91 ERROR: Undefined symbol
+000000EA  3439 004DBD16             91              MOVE.W  CBZPOSY,D2
+Line 92 ERROR: Undefined symbol
+000000F0  4EB9 004DBD16             92              JSR     CINDMTRZ
+Line 93 ERROR: Undefined symbol
+000000F6  4EB9 004DBD16             93              JSR     CBZOCPD  
+000000FC  6000 006E                 94              BRA     FIN      
+00000100                            95  
+Line 96 ERROR: Symbol value differs between first and second pass
+00000100                            96  SIGABA:     ADD.W   #CBZVEL,CBZPOSY               ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE 
 Line 97 ERROR: Undefined symbol
-000000BA  0642 BD16                 97              ADD.W   #OJOHEIGH,D2
-000000BE  103C 0052                 98              MOVE.B  #82,D0
-000000C2  4E4F                      99              TRAP    #15
-000000C4                           100              
-000000C4                           101              
-000000C4  361F                     102              MOVE.W  (A7)+,D3
-000000C6  301F                     103              MOVE.W  (A7)+,D0
-000000C8                           104  
-000000C8                           105  
-000000C8  4E75                     106              RTS
-000000CA                           107  
-000000CA                           108  
-000000CA                           109  
-000000CA                           110  
-000000CA                           111  
-000000CA                           112  
-000000CA                           113  
-000000CA                           114  
-000000CA                           115  
-000000CA                           116  
-000000CA                           117  
-Line 118 WARNING: END directive missing, starting address not set
+00000100  3239 004DBD16             97              MOVE.W  CBZPOSX,D1
+Line 98 ERROR: Undefined symbol
+00000106  3439 004DBD16             98              MOVE.W  CBZPOSY,D2
+Line 99 ERROR: Undefined symbol
+0000010C  4EB9 004DBD16             99              JSR     CINDMTRZ 
+Line 100 ERROR: Undefined symbol
+00000112  4EB9 004DBD16            100              JSR     CBZOCPD  
+00000118  6000 0052                101              BRA     FIN      
+0000011C                           102              
+Line 103 ERROR: Symbol value differs between first and second pass
+0000011C                           103  FIN:            
+0000011C  4C9F 0007                104              MOVEM.W (A7)+,D0-D2
+00000120  4E75                     105              RTS
+00000122                           106              
+00000122                           107  ; ------------------------------------------------------------------------------
+Line 108 ERROR: Symbol value differs between first and second pass
+00000122                           108  HEADPLOT
+00000122                           109  ; DIBUJAR CABEZA.
+00000122                           110  ; INPUT    : NONE 
+00000122                           111  ; OUTPUT   : NONE
+00000122                           112  ; MODIFIES : NONE
+00000122                           113  ; ------------------------------------------------------------------------------
+00000122  3F00                     114             MOVE.W  D0,-(A7)                ; GUARDAMOS D0
+00000124  3003                     115              MOVE.W  D3,D0                   ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
+Line 116 ERROR: Undefined symbol
+00000126  4EB9 004DBD16            116              JSR     CNVICOOR
+0000012C  2F01                     117              MOVE.L  D1,-(A7)
+0000012E                           118              
+0000012E                           119              ; SET COLOR DEL CONTORNO CABEZA
+0000012E  103C 0050                120              MOVE.B  #80,D0
+Line 121 ERROR: Undefined symbol
+00000132  223C 004DBD16            121              MOVE.L  #CBZPCOL,D1
+00000138  4E4F                     122              TRAP    #15
+0000013A                           123              
+0000013A                           124              ; SET COLOR DEL RELLENO CABEZA
+0000013A  103C 0051                125              MOVE.B  #81,D0
+Line 126 ERROR: Undefined symbol
+0000013E  223C 004DBD16            126              MOVE.L  #CBZFCOL,D1
+00000144  4E4F                     127              TRAP    #15
+00000146                           128              
+00000146                           129              ; DIBUJAR CABEZA
+00000146  103C 0057                130              MOVE.B  #87,D0
+0000014A  221F                     131              MOVE.L  (A7)+,D1
+0000014C  3F03                     132              MOVE.W  D3,-(A7)
+0000014E  3601                     133              MOVE.W  D1,D3
+Line 134 ERROR: Undefined symbol
+00000150  0643 BD16                134              ADD.W   #CBZWIDTH,D3
+00000154  3802                     135              MOVE.W  D2,D4
+Line 136 ERROR: Undefined symbol
+00000156  0644 BD16                136              ADD.W   #CBZHEIGH,D4
+0000015A  4E4F                     137              TRAP    #15
+0000015C                           138              
+0000015C  2F01                     139              MOVE.L  D1,-(A7)
+0000015E                           140              
+0000015E                           141              ; SET COLOR DEL CONTORNO OJO
+0000015E  103C 0050                142              MOVE.B  #80,D0
+Line 143 ERROR: Undefined symbol
+00000162  223C 004DBD16            143              MOVE.L  #OJOPCOL,D1
+00000168  4E4F                     144              TRAP    #15
+0000016A                           145              
+0000016A                           146              ; SET COLOR DEL RELLENO OJO
+0000016A  103C 0051                147              MOVE.B  #81,D0
+Line 148 ERROR: Undefined symbol
+0000016E  223C 004DBD16            148              MOVE.L  #OJOFCOL,D1
+00000174  4E4F                     149              TRAP    #15
+00000176                           150              
+00000176                           151              ; DIBUJAR OJO
+00000176  103C 0058                152              MOVE.B  #88,D0
+0000017A  221F                     153              MOVE.L  (A7)+,D1
+0000017C  2F01                     154              MOVE.L  D1,-(A7)
+0000017E  2F02                     155              MOVE.L  D2,-(A7)
+Line 156 ERROR: Comma expected
+00000180                           156              ADD.W   #OJOWIDTH/2,D1            
+00000180  3601                     157              MOVE.W  D1,D3
+Line 158 ERROR: Undefined symbol
+00000182  0643 BD16                158              ADD.W   #OJOWIDTH,D3
+Line 159 ERROR: Comma expected
+00000186                           159              ADD.W   #OJOHEIGH/2,D2
+00000186  3802                     160              MOVE.W  D2,D4
+Line 161 ERROR: Undefined symbol
+00000188  0644 BD16                161              ADD.W   #OJOHEIGH,D4
+0000018C  4E4F                     162              TRAP    #15
+0000018E                           163  
+0000018E                           164              ; DEFINIR COORDENADAS IRIS
+0000018E  241F                     165              MOVE.L  (A7)+,D2
+00000190  221F                     166              MOVE.L  (A7)+,D1
+Line 167 ERROR: Undefined symbol
+00000192  0641 BD16                167              ADD.W   #OJOWIDTH,D1
+Line 168 ERROR: Undefined symbol
+00000196  0642 BD16                168              ADD.W   #OJOHEIGH,D2
+0000019A  103C 0052                169              MOVE.B  #82,D0
+0000019E  4E4F                     170              TRAP    #15
+000001A0                           171              
+000001A0                           172              
+000001A0  361F                     173              MOVE.W  (A7)+,D3
+000001A2  301F                     174              MOVE.W  (A7)+,D0
+000001A4                           175  
+000001A4                           176  
+000001A4  4E75                     177              RTS
+000001A6                           178  
+000001A6                           179  
+000001A6                           180  
+000001A6                           181  
+000001A6                           182  
+000001A6                           183  
+000001A6                           184  
+000001A6                           185  
+000001A6                           186  
+000001A6                           187  
+000001A6                           188  
+000001A6                           189  
+000001A6                           190  
+000001A6                           191  
+Line 192 WARNING: END directive missing, starting address not set
 
-26 errors detected
+55 errors detected
 1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
+ABA                 7E
+ARR                 66
+CONTINU             8A
+DER                 5A
+FIN                 16C
 HEADINIT            0
-HEADPLOT            56
-HEADUPD             20
+HEADPLOT            172
+HEADUPD             2E
+IZQ                 72
+SIGABA              148
+SIGARR              100
+SIGDER              DC
+SIGIZQ              124

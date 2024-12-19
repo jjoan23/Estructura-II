@@ -11,8 +11,9 @@ ESTDCBZ     DS.B    1                       ; 0= DERECHA, 1=ARRIBA, 2=IZQUIERDA,
 
 KBDVAL      DS.B    1                       ; KEY STATE
 KBDEDGE     DS.B    1                       ; KEY EDGE
-
+LASTKEY     DS.L    1                       ; ÚLTIMO ESTADO DE LAS TECLAS
                             
+
 
 
 
