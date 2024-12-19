@@ -12,6 +12,7 @@ SYSINIT
             JSR     SCRINIT
             
             MOVE.L  #SCRPLOT,($80)
+            MOVE.L  #KBDUPD,($84)
             
             MOVE.W  SR,-(A7)
             ANDI.W  #$DFFF,(A7)
@@ -75,6 +76,59 @@ SCRPLOT
             
             RTE
         
+; ------------------------------------------------------------------------------
+KBDINIT
+; INIT KEYBOARD
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+            CLR.B   (KBDVAL)
+            CLR.B   (KBDEDGE)
+            RTS
+
+; ------------------------------------------------------------------------------
+KBDUPD
+; UPDATE KEYBOARD INFO.  
+; 7 -> PAUSE
+; 6 -> FIRE 3
+; 5 -> FIRE 2
+; 4 -> FIRE 1
+; 3 -> DOWN
+; 2 -> RIGHT
+; 1 -> UP
+; 0 -> LEFT
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+
+            MOVEM.L D0-D3,-(A7)
+
+            ; READ FIRST PART
+            MOVE.B  #19,D0
+            MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
+            TRAP    #15
+            
+            ; CONVERT TO DESIRED FORMAT
+            MOVE.W  #3,D3
+.LOOP       LSL.L   #8,D1
+            ROXL.B  #1,D2
+            DBRA.W  D3,.LOOP
+            
+            ; COMPUTE KBDEDGE
+            MOVE.B  (KBDVAL),D0
+            NOT.B   D0
+            AND.B   D2,D0
+            MOVE.B  D0,(KBDEDGE)
+            
+            ; STORE KBDVAL
+            MOVE.B  D2,(KBDVAL)
+            
+            MOVEM.L (A7)+,D0-D3
+
+            RTE
+
 
 *~Font name~Courier New~
 *~Font size~10~

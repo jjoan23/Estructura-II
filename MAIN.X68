@@ -37,7 +37,7 @@ START:
 
 ; LEER DISPOSITIVOS DE ENTRADA
 
-            ;TRAP    #1
+            TRAP    #1
 
 ; ACTUALIZAR LÓGICA DEL JUEGO
 
@@ -74,6 +74,7 @@ START:
     
     
             END    START        
+
 
 
 
