@@ -83,7 +83,7 @@ KBDINIT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            CLR.B   (KBDVAL)
+
             CLR.B   (KBDEDGE)
             RTS
 
@@ -103,54 +103,64 @@ KBDUPD
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
 
-            MOVEM.L D0-D2,-(A7)
+            MOVEM.L D0-D3,-(A7)
 
             ; LEE ESTADO DEL TECLADO
             MOVE.B  #19,D0
             MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
             TRAP    #15                  ; Lee las teclas y guarda en D1
-            MOVE.L  D1,(LASTKEY)         ; Guarda la última tecla leída
+
+            ; CONVERT TO DESIRED FORMAT
+            MOVE.W  #3,D3
+.LOOP       LSL.L   #8,D1
+            ROXL.B  #1,D2
+            DBRA.W  D3,.LOOP
 
             ; PROCESA FLANCOS ASCENDENTES
-            MOVE.B  (KBDVAL),D0          ; Estado anterior
+            MOVE.B  (KBDEDGE),D0         ; Estado anterior
             NOT.B   D0                   ; Invertir bits (teclas no presionadas)
             AND.B   D2,D0                ; Detectar flancos ascendentes
             MOVE.B  D0,(KBDEDGE)         ; Almacena los flancos en KBDEDGE
-
-            ; ACTUALIZA EL ESTADO DE LA DIRECCIÓN
-            CLR.W   D0
-            MOVE.L  (KBDEDGE),D0         ; Lee teclas con flanco ascendente
-
-            ; Detecta pulsaciones y actualiza ESTDCBZ
-            CMP.L   #$000000FF,D0        ; Tecla ABAJO
-            BEQ     DWN
-            CMP.L   #$0000FF00,D0        ; Tecla DERECHA
-            BEQ     DER
-            CMP.L   #$00FF0000,D0        ; Tecla ARRIBA
-            BEQ     ARR
-            CMP.L   #$FF000000,D0        ; Tecla IZQUIERDA
-            BEQ     IZQ
             
-            ; Si no hay pulsaciones, mantener estado
-            BRA     CONTINU
+            ; STORE KBDEDGE
+            MOVE.B  D2,(KBDEDGE)
 
-DER:        MOVE.W  #0,ESTDCBZ           ; Actualiza estado a DERECHA
-            BRA     CONTINU
-            
-ARR:        MOVE.W  #1,ESTDCBZ           ; Actualiza estado a ARRIBA
-            BRA     CONTINU
-
-IZQ:        MOVE.W  #2,ESTDCBZ           ; Actualiza estado a IZQUIERDA
-            BRA     CONTINU                    
-
-DWN:        MOVE.W  #3,ESTDCBZ           ; Actualiza estado a ABAJO
-            BRA     CONTINU
-
-CONTINU:
-            MOVEM.L (A7)+,D0-D2
+*            ; ACTUALIZA EL ESTADO DE LA DIRECCIÓN
+*            CLR.W   D0
+*            MOVE.B  (KBDEDGE),D0         ; Lee teclas con flanco ascendente
+*
+*            ; Detecta pulsaciones y actualiza ESTDCBZ
+*            CMP.L   #$000000FF,D0        ; Tecla ABAJO
+*            BEQ     DWN
+*            CMP.L   #$0000FF00,D0        ; Tecla DERECHA
+*            BEQ     DER
+*            CMP.L   #$00FF0000,D0        ; Tecla ARRIBA
+*            BEQ     ARR
+*            CMP.L   #$FF000000,D0        ; Tecla IZQUIERDA
+*            BEQ     IZQ
+*            
+*            ; Si no hay pulsaciones, mantener estado
+*            BRA     CONTINU
+*
+*DER:        MOVE.W  #0,ESTDCBZ           ; Actualiza estado a DERECHA
+*            BRA     CONTINU
+*            
+*ARR:        MOVE.W  #1,ESTDCBZ           ; Actualiza estado a ARRIBA
+*            BRA     CONTINU
+*
+*IZQ:        MOVE.W  #2,ESTDCBZ           ; Actualiza estado a IZQUIERDA
+*            BRA     CONTINU                    
+*
+*DWN:        MOVE.W  #3,ESTDCBZ           ; Actualiza estado a ABAJO
+*            BRA     CONTINU
+*
+*CONTINU:
+            MOVEM.L (A7)+,D0-D3
             RTE
 
 
+
+; CODIGO ANTERIOR
 
 *            MOVEM.L D0-D3,-(A7)
 *
@@ -206,6 +216,13 @@ CONTINU:
 *            MOVEM.L (A7)+,D0-D3
 *
 *            RTE
+
+
+
+
+
+
+
 
 
 

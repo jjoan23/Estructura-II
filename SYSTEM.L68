@@ -1,6 +1,6 @@
-00001782 Starting Address
+000018A0 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 18/12/2024 18:39:22
+Created On: 20/12/2024 17:21:22
 
 00000000                             1  *-----------------------------------------------------------------------------
 00000000                             2  * SISTEMA
@@ -13,179 +13,256 @@ Created On: 18/12/2024 18:39:22
 00000000                             9  ; OUTPUT   : NONE
 00000000                            10  ; MODIFIES : NONE
 00000000                            11  ; ----------------------------------------------------------------------------
-00000000  4EB9 00000016             12              JSR     SCRINIT
+00000000  4EB9 0000001E             12              JSR     SCRINIT
 00000006                            13              
-00000006  21FC 00000044 0080        14              MOVE.L  #SCRPLOT,($80)
-0000000E                            15              
-0000000E  40E7                      16              MOVE.W  SR,-(A7)
-00000010  0257 DFFF                 17              ANDI.W  #$DFFF,(A7)
-00000014  4E73                      18              RTE
-00000016                            19              
-00000016                            20  ; ------------------------------------------------------------------------------
-00000016                            21  SCRINIT
-00000016                            22  ; INIT SCREEN. SET SCREEN RESOLUTION, SET WINDOWED MODE, CLEAR SCREEN,
-00000016                            23  ; ENABLE DOUBLE BUFFER.
-00000016                            24  ; INPUT    : NONE
-00000016                            25  ; OUTPUT   : NONE
-00000016                            26  ; MODIFIES : NONE
-00000016                            27  ; ------------------------------------------------------------------------------
-00000016                            28  
-00000016  48E7 C000                 29              MOVEM.L D0-D1,-(A7)
-0000001A                            30  
-0000001A                            31              ; SET SCREEN RESOLUTION
-0000001A  103C 0021                 32              MOVE.B  #33,D0
-Line 33 ERROR: Invalid syntax
-0000001E                            33              MOVE.L  #PANWIDTH<<16|PANHEIGH,D1
-0000001E  4E4F                      34              TRAP    #15
-00000020                            35              
-00000020                            36              ; SET WINDOWED MODE
-00000020  7201                      37              MOVE.L  #1,D1
-00000022  4E4F                      38              TRAP    #15
-00000024                            39              
-00000024                            40              ; CLEAR SCREEN
-00000024  103C 000B                 41              MOVE.B  #11,D0
-00000028  323C FF00                 42              MOVE.W  #$FF00,D1
-0000002C  4E4F                      43              TRAP    #15
-0000002E                            44              
-0000002E                            45              ; ENABLE DOUBLE BUFFER
-0000002E  103C 005C                 46              MOVE.B  #92,D0
-00000032  123C 0011                 47              MOVE.B  #17,D1
-00000036  4E4F                      48              TRAP    #15
-00000038                            49              
-00000038  4CDF 0003                 50              MOVEM.L (A7)+,D0-D1
-0000003C                            51              
-0000003C  4E75                      52              RTS    
-0000003E                            53  
-0000003E                            54  ; ------------------------------------------------------------------------------
-Line 55 ERROR: Symbol value differs between first and second pass
-0000003E                            55  SCRPLOT
-0000003E                            56  ; UPDATES DOUBLE BUFFER
-0000003E                            57  ; INPUT    : NONE
-0000003E                            58  ; OUTPUT   : NONE
-0000003E                            59  ; MODIFIES : NONE
-0000003E                            60  ; ------------------------------------------------------------------------------
-0000003E                            61  
-0000003E  48A7 C000                 62              MOVEM.W D0-D1,-(A7)
-00000042                            63              
-00000042                            64              ; SWITCH BUFFERS
-00000042  103C 005E                 65              MOVE.B  #94,D0
-00000046  4E4F                      66              TRAP    #15
-00000048                            67              
-00000048                            68              ; CLEAR HIDDEN BUFFER
-00000048  103C 000B                 69              MOVE.B  #11,D0
-0000004C  323C FF00                 70              MOVE.W  #$FF00,D1
-00000050  4E4F                      71              TRAP    #15
-00000052                            72              
-00000052  4C9F 0003                 73              MOVEM.W (A7)+,D0-D1
-00000056                            74              
-00000056  4E73                      75              RTE
-00000058                            76          
-00000058                            77  
-00000058                            78   
-00000058                            79  *;-----------------------------------------------------------------------------
-00000058                            80  *MTZINIT
-00000058                            81  *; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
-00000058                            82  *; INPUT    : NONE
-00000058                            83  *; OUTPUT   : NONE
-00000058                            84  *; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
-00000058                            85  *; ----------------------------------------------------------------------------
-00000058                            86  *            
-00000058                            87  *            MOVEM.W D0/A0,-(A7)
-00000058                            88  *            
-00000058                            89  *            LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
-00000058                            90  *            MOVE.W #TCELDAS, D0    ; Número total de celdas
-00000058                            91  *
-00000058                            92  *CLNCLDS:
-00000058                            93  *            CLR.B (A0)+            ; Coloca 0 en cada celda
-00000058                            94  *            SUBI.W #1, D0          ; Decrementa el contador de celdas
-00000058                            95  *            BNE CLNCLDS            ; Repite hasta que esten vacías
-00000058                            96  *            
-00000058                            97  *            MOVEM.W (A7)+,D0/A0
-00000058                            98  *
-00000058                            99  *            RTS
-00000058                           100  *
-00000058                           101  *;-----------------------------------------------------------------------------
-00000058                           102  *CINDMTRZ
-00000058                           103  *; CALCULA EL ÍNDICE DE UNA CELDA
-00000058                           104  *; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
-00000058                           105  *; OUTPUT   : D0 = índice de la celda en ESTDCLDS
-00000058                           106  *; MODIFIES : NONE
-00000058                           107  *; ----------------------------------------------------------------------------
-00000058                           108  *
-00000058                           109  *            MOVEM.W D0-D3,-(A7)
-00000058                           110  *
-00000058                           111  *            ; Divide X por TCELDAS
-00000058                           112  *            LSR.W #8, D1           ; D1 = X / 256
-00000058                           113  *            LSR.W #2, D1           ; D1 = X / 1024 (256 * 4)
-00000058                           114  *            MOVE.W D1, D3           ; Copia D1 a D3 para dividir por 3
-00000058                           115  *DIV3X:      SUBQ.W #3, D3           ; Resta 3
-00000058                           116  *            ADDQ.W #1, D1           ; Cuenta cuántas veces restamos
-00000058                           117  *            BPL DIV3X              ; Repite mientras sea positivo
-00000058                           118  *
-00000058                           119  *            ; Divide Y por TCELDAS
-00000058                           120  *            LSR.W #8, D2           ; D2 = Y / 256
-00000058                           121  *            LSR.W #2, D2           ; D2 = Y / 1024
-00000058                           122  *            MOVE.W D2, D3           ; Copiamos D2 a D3 para dividir por 3
-00000058                           123  *DIV3Y:      SUBQ.W #3, D3           ; Restamos 3
-00000058                           124  *            ADDQ.W #1, D2           ; Contamos cuántas veces restamos
-00000058                           125  *            BPL DIV3Y              ; Repetimos mientras sea positivo
-00000058                           126  *
-00000058                           127  *            ; Calcula índice
-00000058                           128  *            MOVE.W D2, D0           ; D0 = Y_CELDA
-00000058                           129  *            ASL.W #6, D0            ; D0 = Y_CELDA * NUMCLMNS (64 = 2^6)
-00000058                           130  *            ADD.W D1, D0            ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
-00000058                           131  *
-00000058                           132  *            MOVEM.W (A7)+,D0-D3
-00000058                           133  *
-00000058                           134  *
-00000058                           135  *            RTS
-00000058                           136  *            
-00000058                           137  *;------------------------------------------------------------------------------            
-00000058                           138  *MCLDOCPD
-00000058                           139  *; MARCA UNA CELDA COMO OCUPADA
-00000058                           140  *; INPUT    : D0 = índice de la celda en ESTDCLDS
-00000058                           141  *; OUTPUT   : NONE
-00000058                           142  *; MODIFIES : Estado de la celda en la variable ESTDCLDS
-00000058                           143  *; -----------------------------------------------------------------------------
-00000058                           144  *
-00000058                           145  *            LEA ESTDCLDS, A0                ; Carga la dirección de la matriz en A0
-00000058                           146  *            MOVE.B #1, (A0, D0.W)           ; Marca la celda correspondientes como vacía
-00000058                           147  *            
-00000058                           148  *            RTS
-00000058                           149  *            
-00000058                           150  *;------------------------------------------------------------------------------            
-00000058                           151  *MCLDVCIA
-00000058                           152  *; MARCA UNA CELDA COMO VACÍA
-00000058                           153  *; INPUT    : D0 = índice de la celda en ESTDCLDS
-00000058                           154  *; OUTPUT   : NONE
-00000058                           155  *; MODIFIES : Estado de la celda en la variable ESTDCLDS
-00000058                           156  *; ----------------------------------------------------------------------------
-00000058                           157  *
-00000058                           158  *            LEA ESTDCLDS, A0                ; Carga la direccion de la matriz en A0
-00000058                           159  *            MOVE.B #0, (A0, D0.W)           ; Marca la celda como vacía
-00000058                           160  *            
-00000058                           161  *            RTS
-00000058                           162  *
-00000058                           163  *
-00000058                           164  *
-00000058                           165  
-00000058                           166  
-00000058                           167  
-00000058                           168  
-00000058                           169  
-00000058                           170  
-00000058                           171  
-00000058                           172  
-00000058                           173  
-Line 174 WARNING: END directive missing, starting address not set
+00000006  21FC 0000004C 0080        14              MOVE.L  #SCRPLOT,($80)
+0000000E  21FC 0000006E 0084        15              MOVE.L  #KBDUPD,($84)
+00000016                            16              
+00000016  40E7                      17              MOVE.W  SR,-(A7)
+00000018  0257 DFFF                 18              ANDI.W  #$DFFF,(A7)
+0000001C                            19              
+0000001C  4E73                      20              RTE
+0000001E                            21              
+0000001E                            22  ; ------------------------------------------------------------------------------
+0000001E                            23  SCRINIT
+0000001E                            24  ; INIT SCREEN. SET SCREEN RESOLUTION, SET WINDOWED MODE, CLEAR SCREEN,
+0000001E                            25  ; ENABLE DOUBLE BUFFER.
+0000001E                            26  ; INPUT    : NONE
+0000001E                            27  ; OUTPUT   : NONE
+0000001E                            28  ; MODIFIES : NONE
+0000001E                            29  ; ------------------------------------------------------------------------------
+0000001E                            30  
+0000001E  48E7 C000                 31              MOVEM.L D0-D1,-(A7)
+00000022                            32  
+00000022                            33              ; SET SCREEN RESOLUTION
+00000022  103C 0021                 34              MOVE.B  #33,D0
+Line 35 ERROR: Invalid syntax
+00000026                            35              MOVE.L  #PANWIDTH<<16|PANHEIGH,D1
+00000026  4E4F                      36              TRAP    #15
+00000028                            37              
+00000028                            38              ; SET WINDOWED MODE
+00000028  7201                      39              MOVE.L  #1,D1
+0000002A  4E4F                      40              TRAP    #15
+0000002C                            41              
+0000002C                            42              ; CLEAR SCREEN
+0000002C  103C 000B                 43              MOVE.B  #11,D0
+00000030  323C FF00                 44              MOVE.W  #$FF00,D1
+00000034  4E4F                      45              TRAP    #15
+00000036                            46              
+00000036                            47              ; ENABLE DOUBLE BUFFER
+00000036  103C 005C                 48              MOVE.B  #92,D0
+0000003A  123C 0011                 49              MOVE.B  #17,D1
+0000003E  4E4F                      50              TRAP    #15
+00000040                            51              
+00000040  4CDF 0003                 52              MOVEM.L (A7)+,D0-D1
+00000044                            53              
+00000044  4E75                      54              RTS    
+00000046                            55  
+00000046                            56  ; ------------------------------------------------------------------------------
+Line 57 ERROR: Symbol value differs between first and second pass
+00000046                            57  SCRPLOT
+00000046                            58  ; UPDATES DOUBLE BUFFER
+00000046                            59  ; INPUT    : NONE
+00000046                            60  ; OUTPUT   : NONE
+00000046                            61  ; MODIFIES : NONE
+00000046                            62  ; ------------------------------------------------------------------------------
+00000046                            63  
+00000046  48A7 C000                 64              MOVEM.W D0-D1,-(A7)
+0000004A                            65              
+0000004A                            66              ; SWITCH BUFFERS
+0000004A  103C 005E                 67              MOVE.B  #94,D0
+0000004E  4E4F                      68              TRAP    #15
+00000050                            69              
+00000050                            70              ; CLEAR HIDDEN BUFFER
+00000050  103C 000B                 71              MOVE.B  #11,D0
+00000054  323C FF00                 72              MOVE.W  #$FF00,D1
+00000058  4E4F                      73              TRAP    #15
+0000005A                            74              
+0000005A  4C9F 0003                 75              MOVEM.W (A7)+,D0-D1
+0000005E                            76              
+0000005E  4E73                      77              RTE
+00000060                            78          
+00000060                            79  ; ------------------------------------------------------------------------------
+Line 80 ERROR: Symbol value differs between first and second pass
+00000060                            80  KBDINIT
+00000060                            81  ; INIT KEYBOARD
+00000060                            82  ; INPUT    : NONE
+00000060                            83  ; OUTPUT   : NONE
+00000060                            84  ; MODIFIES : NONE
+00000060                            85  ; ------------------------------------------------------------------------------
+00000060                            86  
+Line 87 ERROR: Undefined symbol
+00000060  4239 004DBD16             87              CLR.B   (KBDEDGE)
+00000066  4E75                      88              RTS
+00000068                            89  
+00000068                            90  ; ------------------------------------------------------------------------------
+Line 91 ERROR: Symbol value differs between first and second pass
+00000068                            91  KBDUPD
+00000068                            92  ; UPDATE KEYBOARD INFO.  
+00000068                            93  ; 7 -> PAUSE
+00000068                            94  ; 6 -> FIRE 3
+00000068                            95  ; 5 -> FIRE 2
+00000068                            96  ; 4 -> FIRE 1
+00000068                            97  ; 3 -> DOWN
+00000068                            98  ; 2 -> RIGHT
+00000068                            99  ; 1 -> UP
+00000068                           100  ; 0 -> LEFT
+00000068                           101  ; INPUT    : NONE
+00000068                           102  ; OUTPUT   : NONE
+00000068                           103  ; MODIFIES : NONE
+00000068                           104  ; ------------------------------------------------------------------------------
+00000068                           105  
+00000068  48E7 F000                106              MOVEM.L D0-D3,-(A7)
+0000006C                           107  
+0000006C                           108              ; LEE ESTADO DEL TECLADO
+0000006C  103C 0013                109              MOVE.B  #19,D0
+Line 110 ERROR: Invalid syntax
+00000070                           110              MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
+00000070  4E4F                     111              TRAP    #15                  ; Lee las teclas y guarda en D1
+00000072                           112  
+00000072                           113              ; CONVERT TO DESIRED FORMAT
+00000072  363C 0003                114              MOVE.W  #3,D3
+Line 115 ERROR: Symbol value differs between first and second pass
+00000076                           115  .LOOP       LSL.L   #8,D1
+00000076  E312                     116              ROXL.B  #1,D2
+00000078  51CB 0008                117              DBRA.W  D3,.LOOP
+0000007C                           118  
+0000007C                           119              ; PROCESA FLANCOS ASCENDENTES
+Line 120 ERROR: Undefined symbol
+0000007C  1039 004DBD16            120              MOVE.B  (KBDEDGE),D0         ; Estado anterior
+00000082  4600                     121              NOT.B   D0                   ; Invertir bits (teclas no presionadas)
+00000084  C002                     122              AND.B   D2,D0                ; Detectar flancos ascendentes
+Line 123 ERROR: Undefined symbol
+00000086  13C0 005455D0            123              MOVE.B  D0,(KBDEDGE)         ; Almacena los flancos en KBDEDGE
+0000008C                           124              
+0000008C                           125              ; STORE KBDVAL
+Line 126 ERROR: Undefined symbol
+0000008C  13C2 005455B8            126              MOVE.B  D2,(KBDEDGE)
+00000092                           127  
+00000092                           128              ; ACTUALIZA EL ESTADO DE LA DIRECCIÓN
+00000092  4240                     129              CLR.W   D0
+Line 130 ERROR: Undefined symbol
+00000094  1039 004DBD16            130              MOVE.B  (KBDEDGE),D0         ; Lee teclas con flanco ascendente
+0000009A                           131  
+0000009A                           132              ; Detecta pulsaciones y actualiza ESTDCBZ
+0000009A  B0BC 000000FF            133              CMP.L   #$000000FF,D0        ; Tecla ABAJO
+000000A0  6700 0056                134              BEQ     DWN
+000000A4  B0BC 0000FF00            135              CMP.L   #$0000FF00,D0        ; Tecla DERECHA
+000000AA  6700 0028                136              BEQ     DER
+000000AE  B0BC 00FF0000            137              CMP.L   #$00FF0000,D0        ; Tecla ARRIBA
+000000B4  6700 002A                138              BEQ     ARR
+000000B8  B0BC FF000000            139              CMP.L   #$FF000000,D0        ; Tecla IZQUIERDA
+000000BE  6700 002C                140              BEQ     IZQ
+000000C2                           141              
+000000C2                           142              ; Si no hay pulsaciones, mantener estado
+000000C2  6000 0040                143              BRA     CONTINU
+000000C6                           144  
+Line 145 ERROR: Symbol value differs between first and second pass
+000000C6                           145  DER:        MOVE.W  #0,ESTDCBZ           ; Actualiza estado a DERECHA
+000000C6  6000 003C                146              BRA     CONTINU
+000000CA                           147              
+Line 148 ERROR: Symbol value differs between first and second pass
+000000CA                           148  ARR:        MOVE.W  #1,ESTDCBZ           ; Actualiza estado a ARRIBA
+000000CA  6000 0038                149              BRA     CONTINU
+000000CE                           150  
+Line 151 ERROR: Symbol value differs between first and second pass
+000000CE                           151  IZQ:        MOVE.W  #2,ESTDCBZ           ; Actualiza estado a IZQUIERDA
+000000CE  6000 0034                152              BRA     CONTINU                    
+000000D2                           153  
+Line 154 ERROR: Symbol value differs between first and second pass
+000000D2                           154  DWN:        MOVE.W  #3,ESTDCBZ           ; Actualiza estado a ABAJO
+000000D2  6000 0030                155              BRA     CONTINU
+000000D6                           156  
+Line 157 ERROR: Symbol value differs between first and second pass
+000000D6                           157  CONTINU:
+000000D6  4CDF 000F                158              MOVEM.L (A7)+,D0-D3
+000000DA  4E73                     159              RTE
+000000DC                           160  
+000000DC                           161  
+000000DC                           162  
+000000DC                           163  *            MOVEM.L D0-D3,-(A7)
+000000DC                           164  *
+000000DC                           165  *            ; READ FIRST PART
+000000DC                           166  *            MOVE.B  #19,D0
+000000DC                           167  *            MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
+000000DC                           168  *            TRAP    #15
+000000DC                           169  *            
+000000DC                           170  *            MOVE.L  D1,(KBDEDGE)
+000000DC                           171  *          
+000000DC                           172  *            ; CONVERT TO DESIRED FORMAT
+000000DC                           173  *            MOVE.W  #3,D3
+000000DC                           174  *.LOOP       LSL.L   #8,D1
+000000DC                           175  *            ROXL.B  #1,D2
+000000DC                           176  *            DBRA.W  D3,.LOOP
+000000DC                           177  *            
+000000DC                           178  *            ; COMPUTE KBDEDGE
+000000DC                           179  *            MOVE.B  (KBDVAL),D0
+000000DC                           180  *            NOT.B   D0
+000000DC                           181  *            AND.B   D2,D0
+000000DC                           182  *            MOVE.B  D0,(KBDEDGE)
+000000DC                           183  *            
+000000DC                           184  *            ; STORE KBDVAL
+000000DC                           185  *            MOVE.B  D2,(KBDVAL)
+000000DC                           186  *            
+000000DC                           187  *            CLR.W   D0
+000000DC                           188  *            MOVE.L  (KBDEDGE),D0
+000000DC                           189  *            CMP.L   #$000000FF,D0
+000000DC                           190  *            BEQ     DWN
+000000DC                           191  *            CMP.L   #$0000FF00,D0
+000000DC                           192  *            BEQ     DER
+000000DC                           193  *            CMP.L   #$00FF0000,D0
+000000DC                           194  *            BEQ     ARR
+000000DC                           195  *            CMP.L   #$FF000000,D0
+000000DC                           196  *            BEQ     IZQ
+000000DC                           197  *            
+000000DC                           198  *DER:        MOVE.W  #0,ESTDCBZ
+000000DC                           199  *            BRA     CONTINU
+000000DC                           200  *            
+000000DC                           201  *ARR:        MOVE.W  #1,ESTDCBZ
+000000DC                           202  *            BRA     CONTINU
+000000DC                           203  *
+000000DC                           204  *IZQ:        MOVE.W  #2,ESTDCBZ
+000000DC                           205  *            BRA     CONTINU                    
+000000DC                           206  *
+000000DC                           207  *DWN:        MOVE.W  #3,ESTDCBZ
+000000DC                           208  *            BRA     CONTINU
+000000DC                           209  *
+000000DC                           210  *
+000000DC                           211  *    
+000000DC                           212  *CONTINU:
+000000DC                           213  *            
+000000DC                           214  *            MOVEM.L (A7)+,D0-D3
+000000DC                           215  *
+000000DC                           216  *            RTE
+000000DC                           217  
+000000DC                           218  
+000000DC                           219  
+000000DC                           220  
+000000DC                           221  
+000000DC                           222  
+000000DC                           223  
+000000DC                           224  
+000000DC                           225  
+000000DC                           226  
+000000DC                           227  
+000000DC                           228  
+Line 229 WARNING: END directive missing, starting address not set
 
-2 errors detected
+16 errors detected
 1 warning generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-SCRINIT             16
-SCRPLOT             44
+ARR                 E0
+CONTINU             104
+DER                 D4
+DWN                 F8
+IZQ                 EC
+KBDINIT             66
+KBDUPD              6E
+KBDUPD:LOOP         82
+SCRINIT             1E
+SCRPLOT             4C
 SYSINIT             0
