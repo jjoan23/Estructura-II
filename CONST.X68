@@ -35,8 +35,8 @@ OJOFCOL     EQU     $00FFFFFF               ; COLOR RELLENO OJO
 
 ; --- CONSTANTES MARCADOR ----------------------------------------------------
 
-PNTSFCOL    EQU     1                       ; COLOR FONDO MARCADOR (a determinar)
-PNTSTEXT    EQU     1                       ; COORDENADAS DEL MARCADOR (a determinar)
+PNTSFCOL    EQU     $00000000               ; COLOR FONDO MARCADOR (a determinar)
+PNTSTEXT    EQU     0101                    ; COORDENADAS DEL MARCADOR (a determinar)
 
 
 

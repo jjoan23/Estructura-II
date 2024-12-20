@@ -56,11 +56,12 @@ START:
 
 
 ;---DIBUJAR-------------------------------------------------------------------
-             JSR     HEADPLOT
-             JSR     SEGPLOT
-             JSR     TAILPLOT
-             JSR     APPLEPLOT
-             JSR     MTZPLOT
+             JSR    HEADPLOT
+             JSR    SEGPLOT
+             JSR    TAILPLOT
+             JSR    APPLEPLOT
+             JSR    MTZPLOT
+             JSR    SCOPLOT
             
             TRAP    #0                      ; ACTUALIZA DOBLE BUFFER
 
@@ -75,6 +76,7 @@ START:
     
     
             END    START        
+
 
 
 
