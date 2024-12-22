@@ -1,6 +1,6 @@
-00001874 Starting Address
+0000188C Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 20/12/2024 20:13:17
+Created On: 22/12/2024 18:05:36
 
 00000000                             1  *-----------------------------------------------------------------------------
 00000000                             2  * Title      : MAIN
@@ -98,7 +98,7 @@ Created On: 20/12/2024 20:13:17
 00001000  4EB9 0000101E             94              JSR     SCRINIT
 00001006                            95              
 00001006  21FC 0000104C 0080        96              MOVE.L  #SCRPLOT,($80)
-0000100E  21FC 0000106E 0084        97              MOVE.L  #KBDUPD,($84)
+0000100E  21FC 00001074 0084        97              MOVE.L  #KBDUPD,($84)
 00001016                            98              
 00001016  40E7                      99              MOVE.W  SR,-(A7)
 00001018  0257 DFFF                100              ANDI.W  #$DFFF,(A7)
@@ -170,1215 +170,1285 @@ Created On: 20/12/2024 20:13:17
 00001066                           166  ; MODIFIES : NONE
 00001066                           167  ; ------------------------------------------------------------------------------
 00001066                           168  
-00001066  4239 00001BEE            169              CLR.B   (KBDEDGE)
-0000106C  4E75                     170              RTS
-0000106E                           171  
-0000106E                           172  ; ------------------------------------------------------------------------------
-0000106E                           173  KBDUPD
-0000106E                           174  ; UPDATE KEYBOARD INFO.  
-0000106E                           175  ; 7 -> PAUSE
-0000106E                           176  ; 6 -> FIRE 3
-0000106E                           177  ; 5 -> FIRE 2
-0000106E                           178  ; 4 -> FIRE 1
-0000106E                           179  ; 3 -> DOWN
-0000106E                           180  ; 2 -> RIGHT
-0000106E                           181  ; 1 -> UP
-0000106E                           182  ; 0 -> LEFT
-0000106E                           183  ; INPUT    : NONE
-0000106E                           184  ; OUTPUT   : NONE
-0000106E                           185  ; MODIFIES : NONE
-0000106E                           186  ; ------------------------------------------------------------------------------
-0000106E                           187  
-0000106E  48E7 F000                188              MOVEM.L D0-D3,-(A7)
-00001072                           189  
-00001072                           190              ; LEE ESTADO DEL TECLADO
-00001072  103C 0013                191              MOVE.B  #19,D0
-00001076  223C 25262728            192              MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
-0000107C  4E4F                     193              TRAP    #15                  ; Lee las teclas y guarda en D1
-0000107E                           194  
-0000107E                           195              ; CONVERT TO DESIRED FORMAT
-0000107E  363C 0003                196              MOVE.W  #3,D3
-00001082  E189                     197  .LOOP       LSL.L   #8,D1
-00001084  E312                     198              ROXL.B  #1,D2
-00001086  51CB FFFA                199              DBRA.W  D3,.LOOP
-0000108A                           200  
-0000108A                           201              ; PROCESA FLANCOS ASCENDENTES
-0000108A  1039 00001BEE            202              MOVE.B  (KBDEDGE),D0         ; Estado anterior
-00001090  4600                     203              NOT.B   D0                   ; Invertir bits (teclas no presionadas)
-00001092  C002                     204              AND.B   D2,D0                ; Detectar flancos ascendentes
-00001094  13C0 00001BEE            205              MOVE.B  D0,(KBDEDGE)         ; Almacena los flancos en KBDEDGE
-0000109A                           206              
-0000109A                           207              ; STORE KBDEDGE
-0000109A  13C2 00001BEE            208              MOVE.B  D2,(KBDEDGE)
-000010A0                           209  
-000010A0  4CDF 000F                210              MOVEM.L (A7)+,D0-D3
-000010A4  4E73                     211              RTE
-000010A6                           212  
-000010A6                           213  
-000010A6                           214  
-000010A6                           215  ; CODIGO ANTERIOR
-000010A6                           216  
-000010A6                           217  
-000010A6                           218  
-000010A6                           219  
-000010A6                           220  
-000010A6                           221  
-000010A6                           222  
-000010A6                           223  
-000010A6                           224  
-000010A6                           225  
-000010A6                           226  
-000010A6                           227  
-000010A6                           228  
-000010A6                           229  
-000010A6                           230  
-000010A6                           231  
-000010A6                           232  
-000010A6                           233  -------------------- end include --------------------
-000010A6                           234              INCLUDE 'LIB/UTLCODE.X68'
-000010A6                           235  ; =============================================================================
-000010A6                           236  ; UTILITY CODE
-000010A6                           237  ; =============================================================================
-000010A6                           238  
-000010A6                           239  ; -----------------------------------------------------------------------------
-000010A6                           240  UTLINIT
-000010A6                           241  ; INITIALIZES UTILITY CODE
-000010A6                           242  ; INPUT    - NONE
-000010A6                           243  ; OUTPUT   - NONE
-000010A6                           244  ; MODIFIES - NONE
-000010A6                           245  ; -----------------------------------------------------------------------------
-000010A6  48E7 C000                246              MOVEM.L D0-D1,-(A7)
-000010AA  103C 0008                247              MOVE.B  #8,D0
-000010AE  4E4F                     248              TRAP    #15
-000010B0  13C1 000018EA            249              MOVE.B  D1,(UTLRNDIX)
-000010B6  4CDF 0003                250              MOVEM.L (A7)+,D0-D1
-000010BA  4E75                     251              RTS
-000010BC                           252  
-000010BC                           253  ; -----------------------------------------------------------------------------
-000010BC                           254  UTLRAND
-000010BC                           255  ; PROVIDES A PSEUDO-RANDOM BYTE
-000010BC                           256  ; INPUT    - NONE
-000010BC                           257  ; OUTPUT   - D0.L RANDOM VALUE (ONLY BYTE)
-000010BC                           258  ; MODIFIES - NONE (ASIDE OF OUTPUT)
-000010BC                           259  ; -----------------------------------------------------------------------------
-000010BC  2F08                     260              MOVE.L  A0,-(A7)
-000010BE  41F9 000010DA            261              LEA     .RANDVEC,A0
-000010C4  4280                     262              CLR.L   D0
-000010C6  1039 000018EA            263              MOVE.B  (UTLRNDIX),D0
-000010CC  1030 0800                264              MOVE.B  (A0,D0.L),D0
-000010D0  5239 000018EA            265              ADDQ.B  #1,(UTLRNDIX)
-000010D6  205F                     266              MOVE.L  (A7)+,A0
-000010D8  4E75                     267              RTS
-000010DA                           268  
-000010DA                           269  
-000010DA= A2 EE 9A 0C F5 24 ...    270  .RANDVEC    DC.B    162, 238, 154, 12 , 245, 36 , 32 , 103
-000010E2= 2A A3 51 26 E0 AC ...    271              DC.B    42 , 163, 81 , 38 , 224, 172, 19 , 69
-000010EA= 75 51 CA FD 33 EB ...    272              DC.B    117, 81 , 202, 253, 51 , 235, 108, 154
-000010F2= 60 CC E7 B8 9A EB ...    273              DC.B    96 , 204, 231, 184, 154, 235, 34 , 203
-000010FA= 1D 76 B5 95 B0 89 ...    274              DC.B    29 , 118, 181, 149, 176, 137, 62 , 108
-00001102= 39 15 48 C9 6E CA ...    275              DC.B    57 , 21 , 72 , 201, 110, 202, 159, 41
-0000110A= 43 E7 E2 7C 37 25 ...    276              DC.B    67 , 231, 226, 124, 55 , 37 , 84 , 62
-00001112= E9 94 CE E9 E4 52 ...    277              DC.B    233, 148, 206, 233, 228, 82 , 243, 78
-0000111A= 37 6D 9A 84 A2 28 ...    278              DC.B    55 , 109, 154, 132, 162, 40 , 30 , 39
-00001122= 19 E2 C6 77 80 D4 ...    279              DC.B    25 , 226, 198, 119, 128, 212, 232, 225
-0000112A= 0A 5A 32 67 33 C2 ...    280              DC.B    10 , 90 , 50 , 103, 51 , 194, 222, 40
-00001132= 59 80 DC 0E 57 FC ...    281              DC.B    89 , 128, 220, 14 , 87 , 252, 243, 252
-0000113A= 8A AB BC F7 07 4D ...    282              DC.B    138, 171, 188, 247, 7  , 77 , 29 , 234
-00001142= EF D5 77 6E 1E BB ...    283              DC.B    239, 213, 119, 110, 30 , 187, 131, 23
-0000114A= D6 E0 2A 8F BD 28 ...    284              DC.B    214, 224, 42 , 143, 189, 40 , 212, 130
-00001152= 13 4F 66 EC 0A 64 ...    285              DC.B    19 , 79 , 102, 236, 10 , 100, 122, 188
-0000115A= 56 52 9A 16 9B 90 ...    286              DC.B    86 , 82 , 154, 22 , 155, 144, 7  , 199
-00001162= 06 8A A4 F7 01 DA ...    287              DC.B    6  , 138, 164, 247, 1  , 218, 166, 82
-0000116A= F2 E7 77 28 B1 76 ...    288              DC.B    242, 231, 119, 40 , 177, 118, 220, 102
-00001172= A4 42 E3 81 B1 67 ...    289              DC.B    164, 66 , 227, 129, 177, 103, 165, 108
-0000117A= BF CE FA 16 BF 38 ...    290              DC.B    191, 206, 250, 22 , 191, 56 , 30 , 161
-00001182= D1 8B 50 0C 5F 49 ...    291              DC.B    209, 139, 80 , 12 , 95 , 73 , 168, 56
-0000118A= DE 4C 14 A2 40 DC ...    292              DC.B    222, 76 , 20 , 162, 64 , 220, 93 , 12
-00001192= B6 9B 0A 38 5D AB ...    293              DC.B    182, 155, 10 , 56 , 93 , 171, 89 , 6
-0000119A= E2 1B DD 75 15 82 ...    294              DC.B    226, 27 , 221, 117, 21 , 130, 101, 18
-000011A2= 8A 26 51 30 9F 47 ...    295              DC.B    138, 38 , 81 , 48 , 159, 71 , 57 , 21
-000011AA= 1E 8A BB 71 C6 6E ...    296              DC.B    30 , 138, 187, 113, 198, 110, 185, 152
-000011B2= 9F 47 E5 34 94 27 ...    297              DC.B    159, 71 , 229, 52 , 148, 39 , 77 , 6
-000011BA= 7D 06 D6 BA 30 0F ...    298              DC.B    125, 6  , 214, 186, 48 , 15 , 212, 22
-000011C2= EC 7F 7E 03 CF 2D ...    299              DC.B    236, 127, 126, 3  , 207, 45 , 193, 2
-000011CA= 94 5B 23 F2 8B CD ...    300              DC.B    148, 91 , 35 , 242, 139, 205, 248, 237
-000011D2= 74 33 EC B9 0F D5 ...    301              DC.B    116, 51 , 236, 185, 15 , 213, 221, 6
-000011D2= 74 33 EC B9 0F D5 ...    302  -------------------- end include --------------------
-000011DA                           303              INCLUDE 'HEADSRP.X68'
-000011DA                           304  
-000011DA                           305  ; ------------------------------------------------------------------------------
-000011DA                           306  HEADINIT
-000011DA                           307  ; INICIALIZAR CABEZA.
-000011DA                           308  ; INPUT    : NONE 
-000011DA                           309  ; OUTPUT   : NONE
-000011DA                           310  ; MODIFIES : NONE
-000011DA                           311  ; ------------------------------------------------------------------------------
-000011DA  33FC 0140 000018D6       312              MOVE.W  #PANWIDTH/2,(CBZPOSX)
-000011E2  33FC 00F0 000018D8       313              MOVE.W  #PANHEIGH/2,(CBZPOSY)
-000011EA  4279 000018E6            314              CLR     TRZPLOT
-000011F0  13FC 0003 000018E6       315              MOVE.B  #3,TRZPLOT
-000011F8  4279 00001BEC            316              CLR.W   ESTDCBZ
-000011FE  33FC 0000 00001BEC       317              MOVE.W  #0,ESTDCBZ
-00001206  4E75                     318              RTS
-00001208                           319              
-00001208                           320  ; ------------------------------------------------------------------------------
-00001208                           321  HEADUPD
-00001208                           322  ; ACTUALIZAR CABEZA.
-00001208                           323  ; INPUT    : NONE 
-00001208                           324  ; OUTPUT   : NONE
-00001208                           325  ; MODIFIES : NONE
-00001208                           326  ; ------------------------------------------------------------------------------
-00001208  48A7 E000                327              MOVEM.W D0-D2,-(A7)
-0000120C                           328                       
-0000120C  4240                     329              CLR.W   D0
-0000120E  4241                     330              CLR.W   D1
-00001210  4242                     331              CLR.W   D2
-00001212  3239 000018D6            332              MOVE.W  CBZPOSX,D1
-00001218  33C1 000018E2            333              MOVE.W  D1,SGMPOSX
-0000121E  3439 000018D8            334              MOVE.W  CBZPOSY,D2
-00001224  33C2 000018E4            335              MOVE.W  D2,SGMPOSY
-0000122A  4EB9 00001644            336              JSR     CINDMTRZ
-00001230  4EB9 00001696            337              JSR     RSTCLD
-00001236                           338              
-00001236  4240                     339              CLR.W   D0
-00001238  3039 00001BEC            340              MOVE.W  ESTDCBZ,D0
-0000123E  B07C 0000                341              CMP.W   #0,D0
-00001242  6700 001A                342              BEQ     SIGDER
-00001246  B07C 0001                343              CMP.W   #1,D0
-0000124A  6700 0036                344              BEQ     SIGARR
-0000124E  B07C 0002                345              CMP.W   #2,D0
-00001252  6700 0052                346              BEQ     SIGIZQ
-00001256  B07C 0003                347              CMP.W   #3,D0
-0000125A  6700 006E                348              BEQ     SIGABA
-0000125E                           349              
-0000125E  0679 0014 000018D6       350  SIGDER:     ADD.W   #CBZVEL,CBZPOSX               ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE 
-00001266  3239 000018D6            351              MOVE.W  CBZPOSX,D1
-0000126C  3439 000018D8            352              MOVE.W  CBZPOSY,D2
-00001272  4EB9 00001644            353              JSR     CINDMTRZ
-00001278  4EB9 0000167E            354              JSR     CBZOCPD  
-0000127E  6000 006E                355              BRA     FIN
-00001282                           356              
-00001282  0479 0014 000018D8       357  SIGARR:     SUB.W   #CBZVEL,CBZPOSY              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE
-0000128A  3239 000018D6            358              MOVE.W  CBZPOSX,D1
-00001290  3439 000018D8            359              MOVE.W  CBZPOSY,D2 
-00001296  4EB9 00001644            360              JSR     CINDMTRZ
-0000129C  4EB9 0000167E            361              JSR     CBZOCPD  
-000012A2  6000 004A                362              BRA     FIN   
-000012A6                           363    
-000012A6  0479 0014 000018D6       364  SIGIZQ:     SUB.W   #CBZVEL,CBZPOSX              ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE 
-000012AE  3239 000018D6            365              MOVE.W  CBZPOSX,D1
-000012B4  3439 000018D8            366              MOVE.W  CBZPOSY,D2
-000012BA  4EB9 00001644            367              JSR     CINDMTRZ
-000012C0  4EB9 0000167E            368              JSR     CBZOCPD  
-000012C6  6000 0026                369              BRA     FIN      
-000012CA                           370  
-000012CA  0679 0014 000018D8       371  SIGABA:     ADD.W   #CBZVEL,CBZPOSY               ;AUMENTAMOS LA POSICIÓN DE LA SERPIENTE 
-000012D2  3239 000018D6            372              MOVE.W  CBZPOSX,D1
-000012D8  3439 000018D8            373              MOVE.W  CBZPOSY,D2
-000012DE  4EB9 00001644            374              JSR     CINDMTRZ 
-000012E4  4EB9 0000167E            375              JSR     CBZOCPD  
-000012EA  6000 0002                376              BRA     FIN      
-000012EE                           377              
-000012EE                           378  FIN:            
-000012EE  4C9F 0007                379              MOVEM.W (A7)+,D0-D2
-000012F2  4E75                     380              RTS
-000012F4                           381              
-000012F4                           382  ; ------------------------------------------------------------------------------
-000012F4                           383  HEADPLOT
-000012F4                           384  ; DIBUJAR CABEZA.
-000012F4                           385  ; INPUT    : NONE 
-000012F4                           386  ; OUTPUT   : NONE
-000012F4                           387  ; MODIFIES : NONE
-000012F4                           388  ; ------------------------------------------------------------------------------
-000012F4  3F00                     389             MOVE.W  D0,-(A7)                ; GUARDAMOS D0
-000012F6  3003                     390              MOVE.W  D3,D0                  ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
-000012F8  4EB9 00001702            391              JSR     CNVICOOR
-000012FE  2F01                     392              MOVE.L  D1,-(A7)
-00001300                           393              
-00001300                           394              ; SET COLOR DEL CONTORNO CABEZA
-00001300  103C 0050                395              MOVE.B  #80,D0
-00001304  223C 0000FF00            396              MOVE.L  #CBZPCOL,D1
-0000130A  4E4F                     397              TRAP    #15
-0000130C                           398              
-0000130C                           399              ; SET COLOR DEL RELLENO CABEZA
-0000130C  103C 0051                400              MOVE.B  #81,D0
-00001310  223C 0000AA00            401              MOVE.L  #CBZFCOL,D1
-00001316  4E4F                     402              TRAP    #15
-00001318                           403              
-00001318                           404              ; DIBUJAR CABEZA
-00001318  103C 0057                405              MOVE.B  #87,D0
-0000131C  221F                     406              MOVE.L  (A7)+,D1
-0000131E  3F03                     407              MOVE.W  D3,-(A7)
-00001320  3601                     408              MOVE.W  D1,D3
-00001322  0643 0014                409              ADD.W   #CBZWIDTH,D3
-00001326  3802                     410              MOVE.W  D2,D4
-00001328  0644 0014                411              ADD.W   #CBZHEIGH,D4
-0000132C  4E4F                     412              TRAP    #15
-0000132E                           413              
-0000132E  2F01                     414              MOVE.L  D1,-(A7)
-00001330                           415              
-00001330                           416              ; SET COLOR DEL CONTORNO OJO
-00001330  103C 0050                417              MOVE.B  #80,D0
-00001334  7200                     418              MOVE.L  #OJOPCOL,D1
-00001336  4E4F                     419              TRAP    #15
-00001338                           420              
-00001338                           421              ; SET COLOR DEL RELLENO OJO
-00001338  103C 0051                422              MOVE.B  #81,D0
-0000133C  223C 00FFFFFF            423              MOVE.L  #OJOFCOL,D1
-00001342  4E4F                     424              TRAP    #15
-00001344                           425              
-00001344                           426              ; DIBUJAR OJO
-00001344  103C 0058                427              MOVE.B  #88,D0
-00001348  221F                     428              MOVE.L  (A7)+,D1
-0000134A  2F01                     429              MOVE.L  D1,-(A7)
-0000134C  2F02                     430              MOVE.L  D2,-(A7)
-0000134E  5A41                     431              ADD.W   #OJOWIDTH/2,D1            
-00001350  3601                     432              MOVE.W  D1,D3
-00001352  0643 000A                433              ADD.W   #OJOWIDTH,D3
-00001356  5A42                     434              ADD.W   #OJOHEIGH/2,D2
-00001358  3802                     435              MOVE.W  D2,D4
-0000135A  0644 000A                436              ADD.W   #OJOHEIGH,D4
-0000135E  4E4F                     437              TRAP    #15
-00001360                           438  
-00001360                           439              ; DEFINIR COORDENADAS IRIS
-00001360  241F                     440              MOVE.L  (A7)+,D2
-00001362  221F                     441              MOVE.L  (A7)+,D1
-00001364  0641 000A                442              ADD.W   #OJOWIDTH,D1
-00001368  0642 000A                443              ADD.W   #OJOHEIGH,D2
-0000136C  103C 0052                444              MOVE.B  #82,D0
-00001370  4E4F                     445              TRAP    #15
-00001372                           446              
-00001372                           447              
-00001372  361F                     448              MOVE.W  (A7)+,D3
-00001374  301F                     449              MOVE.W  (A7)+,D0
-00001376                           450  
-00001376                           451  
-00001376  4E75                     452              RTS
-00001378                           453  
-00001378                           454  
-00001378                           455  
-00001378                           456  
-00001378                           457  
-00001378                           458  
-00001378                           459  
-00001378                           460  
-00001378                           461  
-00001378                           462  
-00001378                           463  
-00001378                           464  
-00001378                           465  
-00001378                           466  
-00001378                           467  
-00001378                           468  
-00001378                           469  -------------------- end include --------------------
-00001378                           470              INCLUDE 'SEGSRP.X68'
-00001378                           471  
-00001378                           472  ; ------------------------------------------------------------------------------
-00001378                           473  SEGINIT
-00001378                           474  ; INICIALIZAR SEGMENTO.
-00001378                           475  ; INPUT    : NONE 
-00001378                           476  ; OUTPUT   : NONE
-00001378                           477  ; MODIFIES : NONE
-00001378                           478  ; ------------------------------------------------------------------------------
-00001378  33FC 012C 000018E2       479              MOVE.W  #(PANWIDTH/2)-CBZWIDTH,(SGMPOSX)
-00001380  33FC 00F0 000018E4       480              MOVE.W  #PANHEIGH/2,(SGMPOSY)
-00001388  4E75                     481              RTS
-0000138A                           482              
-0000138A                           483  ; ------------------------------------------------------------------------------
-0000138A                           484  SEGUPD
-0000138A                           485  ; ACTUALIZAR SEGMENTO.
-0000138A                           486  ; INPUT    : NONE 
-0000138A                           487  ; OUTPUT   : NONE
-0000138A                           488  ; MODIFIES : NONE
-0000138A                           489  ; ------------------------------------------------------------------------------
-0000138A  48A7 6000                490              MOVEM.W D1-D2,-(A7)
-0000138E                           491              
-0000138E  3239 000018E2            492              MOVE.W  SGMPOSX,D1
-00001394  33C1 000018DE            493              MOVE.W  D1,COLPOSX
-0000139A  3439 000018E4            494              MOVE.W  SGMPOSY,D2
-000013A0  33C2 000018E0            495              MOVE.W  D2,COLPOSY
-000013A6  4EB9 00001644            496              JSR     CINDMTRZ
-000013AC  4EB9 00001696            497              JSR     RSTCLD
-000013B2                           498              
-000013B2  4C9F 0006                499              MOVEM.W (A7)+,D1-D2            
-000013B6  4E75                     500              RTS
-000013B8                           501              
-000013B8                           502  ; ------------------------------------------------------------------------------
-000013B8                           503  SEGPLOT
-000013B8                           504  ; DIBUJAR SEGMENTO.
-000013B8                           505  ; INPUT    : NONE 
-000013B8                           506  ; OUTPUT   : NONE
-000013B8                           507  ; MODIFIES : NONE
-000013B8                           508  ; ------------------------------------------------------------------------------
-000013B8  3F00                     509              MOVE.W  D0,-(A7)
-000013BA  3003                     510              MOVE.W  D3,D0
-000013BC  4EB9 00001702            511              JSR     CNVICOOR
-000013C2  2F01                     512              MOVE.L  D1,-(A7)
-000013C4                           513              
-000013C4  103C 0050                514              MOVE.B  #80,D0
-000013C8  223C 0000FF00            515              MOVE.L  #SGMPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DEL SEGMENTO
-000013CE  4E4F                     516              TRAP    #15
-000013D0                           517              
-000013D0  103C 0051                518              MOVE.B  #81,D0
-000013D4  223C 0000AA00            519              MOVE.L  #SGMFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DEL SEGMENTO
-000013DA  4E4F                     520              TRAP    #15
-000013DC                           521              
-000013DC  103C 0057                522              MOVE.B  #87,D0
-000013E0  221F                     523              MOVE.L  (A7)+,D1
-000013E2  3F03                     524              MOVE.W  D3,-(A7)
-000013E4  3601                     525              MOVE.W  D1,D3
-000013E6  0643 0014                526              ADD.W   #SIZECLDA,D3
-000013EA  3802                     527              MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
-000013EC  0644 0014                528              ADD.W   #SIZECLDA,D4
-000013F0  4E4F                     529              TRAP    #15                     
-000013F2                           530                          
-000013F2  361F                     531              MOVE.W  (A7)+,D3  
-000013F4  301F                     532              MOVE.W  (A7)+,D0
-000013F6                           533  
-000013F6                           534  
-000013F6  4E75                     535              RTS
-000013F8                           536  
-000013F8                           537  
-000013F8                           538  
-000013F8                           539  
-000013F8                           540  
-000013F8                           541  
-000013F8                           542  
-000013F8                           543  
-000013F8                           544  
-000013F8                           545  -------------------- end include --------------------
-000013F8                           546              INCLUDE 'TAILSRP.X68'
-000013F8                           547     
-000013F8                           548  ; ------------------------------------------------------------------------------
-000013F8                           549  TAILINIT
-000013F8                           550  ; INICIALIZAR COLA.
-000013F8                           551  ; INPUT    : NONE 
-000013F8                           552  ; OUTPUT   : NONE
-000013F8                           553  ; MODIFIES : NONE
-000013F8                           554  ; ------------------------------------------------------------------------------
-000013F8  33FC 011D 000018DE       555              MOVE.W  #(PANWIDTH/2)-CBZWIDTH-SGMWIDTH+(COLWIDTH/2),(COLPOSX)
-00001400  33FC 00F0 000018E0       556              MOVE.W  #(PANHEIGH/2),(COLPOSY)
-00001408  4E75                     557              RTS
-0000140A                           558              
-0000140A                           559              
-0000140A                           560  ; ------------------------------------------------------------------------------
-0000140A                           561  TAILUPD
-0000140A                           562  ; ACTUALIZAR COLA.
-0000140A                           563  ; INPUT    : NONE 
-0000140A                           564  ; OUTPUT   : NONE
-0000140A                           565  ; MODIFIES : NONE
-0000140A                           566  ; ------------------------------------------------------------------------------
-0000140A  48A7 6000                567              MOVEM.W D1-D2,-(A7)
-0000140E                           568              
-0000140E  3239 000018DE            569              MOVE.W  COLPOSX,D1
-00001414  3439 000018E0            570              MOVE.W  COLPOSY,D2
-0000141A  4EB9 00001644            571              JSR     CINDMTRZ
-00001420  4EB9 00001696            572              JSR     RSTCLD 
-00001426                           573              
-00001426  4C9F 0006                574              MOVEM.W (A7)+,D1-D2            
-0000142A  4E75                     575              RTS
-0000142C                           576              
-0000142C                           577  ; ------------------------------------------------------------------------------
-0000142C                           578  TAILPLOT
-0000142C                           579  ; DIBUJAR COLA
-0000142C                           580  ; INPUT    : NONE 
-0000142C                           581  ; OUTPUT   : NONE
-0000142C                           582  ; MODIFIES : NONE
-0000142C                           583  ; ------------------------------------------------------------------------------
-0000142C  3F00                     584              MOVE.W  D0,-(A7)
-0000142E  3003                     585              MOVE.W  D3,D0
-00001430  4EB9 00001702            586              JSR     CNVICOOR
-00001436  2F01                     587              MOVE.L  D1,-(A7)
-00001438                           588              
-00001438  103C 0050                589              MOVE.B  #80,D0
-0000143C  223C 0000FF00            590              MOVE.L  #COLPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA COLA
-00001442  4E4F                     591              TRAP    #15
-00001444                           592              
-00001444  103C 0051                593              MOVE.B  #81,D0
-00001448  223C 0000AA00            594              MOVE.L  #COLFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA COLA
-0000144E  4E4F                     595              TRAP    #15
-00001450                           596              
-00001450  103C 0057                597              MOVE.B  #87,D0
-00001454  221F                     598              MOVE.L  (A7)+,D1
-00001456  3F03                     599              MOVE.W  D3,-(A7)
-00001458  3601                     600              MOVE.W  D1,D3
-0000145A  0643 0014                601              ADD.W   #SIZECLDA,D3
-0000145E  3802                     602              MOVE.W  D2,D4                    
-00001460  0644 0014                603              ADD.W   #SIZECLDA,D4
-00001464  4E4F                     604              TRAP    #15                    ; DIBUJAMOS EL CUADRADO 
-00001466                           605                          
-00001466  361F                     606              MOVE.W  (A7)+,D3  
-00001468  301F                     607              MOVE.W  (A7)+,D0
-0000146A                           608  
-0000146A  4E75                     609              RTS
-0000146C                           610  
-0000146C                           611  
-0000146C                           612  
-0000146C                           613  
-0000146C                           614  
-0000146C                           615  
-0000146C                           616  
-0000146C                           617  
-0000146C                           618  -------------------- end include --------------------
-0000146C                           619              INCLUDE 'APPLE.X68'
-0000146C                           620     
-0000146C                           621  ; ------------------------------------------------------------------------------
-0000146C                           622  APPLEINIT
-0000146C                           623  ; Inicializa la manzana en una posición aleatoria
-0000146C                           624  ; INPUT    : NONE 
-0000146C                           625  ; OUTPUT   : NONE
-0000146C                           626  ; MODIFIES : MNZPOSX, MNZPOSY, ESTDCLDS
-0000146C                           627  ; ------------------------------------------------------------------------------
-0000146C                           628  
-0000146C                           629              ; Llama a la función para generar la posición aleatoria
-0000146C  4EB9 0000155A            630              JSR     GENPOSMNZ
-00001472                           631  
-00001472                           632              ; Convierte las coordenadas de la manzana a índice de la matriz
-00001472  4EB9 00001644            633              JSR     CINDMTRZ
-00001478                           634  
-00001478                           635              ; Verifica si la celda está ocupada o libre
-00001478                           636  CHECK:
-00001478  4EB9 0000173E            637              JSR     CHECKCLD
-0000147E  6700 0010                638              BEQ     MARKMNZ                  ; Si está libre
-00001482                           639  
-00001482                           640              ; Si la celda está ocupada
-00001482  4EB9 0000155A            641              JSR     GENPOSMNZ                ; Genera una nueva posición
-00001488  4EB9 00001644            642              JSR     CINDMTRZ                 ; Convierte las nuevas coordenadas
-0000148E  60E8                     643              BRA     CHECK                    ; Repite la comprobación
-00001490                           644  
-00001490                           645  MARKMNZ:
-00001490                           646              ; Marca la celda como ocupada con la manzana (estado 4)
-00001490  4EB9 000016EC            647              JSR     MNZOCPD
-00001496                           648  
-00001496                           649              ; Dibuja la manzana en la pantalla
-00001496  4EB9 000014DC            650              JSR     APPLEPLOT
-0000149C                           651  
-0000149C  4E75                     652              RTS
-0000149E                           653              
-0000149E                           654              ;MOVE.W  #30,(MNZPOSX)   ;DE MOMENTO PONGO X E Y ELEGIDAS MANUALMENTE, EN TEORÍA DEBE SER ALEATORIO
-0000149E                           655              ;MOVE.W  #30,(MNZPOSY)
-0000149E                           656  
-0000149E                           657  ; ------------------------------------------------------------------------------
-0000149E                           658  APPLEUPD
-0000149E                           659  ; Actualiza la posición de la manzana cuando la serpiente come
-0000149E                           660  ; INPUT    : NONE 
-0000149E                           661  ; OUTPUT   : NONE
-0000149E                           662  ; MODIFIES : MNZPOSX, MNZPOSY, ESTDCLDS
-0000149E                           663  ; ------------------------------------------------------------------------------
-0000149E                           664  
-0000149E                           665              ; Convierte las coordenadas actuales de la manzana a índice de la matriz
-0000149E  4EB9 00001644            666              JSR     CINDMTRZ
-000014A4                           667  
-000014A4                           668              ; Marca la celda anterior como vacía
-000014A4  4EB9 000016AA            669              JSR     MCLDVCIA
-000014AA                           670  
-000014AA                           671              ; Llama a la función para generar una nueva posición aleatoria
-000014AA  4EB9 0000155A            672              JSR     GENPOSMNZ
-000014B0                           673  
-000014B0                           674              ; Convierte las nuevas coordenadas de la manzana a índice de la matriz
-000014B0  4EB9 00001644            675              JSR     CINDMTRZ
-000014B6                           676  
-000014B6                           677  CHCKUPDT:
-000014B6  4EB9 0000173E            678              JSR     CHECKCLD             ; Verifica si la celda está libre
-000014BC  6700 0010                679              BEQ     NEWMNZ               ; Si está libre
-000014C0                           680  
-000014C0                           681              ; Si la celda está ocupada
-000014C0  4EB9 0000155A            682              JSR     GENPOSMNZ            ; Genera una nueva posición
-000014C6  4EB9 00001644            683              JSR     CINDMTRZ             ; Convierte las nuevas coordenadas
-000014CC  60E8                     684              BRA     CHCKUPDT             ; Repite la comprobación
-000014CE                           685  
-000014CE                           686  NEWMNZ:
-000014CE                           687              ; Marca la celda como ocupada con la manzana (estado 4)
-000014CE  4EB9 000016EC            688              JSR     MNZOCPD
-000014D4                           689  
-000014D4                           690              ; Dibuja la nueva manzana en la pantalla
-000014D4  4EB9 000014DC            691              JSR     APPLEPLOT
-000014DA                           692  
-000014DA  4E75                     693              RTS
-000014DC                           694              
-000014DC                           695  ; ------------------------------------------------------------------------------
-000014DC                           696  APPLEPLOT
-000014DC                           697  ; Dibuja la manzana
-000014DC                           698  ; INPUT    : NONE 
-000014DC                           699  ; OUTPUT   : NONE
-000014DC                           700  ; MODIFIES : NONE
-000014DC                           701  ; ------------------------------------------------------------------------------
-000014DC  3F00                     702              MOVE.W  D0,-(A7)
-000014DE  3003                     703              MOVE.W  D3,D0
-000014E0  4EB9 00001702            704              JSR     CNVICOOR
-000014E6  2F01                     705              MOVE.L  D1,-(A7)                ; PRIMERO DEBEMOS DIBUJAR EL FONDO Y LUEGO LA MANZANA
-000014E8                           706              
-000014E8  103C 0050                707              MOVE.B  #80,D0
-000014EC  223C 0090EE90            708              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
-000014F2  4E4F                     709              TRAP    #15
-000014F4                           710              
-000014F4  103C 0051                711              MOVE.B  #81,D0
-000014F8  223C 0090EE90            712              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
-000014FE  4E4F                     713              TRAP    #15
-00001500                           714              
-00001500  103C 0057                715              MOVE.B  #87,D0
-00001504  221F                     716              MOVE.L  (A7)+,D1
-00001506  3F03                     717              MOVE.W  D3,-(A7)
-00001508  3601                     718              MOVE.W  D1,D3
-0000150A  0643 0014                719              ADD.W   #SIZECLDA,D3
-0000150E  3802                     720              MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
-00001510  0644 0014                721              ADD.W   #SIZECLDA,D4
-00001514  4E4F                     722              TRAP    #15                     
-00001516                           723                          
-00001516  361F                     724              MOVE.W  (A7)+,D3  
-00001518  301F                     725              MOVE.W  (A7)+,D0
-0000151A                           726  
-0000151A  3F00                     727              MOVE.W  D0,-(A7)
-0000151C  3003                     728              MOVE.W  D3,D0
-0000151E  4EB9 00001702            729              JSR     CNVICOOR
-00001524  2F01                     730              MOVE.L  D1,-(A7)
-00001526                           731              
-00001526  103C 0050                732              MOVE.B  #80,D0
-0000152A  223C 0000AAFF            733              MOVE.L  #MNZPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA MANZANA
-00001530  4E4F                     734              TRAP    #15
-00001532                           735              
-00001532  103C 0051                736              MOVE.B  #81,D0
-00001536  223C 000000FF            737              MOVE.L  #MNZFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA MANZANA
-0000153C  4E4F                     738              TRAP    #15
-0000153E                           739              
-0000153E  103C 0058                740              MOVE.B  #88,D0
-00001542  221F                     741              MOVE.L  (A7)+,D1
-00001544  3F03                     742              MOVE.W  D3,-(A7)
-00001546  3601                     743              MOVE.W  D1,D3
-00001548  0643 0014                744              ADD.W   #SIZECLDA,D3
-0000154C  3802                     745              MOVE.W  D2,D4                    ; DIBUJAMOS EL CIRCULO
-0000154E  0644 0014                746              ADD.W   #SIZECLDA,D4
-00001552  4E4F                     747              TRAP    #15                     
-00001554                           748                          
-00001554  361F                     749              MOVE.W  (A7)+,D3  
-00001556  301F                     750              MOVE.W  (A7)+,D0
-00001558                           751  
-00001558                           752  
-00001558  4E75                     753              RTS
-0000155A                           754  ; ----------------------------------------------------------------------------
-0000155A                           755  GENPOSMNZ
-0000155A                           756  ; Genera una posición aleatoria para la manzana
-0000155A                           757  ; INPUT: NONE
-0000155A                           758  ; OUTPUT:
-0000155A                           759  ; MODIFIES: MNZPOSX, MNZPOSY
-0000155A                           760  ; ----------------------------------------------------------------------------
-0000155A                           761  
-0000155A  48E7 8000                762              MOVEM.L D0,-(A7)
-0000155E                           763  
-0000155E                           764              ; Genera la coordenada X aleatoria
-0000155E  4EB8 10BC                765              JSR     UTLRAND
-00001562  0240 001F                766              ANDI.W  #NUMCLMNS-1, D0       ; Asegura que esté en [0, NUMCLMNS-1]
-00001566  C0FC 0014                767              MULU    #SIZECLDA, D0         ; Escala al tamaño real de las celdas
-0000156A  3200                     768              MOVE.W  D0,D1
-0000156C  33C0 000018D2            769              MOVE.W  D0, MNZPOSX           ; Guarda la coordenada X generada
-00001572                           770              
-00001572                           771              ; Generar coordenada Y aleatoria
-00001572  4EB8 10BC                772              JSR     UTLRAND
-00001576  0240 0017                773              ANDI.W  #NUMFILAS-1, D0       ; Asegura que esté en el rango [0, NUMFILAS-1]
-0000157A  C0FC 0014                774              MULU    #SIZECLDA, D0         ; Escala al tamaño real de las celdas
-0000157E  3400                     775              MOVE.W  D0,D2
-00001580  33C0 000018D4            776              MOVE.W  D0, MNZPOSY           ; Guarda la coordenada Y generada
-00001586                           777              
-00001586  4CDF 0001                778              MOVEM.L (A7)+,D0
-0000158A  4E75                     779              RTS 
-0000158C                           780  
-0000158C                           781  
-0000158C                           782  
-0000158C                           783  -------------------- end include --------------------
-0000158C                           784              INCLUDE 'SCORE.X68'
-0000158C                           785     
-0000158C                           786  ; ------------------------------------------------------------------------------
-0000158C                           787  SCOINIT
-0000158C                           788  ; INICIALIZAR MARCADOR.
-0000158C                           789  ; INPUT    : NONE 
-0000158C                           790  ; OUTPUT   : NONE
-0000158C                           791  ; MODIFIES : NONE
-0000158C                           792  ; ------------------------------------------------------------------------------
-0000158C  4279 000018E8            793              CLR.W   (JGOPNTS)
-00001592  4E75                     794              RTS
-00001594                           795              
-00001594                           796  ; ------------------------------------------------------------------------------
-00001594                           797  SCOUPD
-00001594                           798  ; ACTUALIZAR MARCADOR.
-00001594                           799  ; INPUT    : NONE 
-00001594                           800  ; OUTPUT   : NONE
-00001594                           801  ; MODIFIES : NONE
-00001594                           802  ; ------------------------------------------------------------------------------
-00001594  4E75                     803              RTS
-00001596                           804              
-00001596                           805  ; ------------------------------------------------------------------------------
-00001596                           806  SCOPLOT
-00001596                           807  ; DIBUJAR MARCADOR.
-00001596                           808  ; INPUT    : NONE 
-00001596                           809  ; OUTPUT   : NONE
-00001596                           810  ; MODIFIES : NONE
-00001596                           811  ; ------------------------------------------------------------------------------
-00001596  48E7 C040                812             MOVEM.L  D0-D1/A1,-(A7)
-0000159A                           813             ; SET COLOR DE FONDO
-0000159A  103C 0051                814             MOVE.B   #81,D0
-0000159E  223C 0090EE90            815             MOVE.L   #COLFND,D1
-000015A4  4E4F                     816             TRAP     #15
-000015A6                           817             
-000015A6                           818             
-000015A6                           819             
-000015A6                           820             ; DIBUJAR LINEA DE PUNTUACIÓN
-000015A6  43F9 000015C0            821              LEA     .TXT1,A1
-000015AC  4281                     822              CLR.L   D1
-000015AE  3239 000018E8            823              MOVE.W  (JGOPNTS),D1
-000015B4  103C 0011                824              MOVE.B  #17,D0
-000015B8  4E4F                     825              TRAP    #15
-000015BA                           826              
-000015BA  4CDF 0203                827              MOVEM.L (A7)+,D0-D1/A1
-000015BE  4E75                     828              RTS
-000015C0                           829  
-000015C0                           830  
-000015C0= 50 55 4E 54 4F 53 ...    831  .TXT1       DC.B    'PUNTOS : ',0
-000015CA                           832  
-000015CA                           833  
-000015CA                           834  -------------------- end include --------------------
-000015CA                           835              INCLUDE 'MATRIZ.X68'
-000015CA                           836  ; ----------------------------------------------------------------------------
-000015CA                           837  ; MATRIZ
-000015CA                           838  ; ----------------------------------------------------------------------------
-000015CA                           839  
-000015CA                           840  ;-----------------------------------------------------------------------------
-000015CA                           841  MTZINIT
-000015CA                           842  ; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
-000015CA                           843  ; INPUT    : NONE
-000015CA                           844  ; OUTPUT   : NONE
-000015CA                           845  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
-000015CA                           846  ; ----------------------------------------------------------------------------
-000015CA                           847              
-000015CA  48A7 E080                848              MOVEM.W D0-D2/A0,-(A7)
-000015CE                           849              
-000015CE  41F9 000018EC            850              LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
-000015D4  303C 0300                851              MOVE.W #TCELDAS, D0    ; Número total de celdas
-000015D8                           852  
-000015D8                           853  CLNCLDS:
-000015D8  4218                     854              CLR.B (A0)+            ; Coloca 0 en cada celda
-000015DA  5340                     855              SUBI.W #1, D0          ; Decrementa el contador de celdas
-000015DC  66FA                     856              BNE CLNCLDS            ; Repite hasta que esten vacías
-000015DE                           857              
-000015DE                           858              
-000015DE  3239 000018D6            859              MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION INICIAL DE LA CABEZA             
-000015E4  3439 000018D8            860              MOVE.W  CBZPOSY, D2
-000015EA  4EB9 00001644            861              JSR     CINDMTRZ
-000015F0  4EB9 0000167E            862              JSR     CBZOCPD                 ; MARCAMOS LA POSICIÓN COMO CABEZA
-000015F6                           863              
-000015F6  3239 000018E2            864              MOVE.W  SGMPOSX, D1
-000015FC  3439 000018E4            865              MOVE.W  SGMPOSY, D2             ; VEMOS LA POSICIÓN INICIAL DEL SEGMENTO
-00001602  4EB9 00001644            866              JSR     CINDMTRZ
-00001608  4EB9 000016C0            867              JSR     SGMOCPD                 ; MARCAMOS LA POSICIÓN DEL SEGMENTO
-0000160E                           868              
-0000160E  3239 000018DE            869              MOVE.W  COLPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA COLA
-00001614  3439 000018E0            870              MOVE.W  COLPOSY, D2
-0000161A  4EB9 00001644            871              JSR     CINDMTRZ
-00001620  4EB9 000016D6            872              JSR     COLOCPD                 ; MARCAMOS LA POSICIÓN DE LA COLA
-00001626                           873              
-00001626  3239 000018D2            874              MOVE.W  MNZPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA MANZANA
-0000162C  3439 000018D4            875              MOVE.W  MNZPOSY, D2
-00001632  4EB9 00001644            876              JSR     CINDMTRZ
-00001638  4EB9 000016EC            877              JSR     MNZOCPD                 ; MARCAMOS LA POSICIÓN DE LA MANZANA
-0000163E                           878              
-0000163E                           879              
-0000163E  4C9F 0107                880              MOVEM.W (A7)+,D0-D2/A0
-00001642                           881  
-00001642  4E75                     882              RTS
-00001644                           883  
-00001644                           884  ;-----------------------------------------------------------------------------
-00001644                           885  CINDMTRZ
-00001644                           886  ; CALCULA EL ÍNDICE DE UNA CELDA
-00001644                           887  ; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
-00001644                           888  ; OUTPUT   : D0 = índice de la celda en ESTDCLDS
-00001644                           889  ; MODIFIES : NONE
-00001644                           890  ; ----------------------------------------------------------------------------
-00001644                           891  
-00001644  48A7 7000                892               MOVEM.W D1-D3,-(A7)     ; Guarda los registros D1-D3 en la pila
-00001648                           893  
-00001648                           894              ; Divide X por SIZECLDA
-00001648  3601                     895              MOVE.W  D1, D3          ; Copia X a D3
-0000164A  4241                     896              CLR.W   D1              ; Inicializa el cociente de X
-0000164C                           897  
-0000164C  B67C 0014                898  DIVX:       CMP.W   #SIZECLDA, D3    ; Compara D3 con SIZECLDA
-00001650  6D00 000A                899              BLT     ENDDIVX         ; Si D3 < SIZECLDA, salta a ENDDIVX
-00001654  0443 0014                900              SUB.W   #SIZECLDA, D3   ; Resta SIZECLDA de D3
-00001658  5241                     901              ADDQ.W  #1, D1          ; Incrementa el cociente de X
-0000165A  60F0                     902              BRA     DIVX            ; Repite el bucle
-0000165C                           903  
-0000165C                           904  ENDDIVX:
-0000165C                           905  
-0000165C                           906              ; Divide Y por SIZECLDA
-0000165C  3602                     907              MOVE.W  D2, D3          ; Copia Y a D3
-0000165E  4242                     908              CLR.W   D2              ; Inicializa el cociente de Y
-00001660                           909  
-00001660  B67C 0014                910  DIVY:       CMP.W   #SIZECLDA, D3    ; Compara D3 con SIZECLDA
-00001664  6D00 000A                911              BLT     ENDDIVY         ; Si D3 < SIZECLDA, salta a ENDDIVY
-00001668  0443 0014                912              SUB.W   #SIZECLDA, D3   ; Resta SIZECLDA de D3
-0000166C  5242                     913              ADDQ.W  #1, D2          ; Incrementa el cociente de Y
-0000166E  60F0                     914              BRA     DIVY            ; Repite el bucle
-00001670                           915  
-00001670                           916  ENDDIVY:
-00001670                           917  
-00001670                           918              ; Calcula el índice
-00001670  4240                     919              CLR.W   D0
-00001672  3002                     920              MOVE.W  D2, D0          ; D0 = Y_CELDA
-00001674  EB40                     921              ASL.W   #5, D0          ; D0 = Y_CELDA * NUMCLMNS (32 = 2^5)
-00001676  D041                     922              ADD.W   D1, D0          ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
-00001678                           923  
-00001678  4C9F 000E                924              MOVEM.W (A7)+,D1-D3     ; Restaura los registros D1-D3 desde la pila
-0000167C                           925  
-0000167C  4E75                     926              RTS  
-0000167E                           927              
-0000167E                           928  ;-----------------------------------------------------------------------------
-0000167E                           929  CBZOCPD
-0000167E                           930  ; MARCA UNA CELDA COMO OCUPADA POR LA CABEZA
-0000167E                           931  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-0000167E                           932  ; OUTPUT   : NONE
-0000167E                           933  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-0000167E                           934  ; ----------------------------------------------------------------------------
-0000167E                           935  
-0000167E  48A7 0080                936              MOVEM.W A0,-(A7)
-00001682                           937  
-00001682  41F9 000018EC            938              LEA     ESTDCLDS, A0                ; Dirección de la matriz en A0
-00001688  11B9 000018E6 0000       939              MOVE.B  TRZPLOT, (A0, D0.W)           ; Marca la celda como ocupada
-00001690                           940              
-00001690  4C9F 0100                941              MOVEM.W (A7)+,A0
-00001694                           942              
-00001694  4E75                     943              RTS
-00001696                           944              
-00001696                           945              
-00001696                           946              
-00001696                           947  ;-----------------------------------------------------------------------------
-00001696                           948  RSTCLD
-00001696                           949  ; RESTA 1 A LA CELDA PASADA POR PARÁMETRO
-00001696                           950  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-00001696                           951  ; OUTPUT   : NONE
-00001696                           952  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-00001696                           953  ; ----------------------------------------------------------------------------
-00001696                           954  
-00001696  48A7 0080                955              MOVEM.W A0,-(A7)
-0000169A                           956  
-0000169A  41F9 000018EC            957              LEA     ESTDCLDS, A0              ; Dirección de la matriz en A0
-000016A0  5330 0000                958              SUBQ.B   #1, (A0, D0.W)           ; Marca la celda como ocupada
-000016A4                           959              
-000016A4  4C9F 0100                960              MOVEM.W (A7)+,A0
-000016A8                           961              
-000016A8  4E75                     962              RTS
-000016AA                           963             
-000016AA                           964  ;-----------------------------------------------------------------------------
-000016AA                           965  MCLDVCIA
-000016AA                           966  ; MARCA UNA CELDA COMO VACÍA
-000016AA                           967  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-000016AA                           968  ; OUTPUT   : NONE
-000016AA                           969  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-000016AA                           970  ; ----------------------------------------------------------------------------
-000016AA                           971  
-000016AA  48A7 0080                972              MOVEM.W A0,-(A7)
-000016AE                           973  
-000016AE  41F9 000018EC            974              LEA ESTDCLDS, A0                ; Direccion de la matriz en A0
-000016B4  11BC 0000 0000           975              MOVE.B #0, (A0, D0.W)           ; Marca la celda como vacía
-000016BA                           976              
-000016BA  4C9F 0100                977              MOVEM.W (A7)+,A0
-000016BE                           978              
-000016BE  4E75                     979              RTS
-000016C0                           980  
-000016C0                           981  ;-----------------------------------------------------------------------------
-000016C0                           982  SGMOCPD
-000016C0                           983  ; MARCA UNA CELDA COMO OCUPADA POR EL SEGMENTO
-000016C0                           984  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-000016C0                           985  ; OUTPUT   : NONE
-000016C0                           986  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-000016C0                           987  ; ----------------------------------------------------------------------------
-000016C0                           988  
-000016C0  48A7 0080                989              MOVEM.W A0,-(A7)
-000016C4                           990  
-000016C4  41F9 000018EC            991              LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
-000016CA  11BC 0002 0000           992              MOVE.B #2, (A0, D0.W)           ; Marca la celda como ocupada
-000016D0                           993              
-000016D0  4C9F 0100                994              MOVEM.W (A7)+,A0
-000016D4                           995              
-000016D4  4E75                     996              RTS
-000016D6                           997              
-000016D6                           998  ;-----------------------------------------------------------------------------
-000016D6                           999  COLOCPD
-000016D6                          1000  ; MARCA UNA CELDA COMO OCUPADA POR LA COLA
-000016D6                          1001  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-000016D6                          1002  ; OUTPUT   : NONE
-000016D6                          1003  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-000016D6                          1004  ; ----------------------------------------------------------------------------
-000016D6                          1005  
-000016D6  48A7 0080               1006              MOVEM.W A0,-(A7)
-000016DA                          1007  
-000016DA  41F9 000018EC           1008              LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
-000016E0  11BC 0001 0000          1009              MOVE.B #1, (A0, D0.W)           ; Marca la celda como ocupada
-000016E6                          1010              
-000016E6  4C9F 0100               1011              MOVEM.W (A7)+,A0
-000016EA                          1012              
-000016EA  4E75                    1013              RTS
-000016EC                          1014  
-000016EC                          1015  
-000016EC                          1016  ;-----------------------------------------------------------------------------
-000016EC                          1017  MNZOCPD
-000016EC                          1018  ; MARCA UNA CELDA COMO OCUPADA POR LA MANZANA
-000016EC                          1019  ; INPUT    : D0 = índice de la celda en ESTDCLDS
-000016EC                          1020  ; OUTPUT   : NONE
-000016EC                          1021  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
-000016EC                          1022  ; ----------------------------------------------------------------------------
-000016EC                          1023  
-000016EC  48A7 0080               1024              MOVEM.W A0,-(A7)
-000016F0                          1025  
-000016F0  41F9 000018EC           1026              LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
-000016F6  11BC 0004 0000          1027              MOVE.B #4, (A0, D0.W)           ; Marca la celda como ocupada
-000016FC                          1028              
-000016FC  4C9F 0100               1029              MOVEM.W (A7)+,A0
-00001700                          1030              
-00001700  4E75                    1031              RTS
-00001702                          1032  
-00001702                          1033              
-00001702                          1034  ;-----------------------------------------------------------------------------
-00001702                          1035  CNVICOOR
-00001702                          1036  ; Convierte un índice de celda a coordenadas de pantalla (X, Y)
-00001702                          1037  ; INPUT    : D0 = índice de la celda en ESTADO_CELDAS
-00001702                          1038  ; OUTPUT   : D1 = coordenada X, D2 = coordenada Y
-00001702                          1039  ; MODIFIES : NONE
-00001702                          1040  ; ----------------------------------------------------------------------------
-00001702                          1041  
-00001702  48A7 9800               1042              MOVEM.W D0/D3-D4,-(A7)
-00001706                          1043  
-00001706  3400                    1044              MOVE.W  D0,D2         ; Copia índice a D2 para calcular la fila
-00001708  EA4A                    1045              LSR.W   #5,D2         ; D2 = índice / NUM_COLUMNAS (32 = 2^5)
-0000170A  3200                    1046              MOVE.W  D0,D1         ; Copia índice a D1 para calcular la columna
-0000170C  C27C 001F               1047              AND.W   #$1F,D1       ; D1 = índice % NUM_COLUMNAS (31 = 0x1F) (CREO)
-00001710                          1048  
-00001710                          1049              ; Multiplica por TAMAÑO_CELDA = 10
-00001710  363C 0014               1050              MOVE.W  #SIZECLDA, D3
-00001714  3801                    1051              MOVE.W  D1,D4         ; Copia D1 para multiplicar por 10
-00001716  4241                    1052              CLR.W   D1            ; Inicializa resultado
-00001718                          1053  
-00001718                          1054  
-00001718                          1055  MULTLOOPX: 
-00001718  B87C 0000               1056              CMP.W   #0, D4        ; ¿Quedan iteraciones?
-0000171C  6700 0008               1057              BEQ     ENDMULTX
-00001720  D243                    1058              ADD.W   D3,D1         ; Suma TAMANO_CELDA (10) repetidamente
-00001722                          1059  
-00001722  5344                    1060              SUBQ.W  #1,D4         ; Cuenta las iteraciones restantes
-00001724  60F2                    1061              BRA     MULTLOOPX     ; Repite mientras no sea 0
-00001726                          1062  ENDMULTX: 
-00001726  3802                    1063              MOVE.W  D2,D4         ; Copia D2 para multiplicar por 10
-00001728  4242                    1064              CLR.W   D2            ; Inicializa resultado
-0000172A                          1065  
-0000172A                          1066  MULTLOOPY: 
-0000172A  B87C 0000               1067              CMP.W   #0, D4        ; ¿Quedan iteraciones?
-0000172E  6700 0008               1068              BEQ     ENDMULTY
-00001732  D443                    1069              ADD.W   D3,D2         ; Suma TAMANO_CELDA (10) repetidamente
-00001734  5344                    1070              SUBQ.W  #1,D4         ; Cuenta las iteraciones restantes
-00001736  60F2                    1071              BRA     MULTLOOPY     ; Repite mientras no sea 0
-00001738                          1072  ENDMULTY:
-00001738  4C9F 0019               1073              MOVEM.W (A7)+,D0/D3-D4
-0000173C                          1074  
-0000173C  4E75                    1075              RTS
-0000173E                          1076  
-0000173E                          1077  ; ----------------------------------------------------------------------------
-0000173E                          1078  CHECKCLD
-0000173E                          1079  ; INPUT: D0 = índice de la celda
-0000173E                          1080  ; OUTPUT: D0 = 0 si está vacía, 1 si está ocupada
-0000173E                          1081  ; MODIFIES: Ninguno
-0000173E                          1082  ; ----------------------------------------------------------------------------
-0000173E                          1083  
-0000173E  41F9 000018EC           1084              LEA     ESTDCLDS, A0    ; Carga la dirección de la matriz ESTDCLDS
-00001744  1230 0000               1085              MOVE.B  (A0, D0.W),D1   ; Carga el estado de la celda en D1
-00001748  B23C 0000               1086              CMP.B   #0, D1          ; Compara si está vacía (0)
-0000174C  6700 0008               1087              BEQ     CLDFREE         ; Si está vacía
-00001750  303C 0001               1088              MOVE.W  #1, D0          ; Si está ocupada, devuelve 1 (ocupada)
-00001754                          1089  
-00001754  4E75                    1090              RTS
-00001756                          1091  
-00001756                          1092  CLDFREE:
-00001756  303C 0000               1093              MOVE.W  #0, D0                 ; Devuelve 0 (libre)
-0000175A                          1094  
-0000175A  4E75                    1095              RTS
-0000175C                          1096  
-0000175C                          1097  
-0000175C                          1098  ;-----------------------------------------------------------------------------
-0000175C                          1099  FONPLOT
-0000175C                          1100  ; DIBUJADO DEL FONDO
-0000175C                          1101  ; INPUT    : NONE
-0000175C                          1102  ; OUTPUT   : NONE
-0000175C                          1103  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
-0000175C                          1104  ; ----------------------------------------------------------------------------
-0000175C                          1105  
-0000175C  3F00                    1106              MOVE.W  D0,-(A7)
-0000175E  3003                    1107              MOVE.W  D3,D0
-00001760  4EB8 1702               1108              JSR     CNVICOOR
-00001764  2F01                    1109              MOVE.L  D1,-(A7)
-00001766                          1110              
-00001766  103C 0050               1111              MOVE.B  #80,D0
-0000176A  223C 0090EE90           1112              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
-00001770  4E4F                    1113              TRAP    #15
-00001772                          1114              
-00001772  103C 0051               1115              MOVE.B  #81,D0
-00001776  223C 0090EE90           1116              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
-0000177C  4E4F                    1117              TRAP    #15
-0000177E                          1118              
-0000177E  103C 0057               1119              MOVE.B  #87,D0
-00001782  221F                    1120              MOVE.L  (A7)+,D1
-00001784  3F03                    1121              MOVE.W  D3,-(A7)
-00001786  3601                    1122              MOVE.W  D1,D3
-00001788  0643 0014               1123              ADD.W   #SIZECLDA,D3
-0000178C  3802                    1124              MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
-0000178E  0644 0014               1125              ADD.W   #SIZECLDA,D4
-00001792  4E4F                    1126              TRAP    #15                     
-00001794                          1127                          
-00001794  361F                    1128              MOVE.W  (A7)+,D3  
-00001796  301F                    1129              MOVE.W  (A7)+,D0
-00001798  4E75                    1130              RTS         
-0000179A                          1131  
-0000179A                          1132  
-0000179A                          1133  
-0000179A                          1134  ;-----------------------------------------------------------------------------
-0000179A                          1135  MTZUPD
-0000179A                          1136  ; ACTUALIZA LA MATRIZ CASILLA A CASILLA
-0000179A                          1137  ; INPUT    : NONE
-0000179A                          1138  ; OUTPUT   : NONE
-0000179A                          1139  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
-0000179A                          1140  ; ----------------------------------------------------------------------------
-0000179A                          1141  
-0000179A                          1142  
-0000179A  48A7 E080               1143              MOVEM.W D0-D2/A0,-(A7)
-0000179E                          1144              
-0000179E  41F9 000018EC           1145              LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
-000017A4  303C 0300               1146              MOVE.W #TCELDAS, D0    ; Número total de celdas
-000017A8                          1147  
-000017A8                          1148  .CLNCLDS:
-000017A8  4218                    1149              CLR.B (A0)+            ; Coloca 0 en cada celda
-000017AA  5340                    1150              SUBI.W #1, D0          ; Decrementa el contador de celdas
-000017AC  66FA                    1151              BNE .CLNCLDS           ; Repite hasta que esten vacías
-000017AE                          1152              
-000017AE                          1153              
-000017AE  3239 000018D6           1154              MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION INICIAL DE LA CABEZA             
-000017B4  3439 000018D8           1155              MOVE.W  CBZPOSY, D2
-000017BA  4EB8 1644               1156              JSR     CINDMTRZ
-000017BE  4EB8 167E               1157              JSR     CBZOCPD                 ; MARCAMOS LA POSICIÓN COMO CABEZA
-000017C2                          1158              
-000017C2  3239 000018E2           1159              MOVE.W  SGMPOSX, D1
-000017C8  3439 000018E4           1160              MOVE.W  SGMPOSY, D2             ; VEMOS LA POSICIÓN INICIAL DEL SEGMENTO
-000017CE  4EB8 1644               1161              JSR     CINDMTRZ
-000017D2  4EB8 16C0               1162              JSR     SGMOCPD                 ; MARCAMOS LA POSICIÓN DEL SEGMENTO
-000017D6                          1163              
-000017D6  3239 000018DE           1164              MOVE.W  COLPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA COLA
-000017DC  3439 000018E0           1165              MOVE.W  COLPOSY, D2
-000017E2  4EB8 1644               1166              JSR     CINDMTRZ
-000017E6  4EB8 16D6               1167              JSR     COLOCPD                 ; MARCAMOS LA POSICIÓN DE LA COLA
-000017EA                          1168              
-000017EA  3239 000018D2           1169              MOVE.W  MNZPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA MANZANA
-000017F0  3439 000018D4           1170              MOVE.W  MNZPOSY, D2
-000017F6  4EB8 1644               1171              JSR     CINDMTRZ
-000017FA  4EB8 16EC               1172              JSR     MNZOCPD                 ; MARCAMOS LA POSICIÓN DE LA MANZANA
-000017FE                          1173              
-000017FE                          1174              
-000017FE  4C9F 0107               1175              MOVEM.W (A7)+,D0-D2/A0
-00001802                          1176  
-00001802  4E75                    1177              RTS
-00001804                          1178  
-00001804                          1179  
-00001804                          1180  
-00001804                          1181  ;-----------------------------------------------------------------------------
-00001804                          1182  MTZPLOT
-00001804                          1183  ; DIBUJA LA MATRIZ CASILLA A CASILLA
-00001804                          1184  ; INPUT    : NONE
-00001804                          1185  ; OUTPUT   : NONE
-00001804                          1186  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
-00001804                          1187  ; ----------------------------------------------------------------------------
-00001804  48E7 F080               1188              MOVEM.L D0-D3/A0,-(A7)
-00001808                          1189  
-00001808  4240                    1190              CLR.W   D0
-0000180A  4243                    1191              CLR.W   D3
-0000180C  41F9 000018EC           1192              LEA     ESTDCLDS, A0            ; Apunta al inicio de ESTDCLDS
-00001812  303C 0300               1193              MOVE.W  #TCELDAS, D0            ; Número total de celdas
-00001816  363C 0000               1194              MOVE.W  #0,D3                   ; LO UTILIZAMOS PARA SABER EL INDICE EN EL QUE NOS ENCONTRAMOS
-0000181A  4241                    1195              CLR.W   D1
-0000181C  4242                    1196              CLR.W   D2
-0000181E                          1197              
-0000181E                          1198  
-0000181E                          1199  PLOTCLDS:
-0000181E  1218                    1200              MOVE.B  (A0)+,D1                ; MOVEMOS EL VALOR DE LA CELDA A D1
-00001820  B23C 0000               1201              CMP.B   #0,D1
-00001824  6700 0036               1202              BEQ     PLOTVAC                 ; SALTA A DIBUJAR POSICIÓN VACÍA
-00001828  B23C 0001               1203              CMP.B   #1,D1 
-0000182C  6700 0034               1204              BEQ     PLOTCOL                 ; SALTA A DIBUJAR COLA
-00001830  B23C 0002               1205              CMP.B   #2,D1
-00001834  6700 0032               1206              BEQ     PLOTSEG                 ; SALTA A DIBUJAR SEGMENTO
-00001838  B239 000018E6           1207              CMP.B   TRZPLOT,D1
-0000183E  6700 0016               1208              BEQ     PLOTCBZ                 ; SALTA A DIBUJAR CABEZA
-00001842  B23C 0004               1209              CMP.B   #4,D1                 
-00001846  6700 0026               1210              BEQ     PLOTAPPLE               ; SALTA A DIBUJAR MANZANA
-0000184A                          1211    
-0000184A                          1212  DONEPLOT            
-0000184A  5243                    1213              ADDQ    #1,D3                   ; AUMENTAMOS EL INDICE DE CELDA PARA LA SIGUIENTE
-0000184C  5340                    1214              SUBI.W  #1, D0                  ; Decrementa el contador de celdas
-0000184E  66CE                    1215              BNE     PLOTCLDS                ; Repite hasta que esten vacías
-00001850  4CDF 010F               1216              MOVEM.L (A7)+,D0-D3/A0
-00001854  4E75                    1217              RTS
-00001856                          1218  PLOTCBZ:
-00001856  4EB8 12F4               1219              JSR     HEADPLOT
-0000185A  60EE                    1220              BRA     DONEPLOT
-0000185C                          1221  
-0000185C                          1222  PLOTVAC:    
-0000185C  4EB8 175C               1223              JSR     FONPLOT
-00001860  60E8                    1224              BRA     DONEPLOT                ; DIBUJADO HECHO 
-00001862                          1225  
-00001862                          1226  PLOTCOL:   
-00001862  4EB8 142C               1227              JSR     TAILPLOT 
-00001866  60E2                    1228              BRA     DONEPLOT                ; DIBUJADO HECHO 
-00001868                          1229              
-00001868                          1230  PLOTSEG:    
-00001868  4EB8 13B8               1231              JSR     SEGPLOT
-0000186C  60DC                    1232              BRA     DONEPLOT                ; DIBUJADO HECHO    
-0000186E                          1233  
-0000186E                          1234  PLOTAPPLE:
-0000186E  4EB8 14DC               1235              JSR     APPLEPLOT
-00001872  60D6                    1236              BRA     DONEPLOT            
-00001874                          1237  
-00001874                          1238  
-00001874                          1239  
-00001874                          1240  
-00001874                          1241  
-00001874                          1242  
-00001874                          1243  
-00001874                          1244  
-00001874                          1245  
-00001874                          1246  
-00001874                          1247  
-00001874                          1248  
-00001874                          1249  
-00001874                          1250  
-00001874                          1251  -------------------- end include --------------------
-00001874                          1252  START:
-00001874                          1253                  
-00001874                          1254  ; --- INIZIALIZACIÓN ---------------------------------------------------------
-00001874                          1255  
-00001874  4EB8 1000               1256              JSR     SYSINIT
-00001878  4EB8 10A6               1257              JSR     UTLINIT
-0000187C  4EB8 1066               1258              JSR     KBDINIT
-00001880  4EB8 15CA               1259              JSR     MTZINIT
-00001884  4EB8 11DA               1260              JSR     HEADINIT                
-00001888  4EB8 1378               1261              JSR     SEGINIT
-0000188C  4EB8 13F8               1262              JSR     TAILINIT
-00001890  4EB8 158C               1263              JSR     SCOINIT
-00001894  4EB8 146C               1264              JSR     APPLEINIT
-00001898                          1265              
-00001898                          1266  
-00001898                          1267  .LOOP
-00001898                          1268  
-00001898                          1269  ; --- ACTUALIZAR -------------------------------------------------------------
-00001898                          1270  
-00001898                          1271  ; LEER DISPOSITIVOS DE ENTRADA
-00001898                          1272  
-00001898  4E41                    1273              TRAP    #1
-0000189A                          1274  
-0000189A                          1275  ; ACTUALIZAR LÓGICA DEL JUEGO
-0000189A                          1276              
-0000189A  4EB8 140A               1277              JSR     TAILUPD
-0000189E  4EB8 138A               1278              JSR     SEGUPD
-000018A2  4EB8 1208               1279              JSR     HEADUPD
-000018A6                          1280              ;JSR     APPLEUPD  
-000018A6  4EB8 179A               1281              JSR     MTZUPD
-000018AA                          1282              
-000018AA                          1283  ; --- SINCRONIZACIÓN ---------------------------------------------------------
-000018AA                          1284              ; THE FOLLOWING SYNC STRATEGY IS ****WRONG****
-000018AA  103C 0017               1285              MOVE.B  #23,D0
-000018AE  7201                    1286              MOVE.L  #1,D1
-000018B0  4E4F                    1287              TRAP    #15
-000018B2                          1288  
-000018B2                          1289  
-000018B2                          1290  ;---DIBUJAR-------------------------------------------------------------------
-000018B2  4EB8 12F4               1291               JSR    HEADPLOT
-000018B6  4EB8 13B8               1292               JSR    SEGPLOT
-000018BA  4EB8 142C               1293               JSR    TAILPLOT
-000018BE  4EB8 14DC               1294               JSR    APPLEPLOT
-000018C2  4EB8 1804               1295               JSR    MTZPLOT
-000018C6  4EB8 1596               1296               JSR    SCOPLOT
-000018CA                          1297              
-000018CA  4E40                    1298              TRAP    #0                      ; ACTUALIZA DOBLE BUFFER
-000018CC                          1299  
-000018CC                          1300  
-000018CC  60CA                    1301              BRA     .LOOP
-000018CE                          1302  
-000018CE  FFFF FFFF               1303              SIMHALT
-000018D2                          1304              
-000018D2                          1305              INCLUDE 'VARS.X68'
-000018D2                          1306  ; ----------------------------------------------------------------------------
-000018D2                          1307  ; VARIABLES DEL JUEGO
-000018D2                          1308  ; ----------------------------------------------------------------------------
-000018D2                          1309  
-000018D2                          1310  ; --- VARIABLES DE LA MANZANA ------------------------------------------------
-000018D2                          1311  
-000018D2                          1312  MNZPOSX     DS.W    1                       ; COORDENADA X DE LA MANZANA
-000018D4                          1313  MNZPOSY     DS.W    1                       ; COORDENADA Y DE LA MANZANA
-000018D6                          1314  
-000018D6                          1315  ; --- VARIABLES DE LA SERPIENTE ----------------------------------------------
-000018D6                          1316  
-000018D6                          1317  CBZPOSX     DS.W    1                       ; COORDENADA X CABEZA
-000018D8                          1318  CBZPOSY     DS.W    1                       ; COORDENADA Y CABEZA
-000018DA                          1319  CBZVELX     DS.W    1                       ; VELOCIDAD X CABEZA
-000018DC                          1320  CBZVELY     DS.W    1                       ; VELOCIDAD Y CABEZA
-000018DE                          1321  COLPOSX     DS.W    1                       ; COORDENADA X COLA
-000018E0                          1322  COLPOSY     DS.W    1                       ; COORDENADA Y COLA
-000018E2                          1323  SGMPOSX     DS.W    1                       ; COORDENADA X SEGMENTO
-000018E4                          1324  SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
-000018E6                          1325  TRZPLOT     DS.B    1                       ; NÚMERO DE TROZOS A DIBUJAR
-000018E7                          1326  
-000018E7                          1327  ; --- VARIABLES DEL MARCADOR -------------------------------------------------
-000018E7                          1328  
-000018E8                          1329  JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
-000018EA                          1330  
-000018EA                          1331  
-000018EA                          1332  
-000018EA                          1333  
-000018EA                          1334  -------------------- end include --------------------
-000018EA                          1335              INCLUDE 'LIB/UTLVARS.X68'
-000018EA                          1336  ; =============================================================================
-000018EA                          1337  ; UTILITY VARIABLES
-000018EA                          1338  ; =============================================================================
-000018EA                          1339  
-000018EA                          1340  UTLRNDIX    DS.B    1                       ; NEXT INDEX TO RANDOM NUMBER
-000018EC                          1341              DS.W    0
-000018EC                          1342  -------------------- end include --------------------
-000018EC                          1343              INCLUDE 'SYSVARS.X68'
-000018EC                          1344  ; ----------------------------------------------------------------------------
-000018EC                          1345  ; VARIABLES DEL SISTEMA
-000018EC                          1346  ; ----------------------------------------------------------------------------
-000018EC                          1347  
-000018EC                          1348  ; --- VARIABLES DE LA MATRIZ -------------------------------------------------
-000018EC                          1349  
-000018EC                          1350  ESTDCLDS    DS.B    TCELDAS                 ; ESTADO DE LAS CELDAS 0=VACÍO  1=COLA   2=SEGMENTO  TRZPLOT=CABEZA  4?=MANZANA    
-00001BEC                          1351  ESTDCBZ     DS.B    1                       ; 0= DERECHA, 1=ARRIBA, 2=IZQUIERDA, 3=ABAJO
-00001BED                          1352  
-00001BED                          1353  ; --- VARIABLES DE TECLADO ---------------------------------------------------
-00001BED                          1354  
-00001BED                          1355  KBDVAL      DS.B    1
-00001BEE                          1356  KBDEDGE     DS.B    1                       ; KEY EDGE
-00001BF0                          1357  LASTKEY     DS.L    1                       
-00001BF4                          1358  
-00001BF4                          1359  
-00001BF4                          1360  
-00001BF4                          1361  
-00001BF4                          1362  
-00001BF4                          1363  
-00001BF4                          1364  
-00001BF4                          1365  
-00001BF4                          1366  
-00001BF4                          1367  
-00001BF4                          1368  
-00001BF4                          1369  
-00001BF4                          1370  
-00001BF4                          1371  
-00001BF4                          1372  
-00001BF4                          1373  
-00001BF4                          1374  -------------------- end include --------------------
-00001BF4                          1375      
-00001BF4                          1376      
-00001BF4                          1377              END    START        
+00001066  4239 00001C05            169              CLR.B   (KBDVAL)
+0000106C  4239 00001C06            170              CLR.B   (KBDEDGE)
+00001072  4E75                     171              RTS
+00001074                           172  
+00001074                           173  ; ------------------------------------------------------------------------------
+00001074                           174  KBDUPD
+00001074                           175  ; UPDATE KEYBOARD INFO.  
+00001074                           176  ; 7 -> PAUSE
+00001074                           177  ; 6 -> FIRE 3
+00001074                           178  ; 5 -> FIRE 2
+00001074                           179  ; 4 -> FIRE 1
+00001074                           180  ; 3 -> DOWN
+00001074                           181  ; 2 -> RIGHT
+00001074                           182  ; 1 -> UP
+00001074                           183  ; 0 -> LEFT
+00001074                           184  ; INPUT    : NONE
+00001074                           185  ; OUTPUT   : NONE
+00001074                           186  ; MODIFIES : NONE
+00001074                           187  ; ------------------------------------------------------------------------------
+00001074                           188  
+00001074  48E7 F000                189              MOVEM.L D0-D3,-(A7)
+00001078                           190  
+00001078                           191              ; LEE ESTADO DEL TECLADO
+00001078  103C 0013                192              MOVE.B  #19,D0
+0000107C  223C 25262728            193              MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
+00001082  4E4F                     194              TRAP    #15                  ; Lee las teclas y guarda en D1
+00001084                           195  
+00001084                           196              ; CONVERT TO DESIRED FORMAT
+00001084  363C 0003                197              MOVE.W  #3,D3
+00001088  4282                     198              CLR.L   D2
+0000108A  E189                     199  .LOOP       LSL.L   #8,D1
+0000108C  E312                     200              ROXL.B  #1,D2
+0000108E  51CB FFFA                201              DBRA.W  D3,.LOOP
+00001092                           202  
+00001092                           203              ; PROCESA FLANCOS ASCENDENTES
+00001092  1039 00001C05            204              MOVE.B  (KBDVAL),D0         ; Estado anterior
+00001098  4600                     205              NOT.B   D0                   ; Invertir bits (teclas no presionadas)
+0000109A  C002                     206              AND.B   D2,D0                ; Detectar flancos ascendentes
+0000109C  13C0 00001C06            207              MOVE.B  D0,(KBDEDGE)         ; Almacena los flancos en KBDEDGE
+000010A2                           208              
+000010A2                           209              
+000010A2                           210              ; ACTUALIZA EL ESTADO DE LA DIRECCIÓN
+000010A2  1039 00001C06            211              MOVE.B  (KBDEDGE),D0         ; Lee teclas con flanco ascendente
+000010A8                           212  
+000010A8                           213              ; Detecta pulsaciones y actualiza ESTDCBZ
+000010A8  0800 0003                214              BTST    #3,D0                  ; Verifica si la tecla IZQUIERDA está pulsada
+000010AC  6700 000E                215              BEQ     CHKARR
+000010B0  33FC 0002 00001C04       216              MOVE.W  #2,(ESTDCBZ)           ; Actualiza a IZQUIERDA
+000010B8  6000 003A                217              BRA     CONTINU
+000010BC                           218  
+000010BC                           219  CHKARR:
+000010BC  0800 0002                220              BTST    #2,D0                  ; Verifica si la tecla ARRIBA está pulsada
+000010C0  6700 000E                221              BEQ     CHKDER
+000010C4  33FC 0001 00001C04       222              MOVE.W  #1,(ESTDCBZ)           ; Actualiza a ARRIBA
+000010CC  6000 0026                223              BRA     CONTINU
+000010D0                           224  
+000010D0                           225  CHKDER:
+000010D0  0800 0001                226              BTST    #1,D0                  ; Verifica si la tecla DERECHA está pulsada
+000010D4  6700 000E                227              BEQ     CHKDWN
+000010D8  33FC 0000 00001C04       228              MOVE.W  #0,(ESTDCBZ)           ; Actualiza a DERECHA
+000010E0  6000 0012                229              BRA     CONTINU
+000010E4                           230  
+000010E4                           231  CHKDWN:
+000010E4  0800 0000                232              BTST    #0,D0                  ; Verifica si la tecla ABAJO está pulsada
+000010E8  6700 000A                233              BEQ     CONTINU
+000010EC  33FC 0003 00001C04       234              MOVE.W  #3,(ESTDCBZ)           ; Actualiza a ABAJO
+000010F4                           235              
+000010F4                           236  
+000010F4                           237  CONTINU:
+000010F4                           238              ; STORE KBDEDGE
+000010F4  13C2 00001C05            239              MOVE.B  D2,(KBDVAL)
+000010FA  4CDF 000F                240              MOVEM.L (A7)+,D0-D3
+000010FE  4E73                     241              RTE
+00001100                           242  
+00001100                           243  
+00001100                           244  
+00001100                           245  ; CODIGO ANTERIOR
+00001100                           246  
+00001100                           247  
+00001100                           248  
+00001100                           249  
+00001100                           250  
+00001100                           251  
+00001100                           252  
+00001100                           253  
+00001100                           254  
+00001100                           255  
+00001100                           256  
+00001100                           257  
+00001100                           258  
+00001100                           259  
+00001100                           260  
+00001100                           261  
+00001100                           262  
+00001100                           263  
+00001100                           264  
+00001100                           265  
+00001100                           266  
+00001100                           267  
+00001100                           268  
+00001100                           269  
+00001100                           270  
+00001100                           271  
+00001100                           272  
+00001100                           273  
+00001100                           274  
+00001100                           275  
+00001100                           276  
+00001100                           277  
+00001100                           278  
+00001100                           279  
+00001100                           280  -------------------- end include --------------------
+00001100                           281              INCLUDE 'LIB/UTLCODE.X68'
+00001100                           282  ; =============================================================================
+00001100                           283  ; UTILITY CODE
+00001100                           284  ; =============================================================================
+00001100                           285  
+00001100                           286  ; -----------------------------------------------------------------------------
+00001100                           287  UTLINIT
+00001100                           288  ; INITIALIZES UTILITY CODE
+00001100                           289  ; INPUT    - NONE
+00001100                           290  ; OUTPUT   - NONE
+00001100                           291  ; MODIFIES - NONE
+00001100                           292  ; -----------------------------------------------------------------------------
+00001100  48E7 C000                293              MOVEM.L D0-D1,-(A7)
+00001104  103C 0008                294              MOVE.B  #8,D0
+00001108  4E4F                     295              TRAP    #15
+0000110A  13C1 00001902            296              MOVE.B  D1,(UTLRNDIX)
+00001110  4CDF 0003                297              MOVEM.L (A7)+,D0-D1
+00001114  4E75                     298              RTS
+00001116                           299  
+00001116                           300  ; -----------------------------------------------------------------------------
+00001116                           301  UTLRAND
+00001116                           302  ; PROVIDES A PSEUDO-RANDOM BYTE
+00001116                           303  ; INPUT    - NONE
+00001116                           304  ; OUTPUT   - D0.L RANDOM VALUE (ONLY BYTE)
+00001116                           305  ; MODIFIES - NONE (ASIDE OF OUTPUT)
+00001116                           306  ; -----------------------------------------------------------------------------
+00001116  2F08                     307              MOVE.L  A0,-(A7)
+00001118  41F9 00001134            308              LEA     .RANDVEC,A0
+0000111E  4280                     309              CLR.L   D0
+00001120  1039 00001902            310              MOVE.B  (UTLRNDIX),D0
+00001126  1030 0800                311              MOVE.B  (A0,D0.L),D0
+0000112A  5239 00001902            312              ADDQ.B  #1,(UTLRNDIX)
+00001130  205F                     313              MOVE.L  (A7)+,A0
+00001132  4E75                     314              RTS
+00001134                           315  
+00001134                           316  
+00001134= A2 EE 9A 0C F5 24 ...    317  .RANDVEC    DC.B    162, 238, 154, 12 , 245, 36 , 32 , 103
+0000113C= 2A A3 51 26 E0 AC ...    318              DC.B    42 , 163, 81 , 38 , 224, 172, 19 , 69
+00001144= 75 51 CA FD 33 EB ...    319              DC.B    117, 81 , 202, 253, 51 , 235, 108, 154
+0000114C= 60 CC E7 B8 9A EB ...    320              DC.B    96 , 204, 231, 184, 154, 235, 34 , 203
+00001154= 1D 76 B5 95 B0 89 ...    321              DC.B    29 , 118, 181, 149, 176, 137, 62 , 108
+0000115C= 39 15 48 C9 6E CA ...    322              DC.B    57 , 21 , 72 , 201, 110, 202, 159, 41
+00001164= 43 E7 E2 7C 37 25 ...    323              DC.B    67 , 231, 226, 124, 55 , 37 , 84 , 62
+0000116C= E9 94 CE E9 E4 52 ...    324              DC.B    233, 148, 206, 233, 228, 82 , 243, 78
+00001174= 37 6D 9A 84 A2 28 ...    325              DC.B    55 , 109, 154, 132, 162, 40 , 30 , 39
+0000117C= 19 E2 C6 77 80 D4 ...    326              DC.B    25 , 226, 198, 119, 128, 212, 232, 225
+00001184= 0A 5A 32 67 33 C2 ...    327              DC.B    10 , 90 , 50 , 103, 51 , 194, 222, 40
+0000118C= 59 80 DC 0E 57 FC ...    328              DC.B    89 , 128, 220, 14 , 87 , 252, 243, 252
+00001194= 8A AB BC F7 07 4D ...    329              DC.B    138, 171, 188, 247, 7  , 77 , 29 , 234
+0000119C= EF D5 77 6E 1E BB ...    330              DC.B    239, 213, 119, 110, 30 , 187, 131, 23
+000011A4= D6 E0 2A 8F BD 28 ...    331              DC.B    214, 224, 42 , 143, 189, 40 , 212, 130
+000011AC= 13 4F 66 EC 0A 64 ...    332              DC.B    19 , 79 , 102, 236, 10 , 100, 122, 188
+000011B4= 56 52 9A 16 9B 90 ...    333              DC.B    86 , 82 , 154, 22 , 155, 144, 7  , 199
+000011BC= 06 8A A4 F7 01 DA ...    334              DC.B    6  , 138, 164, 247, 1  , 218, 166, 82
+000011C4= F2 E7 77 28 B1 76 ...    335              DC.B    242, 231, 119, 40 , 177, 118, 220, 102
+000011CC= A4 42 E3 81 B1 67 ...    336              DC.B    164, 66 , 227, 129, 177, 103, 165, 108
+000011D4= BF CE FA 16 BF 38 ...    337              DC.B    191, 206, 250, 22 , 191, 56 , 30 , 161
+000011DC= D1 8B 50 0C 5F 49 ...    338              DC.B    209, 139, 80 , 12 , 95 , 73 , 168, 56
+000011E4= DE 4C 14 A2 40 DC ...    339              DC.B    222, 76 , 20 , 162, 64 , 220, 93 , 12
+000011EC= B6 9B 0A 38 5D AB ...    340              DC.B    182, 155, 10 , 56 , 93 , 171, 89 , 6
+000011F4= E2 1B DD 75 15 82 ...    341              DC.B    226, 27 , 221, 117, 21 , 130, 101, 18
+000011FC= 8A 26 51 30 9F 47 ...    342              DC.B    138, 38 , 81 , 48 , 159, 71 , 57 , 21
+00001204= 1E 8A BB 71 C6 6E ...    343              DC.B    30 , 138, 187, 113, 198, 110, 185, 152
+0000120C= 9F 47 E5 34 94 27 ...    344              DC.B    159, 71 , 229, 52 , 148, 39 , 77 , 6
+00001214= 7D 06 D6 BA 30 0F ...    345              DC.B    125, 6  , 214, 186, 48 , 15 , 212, 22
+0000121C= EC 7F 7E 03 CF 2D ...    346              DC.B    236, 127, 126, 3  , 207, 45 , 193, 2
+00001224= 94 5B 23 F2 8B CD ...    347              DC.B    148, 91 , 35 , 242, 139, 205, 248, 237
+0000122C= 74 33 EC B9 0F D5 ...    348              DC.B    116, 51 , 236, 185, 15 , 213, 221, 6
+0000122C= 74 33 EC B9 0F D5 ...    349  -------------------- end include --------------------
+00001234                           350              INCLUDE 'HEADSRP.X68'
+00001234                           351  
+00001234                           352  ; ------------------------------------------------------------------------------
+00001234                           353  HEADINIT
+00001234                           354  ; INICIALIZAR CABEZA.
+00001234                           355  ; INPUT    : NONE 
+00001234                           356  ; OUTPUT   : NONE
+00001234                           357  ; MODIFIES : NONE
+00001234                           358  ; ------------------------------------------------------------------------------
+00001234  33FC 0140 000018EE       359              MOVE.W  #PANWIDTH/2,(CBZPOSX)
+0000123C  33FC 00F0 000018F0       360              MOVE.W  #PANHEIGH/2,(CBZPOSY)
+00001244  4279 000018FE            361              CLR     (TRZPLOT)
+0000124A  13FC 0003 000018FE       362              MOVE.B  #3,(TRZPLOT)
+00001252  4279 00001C04            363              CLR.W   (ESTDCBZ)
+00001258  33FC 0000 00001C04       364              MOVE.W  #0,(ESTDCBZ)
+00001260  4E75                     365              RTS
+00001262                           366              
+00001262                           367  ; ------------------------------------------------------------------------------
+00001262                           368  HEADUPD
+00001262                           369  ; ACTUALIZAR CABEZA.
+00001262                           370  ; INPUT    : NONE 
+00001262                           371  ; OUTPUT   : NONE
+00001262                           372  ; MODIFIES : NONE
+00001262                           373  ; ------------------------------------------------------------------------------
+00001262                           374  
+00001262  48A7 E000                375              MOVEM.W D0-D2,-(A7)            ; Guardar registros
+00001266                           376  
+00001266                           377  
+00001266                           378              ; Marcar celda actual como vacía
+00001266  3239 000018EE            379              MOVE.W  (CBZPOSX),D1
+0000126C  3439 000018F0            380              MOVE.W  (CBZPOSY),D2
+00001272  4EB9 0000165C            381              JSR     CINDMTRZ
+00001278  4EB9 000016C2            382              JSR     MCLDVCIA               ; Marcar celda vacía
+0000127E                           383              
+0000127E                           384              
+0000127E                           385              ;CLR.W   D0
+0000127E  3039 00001C04            386              MOVE.W  (ESTDCBZ),D0
+00001284  B07C 0000                387              CMP.W   #0,D0
+00001288  6700 001E                388              BEQ     SIGDER
+0000128C  B07C 0001                389              CMP.W   #1,D0
+00001290  6700 0022                390              BEQ     SIGARR
+00001294  B07C 0002                391              CMP.W   #2,D0
+00001298  6700 0026                392              BEQ     SIGIZQ
+0000129C  B07C 0003                393              CMP.W   #3,D0
+000012A0  6700 002A                394              BEQ     SIGABA
+000012A4                           395  
+000012A4                           396  
+000012A4                           397  
+000012A4                           398              ; Si no hay dirección válida, salir
+000012A4  6000 0060                399              BRA     FIN
+000012A8                           400  
+000012A8                           401  SIGDER:
+000012A8  0679 0014 000018EE       402              ADD.W   #CBZVEL, (CBZPOSX)
+000012B0  6000 0022                403              BRA     UPDMTRZ
+000012B4                           404  
+000012B4                           405  SIGARR:
+000012B4  0479 0014 000018F0       406              SUB.W   #CBZVEL, (CBZPOSY)
+000012BC  6000 0016                407              BRA     UPDMTRZ
+000012C0                           408  
+000012C0                           409  SIGIZQ:
+000012C0  0479 0014 000018EE       410              SUB.W   #CBZVEL, (CBZPOSX)
+000012C8  6000 000A                411              BRA     UPDMTRZ
+000012CC                           412  
+000012CC                           413  SIGABA:
+000012CC  0679 0014 000018F0       414              ADD.W   #CBZVEL, (CBZPOSY)
+000012D4                           415  
+000012D4                           416  UPDMTRZ:
+000012D4                           417              ; Convertir posición nueva a índice
+000012D4  3239 000018EE            418              MOVE.W  (CBZPOSX),D1
+000012DA  3439 000018F0            419              MOVE.W  (CBZPOSY),D2
+000012E0  4EB9 0000165C            420              JSR     CINDMTRZ
+000012E6                           421  
+000012E6                           422              ; Verificar colisiones
+000012E6  4EB9 00001756            423              JSR     CHECKCLD
+000012EC  B07C 0000                424              CMP.W   #0, D0                 ; Si celda está libre
+000012F0  6700 0006                425              BEQ     MARKCLD
+000012F4  6000 000C                426              BRA     GAMEOVER              ; Colisión consigo misma
+000012F8                           427  
+000012F8                           428  MARKCLD:
+000012F8                           429              ; Marcar nueva posición como ocupada por la cabeza
+000012F8  4EB9 00001696            430              JSR     CBZOCPD
+000012FE  6000 0006                431              BRA     FIN
+00001302                           432  
+00001302                           433  GAMEOVER:
+00001302                           434              ; Implementar lógica de fin de juego
+00001302                           435              ; Por ahora, simplemente retornar
+00001302  6000 0002                436              BRA     FIN
+00001306                           437  
+00001306                           438  FIN:
+00001306  4C9F 0007                439              MOVEM.W (A7)+,D0-D2            ; Restaurar registros
+0000130A                           440  
+0000130A  4E75                     441      RTS
+0000130C                           442              
+0000130C                           443  ; ------------------------------------------------------------------------------
+0000130C                           444  HEADPLOT
+0000130C                           445  ; DIBUJAR CABEZA.
+0000130C                           446  ; INPUT    : NONE 
+0000130C                           447  ; OUTPUT   : NONE
+0000130C                           448  ; MODIFIES : NONE
+0000130C                           449  ; ------------------------------------------------------------------------------
+0000130C                           450                         
+0000130C  3F00                     451              MOVE.W  D0,-(A7)               ; GUARDAMOS D0
+0000130E  3003                     452              MOVE.W  D3,D0                  ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
+00001310  4EB9 0000171A            453              JSR     CNVICOOR
+00001316  2F01                     454              MOVE.L  D1,-(A7)
+00001318                           455              
+00001318                           456              ; SET COLOR DEL CONTORNO CABEZA
+00001318  103C 0050                457              MOVE.B  #80,D0
+0000131C  223C 0000FF00            458              MOVE.L  #CBZPCOL,D1
+00001322  4E4F                     459              TRAP    #15
+00001324                           460              
+00001324                           461              ; SET COLOR DEL RELLENO CABEZA
+00001324  103C 0051                462              MOVE.B  #81,D0
+00001328  223C 0000AA00            463              MOVE.L  #CBZFCOL,D1
+0000132E  4E4F                     464              TRAP    #15
+00001330                           465              
+00001330                           466              ; DIBUJAR CABEZA
+00001330  103C 0057                467              MOVE.B  #87,D0
+00001334  221F                     468              MOVE.L  (A7)+,D1
+00001336  3F03                     469              MOVE.W  D3,-(A7)
+00001338  3601                     470              MOVE.W  D1,D3
+0000133A  0643 0014                471              ADD.W   #CBZWIDTH,D3
+0000133E  3802                     472              MOVE.W  D2,D4
+00001340  0644 0014                473              ADD.W   #CBZHEIGH,D4
+00001344  4E4F                     474              TRAP    #15
+00001346                           475              
+00001346  2F01                     476              MOVE.L  D1,-(A7)
+00001348                           477              
+00001348                           478              ; SET COLOR DEL CONTORNO OJO
+00001348  103C 0050                479              MOVE.B  #80,D0
+0000134C  7200                     480              MOVE.L  #OJOPCOL,D1
+0000134E  4E4F                     481              TRAP    #15
+00001350                           482              
+00001350                           483              ; SET COLOR DEL RELLENO OJO
+00001350  103C 0051                484              MOVE.B  #81,D0
+00001354  223C 00FFFFFF            485              MOVE.L  #OJOFCOL,D1
+0000135A  4E4F                     486              TRAP    #15
+0000135C                           487              
+0000135C                           488              ; DIBUJAR OJO
+0000135C  103C 0058                489              MOVE.B  #88,D0
+00001360  221F                     490              MOVE.L  (A7)+,D1
+00001362  2F01                     491              MOVE.L  D1,-(A7)
+00001364  2F02                     492              MOVE.L  D2,-(A7)
+00001366  5A41                     493              ADD.W   #OJOWIDTH/2,D1            
+00001368  3601                     494              MOVE.W  D1,D3
+0000136A  0643 000A                495              ADD.W   #OJOWIDTH,D3
+0000136E  5A42                     496              ADD.W   #OJOHEIGH/2,D2
+00001370  3802                     497              MOVE.W  D2,D4
+00001372  0644 000A                498              ADD.W   #OJOHEIGH,D4
+00001376  4E4F                     499              TRAP    #15
+00001378                           500  
+00001378                           501              ; DEFINIR COORDENADAS IRIS
+00001378  241F                     502              MOVE.L  (A7)+,D2
+0000137A  221F                     503              MOVE.L  (A7)+,D1
+0000137C  0641 000A                504              ADD.W   #OJOWIDTH,D1
+00001380  0642 000A                505              ADD.W   #OJOHEIGH,D2
+00001384  103C 0052                506              MOVE.B  #82,D0
+00001388  4E4F                     507              TRAP    #15
+0000138A                           508              
+0000138A                           509              
+0000138A  361F                     510              MOVE.W  (A7)+,D3
+0000138C  301F                     511              MOVE.W  (A7)+,D0
+0000138E                           512  
+0000138E                           513  
+0000138E  4E75                     514              RTS
+00001390                           515  
+00001390                           516  
+00001390                           517  
+00001390                           518  
+00001390                           519  
+00001390                           520  
+00001390                           521  
+00001390                           522  
+00001390                           523  
+00001390                           524  
+00001390                           525  
+00001390                           526  
+00001390                           527  
+00001390                           528  
+00001390                           529  
+00001390                           530  
+00001390                           531  
+00001390                           532  
+00001390                           533  
+00001390                           534  
+00001390                           535  
+00001390                           536  
+00001390                           537  
+00001390                           538  
+00001390                           539  -------------------- end include --------------------
+00001390                           540              INCLUDE 'SEGSRP.X68'
+00001390                           541  
+00001390                           542  ; ------------------------------------------------------------------------------
+00001390                           543  SEGINIT
+00001390                           544  ; INICIALIZAR SEGMENTO.
+00001390                           545  ; INPUT    : NONE 
+00001390                           546  ; OUTPUT   : NONE
+00001390                           547  ; MODIFIES : NONE
+00001390                           548  ; ------------------------------------------------------------------------------
+00001390  33FC 012C 000018FA       549              MOVE.W  #(PANWIDTH/2)-CBZWIDTH,(SGMPOSX)
+00001398  33FC 00F0 000018FC       550              MOVE.W  #PANHEIGH/2,(SGMPOSY)
+000013A0  4E75                     551              RTS
+000013A2                           552              
+000013A2                           553  ; ------------------------------------------------------------------------------
+000013A2                           554  SEGUPD
+000013A2                           555  ; ACTUALIZAR SEGMENTO.
+000013A2                           556  ; INPUT    : NONE 
+000013A2                           557  ; OUTPUT   : NONE
+000013A2                           558  ; MODIFIES : NONE
+000013A2                           559  ; ------------------------------------------------------------------------------
+000013A2  48A7 6000                560              MOVEM.W D1-D2,-(A7)
+000013A6                           561              
+000013A6  3239 000018FA            562              MOVE.W  SGMPOSX,D1
+000013AC  33C1 000018F6            563              MOVE.W  D1,COLPOSX
+000013B2  3439 000018FC            564              MOVE.W  SGMPOSY,D2
+000013B8  33C2 000018F8            565              MOVE.W  D2,COLPOSY
+000013BE  4EB9 0000165C            566              JSR     CINDMTRZ
+000013C4  4EB9 000016AE            567              JSR     RSTCLD
+000013CA                           568              
+000013CA  4C9F 0006                569              MOVEM.W (A7)+,D1-D2            
+000013CE  4E75                     570              RTS
+000013D0                           571              
+000013D0                           572  ; ------------------------------------------------------------------------------
+000013D0                           573  SEGPLOT
+000013D0                           574  ; DIBUJAR SEGMENTO.
+000013D0                           575  ; INPUT    : NONE 
+000013D0                           576  ; OUTPUT   : NONE
+000013D0                           577  ; MODIFIES : NONE
+000013D0                           578  ; ------------------------------------------------------------------------------
+000013D0  3F00                     579              MOVE.W  D0,-(A7)
+000013D2  3003                     580              MOVE.W  D3,D0
+000013D4  4EB9 0000171A            581              JSR     CNVICOOR
+000013DA  2F01                     582              MOVE.L  D1,-(A7)
+000013DC                           583              
+000013DC  103C 0050                584              MOVE.B  #80,D0
+000013E0  223C 0000FF00            585              MOVE.L  #SGMPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DEL SEGMENTO
+000013E6  4E4F                     586              TRAP    #15
+000013E8                           587              
+000013E8  103C 0051                588              MOVE.B  #81,D0
+000013EC  223C 0000AA00            589              MOVE.L  #SGMFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DEL SEGMENTO
+000013F2  4E4F                     590              TRAP    #15
+000013F4                           591              
+000013F4  103C 0057                592              MOVE.B  #87,D0
+000013F8  221F                     593              MOVE.L  (A7)+,D1
+000013FA  3F03                     594              MOVE.W  D3,-(A7)
+000013FC  3601                     595              MOVE.W  D1,D3
+000013FE  0643 0014                596              ADD.W   #SIZECLDA,D3
+00001402  3802                     597              MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+00001404  0644 0014                598              ADD.W   #SIZECLDA,D4
+00001408  4E4F                     599              TRAP    #15                     
+0000140A                           600                          
+0000140A  361F                     601              MOVE.W  (A7)+,D3  
+0000140C  301F                     602              MOVE.W  (A7)+,D0
+0000140E                           603  
+0000140E                           604  
+0000140E  4E75                     605              RTS
+00001410                           606  
+00001410                           607  
+00001410                           608  
+00001410                           609  
+00001410                           610  
+00001410                           611  
+00001410                           612  
+00001410                           613  
+00001410                           614  
+00001410                           615  -------------------- end include --------------------
+00001410                           616              INCLUDE 'TAILSRP.X68'
+00001410                           617     
+00001410                           618  ; ------------------------------------------------------------------------------
+00001410                           619  TAILINIT
+00001410                           620  ; INICIALIZAR COLA.
+00001410                           621  ; INPUT    : NONE 
+00001410                           622  ; OUTPUT   : NONE
+00001410                           623  ; MODIFIES : NONE
+00001410                           624  ; ------------------------------------------------------------------------------
+00001410  33FC 011D 000018F6       625              MOVE.W  #(PANWIDTH/2)-CBZWIDTH-SGMWIDTH+(COLWIDTH/2),(COLPOSX)
+00001418  33FC 00F0 000018F8       626              MOVE.W  #(PANHEIGH/2),(COLPOSY)
+00001420  4E75                     627              RTS
+00001422                           628              
+00001422                           629              
+00001422                           630  ; ------------------------------------------------------------------------------
+00001422                           631  TAILUPD
+00001422                           632  ; ACTUALIZAR COLA.
+00001422                           633  ; INPUT    : NONE 
+00001422                           634  ; OUTPUT   : NONE
+00001422                           635  ; MODIFIES : NONE
+00001422                           636  ; ------------------------------------------------------------------------------
+00001422  48A7 6000                637              MOVEM.W D1-D2,-(A7)
+00001426                           638              
+00001426  3239 000018F6            639              MOVE.W  COLPOSX,D1
+0000142C  3439 000018F8            640              MOVE.W  COLPOSY,D2
+00001432  4EB9 0000165C            641              JSR     CINDMTRZ
+00001438  4EB9 000016AE            642              JSR     RSTCLD 
+0000143E                           643              
+0000143E  4C9F 0006                644              MOVEM.W (A7)+,D1-D2            
+00001442  4E75                     645              RTS
+00001444                           646              
+00001444                           647  ; ------------------------------------------------------------------------------
+00001444                           648  TAILPLOT
+00001444                           649  ; DIBUJAR COLA
+00001444                           650  ; INPUT    : NONE 
+00001444                           651  ; OUTPUT   : NONE
+00001444                           652  ; MODIFIES : NONE
+00001444                           653  ; ------------------------------------------------------------------------------
+00001444  3F00                     654              MOVE.W  D0,-(A7)
+00001446  3003                     655              MOVE.W  D3,D0
+00001448  4EB9 0000171A            656              JSR     CNVICOOR
+0000144E  2F01                     657              MOVE.L  D1,-(A7)
+00001450                           658              
+00001450  103C 0050                659              MOVE.B  #80,D0
+00001454  223C 0000FF00            660              MOVE.L  #COLPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA COLA
+0000145A  4E4F                     661              TRAP    #15
+0000145C                           662              
+0000145C  103C 0051                663              MOVE.B  #81,D0
+00001460  223C 0000AA00            664              MOVE.L  #COLFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA COLA
+00001466  4E4F                     665              TRAP    #15
+00001468                           666              
+00001468  103C 0057                667              MOVE.B  #87,D0
+0000146C  221F                     668              MOVE.L  (A7)+,D1
+0000146E  3F03                     669              MOVE.W  D3,-(A7)
+00001470  3601                     670              MOVE.W  D1,D3
+00001472  0643 0014                671              ADD.W   #SIZECLDA,D3
+00001476  3802                     672              MOVE.W  D2,D4                    
+00001478  0644 0014                673              ADD.W   #SIZECLDA,D4
+0000147C  4E4F                     674              TRAP    #15                    ; DIBUJAMOS EL CUADRADO 
+0000147E                           675                          
+0000147E  361F                     676              MOVE.W  (A7)+,D3  
+00001480  301F                     677              MOVE.W  (A7)+,D0
+00001482                           678  
+00001482  4E75                     679              RTS
+00001484                           680  
+00001484                           681  
+00001484                           682  
+00001484                           683  
+00001484                           684  
+00001484                           685  
+00001484                           686  
+00001484                           687  
+00001484                           688  -------------------- end include --------------------
+00001484                           689              INCLUDE 'APPLE.X68'
+00001484                           690     
+00001484                           691  ; ------------------------------------------------------------------------------
+00001484                           692  APPLEINIT
+00001484                           693  ; Inicializa la manzana en una posición aleatoria
+00001484                           694  ; INPUT    : NONE 
+00001484                           695  ; OUTPUT   : NONE
+00001484                           696  ; MODIFIES : MNZPOSX, MNZPOSY, ESTDCLDS
+00001484                           697  ; ------------------------------------------------------------------------------
+00001484                           698  
+00001484                           699              ; Llama a la función para generar la posición aleatoria
+00001484  4EB9 00001572            700              JSR     GENPOSMNZ
+0000148A                           701  
+0000148A                           702              ; Convierte las coordenadas de la manzana a índice de la matriz
+0000148A  4EB9 0000165C            703              JSR     CINDMTRZ
+00001490                           704  
+00001490                           705              ; Verifica si la celda está ocupada o libre
+00001490                           706  CHECK:
+00001490  4EB9 00001756            707              JSR     CHECKCLD
+00001496  6700 0010                708              BEQ     MARKMNZ                  ; Si está libre
+0000149A                           709  
+0000149A                           710              ; Si la celda está ocupada
+0000149A  4EB9 00001572            711              JSR     GENPOSMNZ                ; Genera una nueva posición
+000014A0  4EB9 0000165C            712              JSR     CINDMTRZ                 ; Convierte las nuevas coordenadas
+000014A6  60E8                     713              BRA     CHECK                    ; Repite la comprobación
+000014A8                           714  
+000014A8                           715  MARKMNZ:
+000014A8                           716              ; Marca la celda como ocupada con la manzana (estado 4)
+000014A8  4EB9 00001704            717              JSR     MNZOCPD
+000014AE                           718  
+000014AE                           719              ; Dibuja la manzana en la pantalla
+000014AE  4EB9 000014F4            720              JSR     APPLEPLOT
+000014B4                           721  
+000014B4  4E75                     722              RTS
+000014B6                           723              
+000014B6                           724              ;MOVE.W  #30,(MNZPOSX)   ;DE MOMENTO PONGO X E Y ELEGIDAS MANUALMENTE, EN TEORÍA DEBE SER ALEATORIO
+000014B6                           725              ;MOVE.W  #30,(MNZPOSY)
+000014B6                           726  
+000014B6                           727  ; ------------------------------------------------------------------------------
+000014B6                           728  APPLEUPD
+000014B6                           729  ; Actualiza la posición de la manzana cuando la serpiente come
+000014B6                           730  ; INPUT    : NONE 
+000014B6                           731  ; OUTPUT   : NONE
+000014B6                           732  ; MODIFIES : MNZPOSX, MNZPOSY, ESTDCLDS
+000014B6                           733  ; ------------------------------------------------------------------------------
+000014B6                           734  
+000014B6                           735              ; Convierte las coordenadas actuales de la manzana a índice de la matriz
+000014B6  4EB9 0000165C            736              JSR     CINDMTRZ
+000014BC                           737  
+000014BC                           738              ; Marca la celda anterior como vacía
+000014BC  4EB9 000016C2            739              JSR     MCLDVCIA
+000014C2                           740  
+000014C2                           741              ; Llama a la función para generar una nueva posición aleatoria
+000014C2  4EB9 00001572            742              JSR     GENPOSMNZ
+000014C8                           743  
+000014C8                           744              ; Convierte las nuevas coordenadas de la manzana a índice de la matriz
+000014C8  4EB9 0000165C            745              JSR     CINDMTRZ
+000014CE                           746  
+000014CE                           747  CHCKUPDT:
+000014CE  4EB9 00001756            748              JSR     CHECKCLD             ; Verifica si la celda está libre
+000014D4  6700 0010                749              BEQ     NEWMNZ               ; Si está libre
+000014D8                           750  
+000014D8                           751              ; Si la celda está ocupada
+000014D8  4EB9 00001572            752              JSR     GENPOSMNZ            ; Genera una nueva posición
+000014DE  4EB9 0000165C            753              JSR     CINDMTRZ             ; Convierte las nuevas coordenadas
+000014E4  60E8                     754              BRA     CHCKUPDT             ; Repite la comprobación
+000014E6                           755  
+000014E6                           756  NEWMNZ:
+000014E6                           757              ; Marca la celda como ocupada con la manzana (estado 4)
+000014E6  4EB9 00001704            758              JSR     MNZOCPD
+000014EC                           759  
+000014EC                           760              ; Dibuja la nueva manzana en la pantalla
+000014EC  4EB9 000014F4            761              JSR     APPLEPLOT
+000014F2                           762  
+000014F2  4E75                     763              RTS
+000014F4                           764              
+000014F4                           765  ; ------------------------------------------------------------------------------
+000014F4                           766  APPLEPLOT
+000014F4                           767  ; Dibuja la manzana
+000014F4                           768  ; INPUT    : NONE 
+000014F4                           769  ; OUTPUT   : NONE
+000014F4                           770  ; MODIFIES : NONE
+000014F4                           771  ; ------------------------------------------------------------------------------
+000014F4  3F00                     772              MOVE.W  D0,-(A7)
+000014F6  3003                     773              MOVE.W  D3,D0
+000014F8  4EB9 0000171A            774              JSR     CNVICOOR
+000014FE  2F01                     775              MOVE.L  D1,-(A7)                ; PRIMERO DEBEMOS DIBUJAR EL FONDO Y LUEGO LA MANZANA
+00001500                           776              
+00001500  103C 0050                777              MOVE.B  #80,D0
+00001504  223C 0090EE90            778              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
+0000150A  4E4F                     779              TRAP    #15
+0000150C                           780              
+0000150C  103C 0051                781              MOVE.B  #81,D0
+00001510  223C 0090EE90            782              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
+00001516  4E4F                     783              TRAP    #15
+00001518                           784              
+00001518  103C 0057                785              MOVE.B  #87,D0
+0000151C  221F                     786              MOVE.L  (A7)+,D1
+0000151E  3F03                     787              MOVE.W  D3,-(A7)
+00001520  3601                     788              MOVE.W  D1,D3
+00001522  0643 0014                789              ADD.W   #SIZECLDA,D3
+00001526  3802                     790              MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+00001528  0644 0014                791              ADD.W   #SIZECLDA,D4
+0000152C  4E4F                     792              TRAP    #15                     
+0000152E                           793                          
+0000152E  361F                     794              MOVE.W  (A7)+,D3  
+00001530  301F                     795              MOVE.W  (A7)+,D0
+00001532                           796  
+00001532  3F00                     797              MOVE.W  D0,-(A7)
+00001534  3003                     798              MOVE.W  D3,D0
+00001536  4EB9 0000171A            799              JSR     CNVICOOR
+0000153C  2F01                     800              MOVE.L  D1,-(A7)
+0000153E                           801              
+0000153E  103C 0050                802              MOVE.B  #80,D0
+00001542  223C 0000AAFF            803              MOVE.L  #MNZPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA MANZANA
+00001548  4E4F                     804              TRAP    #15
+0000154A                           805              
+0000154A  103C 0051                806              MOVE.B  #81,D0
+0000154E  223C 000000FF            807              MOVE.L  #MNZFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA MANZANA
+00001554  4E4F                     808              TRAP    #15
+00001556                           809              
+00001556  103C 0058                810              MOVE.B  #88,D0
+0000155A  221F                     811              MOVE.L  (A7)+,D1
+0000155C  3F03                     812              MOVE.W  D3,-(A7)
+0000155E  3601                     813              MOVE.W  D1,D3
+00001560  0643 0014                814              ADD.W   #SIZECLDA,D3
+00001564  3802                     815              MOVE.W  D2,D4                    ; DIBUJAMOS EL CIRCULO
+00001566  0644 0014                816              ADD.W   #SIZECLDA,D4
+0000156A  4E4F                     817              TRAP    #15                     
+0000156C                           818                          
+0000156C  361F                     819              MOVE.W  (A7)+,D3  
+0000156E  301F                     820              MOVE.W  (A7)+,D0
+00001570                           821  
+00001570                           822  
+00001570  4E75                     823              RTS
+00001572                           824  ; ----------------------------------------------------------------------------
+00001572                           825  GENPOSMNZ
+00001572                           826  ; Genera una posición aleatoria para la manzana
+00001572                           827  ; INPUT: NONE
+00001572                           828  ; OUTPUT:
+00001572                           829  ; MODIFIES: MNZPOSX, MNZPOSY
+00001572                           830  ; ----------------------------------------------------------------------------
+00001572                           831  
+00001572  48E7 8000                832              MOVEM.L D0,-(A7)
+00001576                           833  
+00001576                           834              ; Genera la coordenada X aleatoria
+00001576  4EB8 1116                835              JSR     UTLRAND
+0000157A  0240 001F                836              ANDI.W  #NUMCLMNS-1, D0       ; Asegura que esté en [0, NUMCLMNS-1]
+0000157E  C0FC 0014                837              MULU    #SIZECLDA, D0         ; Escala al tamaño real de las celdas
+00001582  3200                     838              MOVE.W  D0,D1
+00001584  33C0 000018EA            839              MOVE.W  D0, MNZPOSX           ; Guarda la coordenada X generada
+0000158A                           840              
+0000158A                           841              ; Generar coordenada Y aleatoria
+0000158A  4EB8 1116                842              JSR     UTLRAND
+0000158E  0240 0017                843              ANDI.W  #NUMFILAS-1, D0       ; Asegura que esté en el rango [0, NUMFILAS-1]
+00001592  C0FC 0014                844              MULU    #SIZECLDA, D0         ; Escala al tamaño real de las celdas
+00001596  3400                     845              MOVE.W  D0,D2
+00001598  33C0 000018EC            846              MOVE.W  D0, MNZPOSY           ; Guarda la coordenada Y generada
+0000159E                           847              
+0000159E  4CDF 0001                848              MOVEM.L (A7)+,D0
+000015A2  4E75                     849              RTS 
+000015A4                           850  
+000015A4                           851  
+000015A4                           852  
+000015A4                           853  -------------------- end include --------------------
+000015A4                           854              INCLUDE 'SCORE.X68'
+000015A4                           855     
+000015A4                           856  ; ------------------------------------------------------------------------------
+000015A4                           857  SCOINIT
+000015A4                           858  ; INICIALIZAR MARCADOR.
+000015A4                           859  ; INPUT    : NONE 
+000015A4                           860  ; OUTPUT   : NONE
+000015A4                           861  ; MODIFIES : NONE
+000015A4                           862  ; ------------------------------------------------------------------------------
+000015A4  4279 00001900            863              CLR.W   (JGOPNTS)
+000015AA  4E75                     864              RTS
+000015AC                           865              
+000015AC                           866  ; ------------------------------------------------------------------------------
+000015AC                           867  SCOUPD
+000015AC                           868  ; ACTUALIZAR MARCADOR.
+000015AC                           869  ; INPUT    : NONE 
+000015AC                           870  ; OUTPUT   : NONE
+000015AC                           871  ; MODIFIES : NONE
+000015AC                           872  ; ------------------------------------------------------------------------------
+000015AC  4E75                     873              RTS
+000015AE                           874              
+000015AE                           875  ; ------------------------------------------------------------------------------
+000015AE                           876  SCOPLOT
+000015AE                           877  ; DIBUJAR MARCADOR.
+000015AE                           878  ; INPUT    : NONE 
+000015AE                           879  ; OUTPUT   : NONE
+000015AE                           880  ; MODIFIES : NONE
+000015AE                           881  ; ------------------------------------------------------------------------------
+000015AE  48E7 C040                882             MOVEM.L  D0-D1/A1,-(A7)
+000015B2                           883             ; SET COLOR DE FONDO
+000015B2  103C 0051                884             MOVE.B   #81,D0
+000015B6  223C 0090EE90            885             MOVE.L   #COLFND,D1
+000015BC  4E4F                     886             TRAP     #15
+000015BE                           887             
+000015BE                           888             
+000015BE                           889             
+000015BE                           890             ; DIBUJAR LINEA DE PUNTUACIÓN
+000015BE  43F9 000015D8            891              LEA     .TXT1,A1
+000015C4  4281                     892              CLR.L   D1
+000015C6  3239 00001900            893              MOVE.W  (JGOPNTS),D1
+000015CC  103C 0011                894              MOVE.B  #17,D0
+000015D0  4E4F                     895              TRAP    #15
+000015D2                           896              
+000015D2  4CDF 0203                897              MOVEM.L (A7)+,D0-D1/A1
+000015D6  4E75                     898              RTS
+000015D8                           899  
+000015D8                           900  
+000015D8= 50 55 4E 54 4F 53 ...    901  .TXT1       DC.B    'PUNTOS : ',0
+000015E2                           902  
+000015E2                           903  
+000015E2                           904  -------------------- end include --------------------
+000015E2                           905              INCLUDE 'MATRIZ.X68'
+000015E2                           906  ; ----------------------------------------------------------------------------
+000015E2                           907  ; MATRIZ
+000015E2                           908  ; ----------------------------------------------------------------------------
+000015E2                           909  
+000015E2                           910  ;-----------------------------------------------------------------------------
+000015E2                           911  MTZINIT
+000015E2                           912  ; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
+000015E2                           913  ; INPUT    : NONE
+000015E2                           914  ; OUTPUT   : NONE
+000015E2                           915  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+000015E2                           916  ; ----------------------------------------------------------------------------
+000015E2                           917              
+000015E2  48A7 E080                918              MOVEM.W D0-D2/A0,-(A7)
+000015E6                           919              
+000015E6  41F9 00001904            920              LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
+000015EC  303C 0300                921              MOVE.W #TCELDAS, D0    ; Número total de celdas
+000015F0                           922  
+000015F0                           923  CLNCLDS:
+000015F0  4218                     924              CLR.B (A0)+            ; Coloca 0 en cada celda
+000015F2  5340                     925              SUBI.W #1, D0          ; Decrementa el contador de celdas
+000015F4  66FA                     926              BNE CLNCLDS            ; Repite hasta que esten vacías
+000015F6                           927              
+000015F6                           928              
+000015F6  3239 000018EE            929              MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION INICIAL DE LA CABEZA             
+000015FC  3439 000018F0            930              MOVE.W  CBZPOSY, D2
+00001602  4EB9 0000165C            931              JSR     CINDMTRZ
+00001608  4EB9 00001696            932              JSR     CBZOCPD                 ; MARCAMOS LA POSICIÓN COMO CABEZA
+0000160E                           933              
+0000160E  3239 000018FA            934              MOVE.W  SGMPOSX, D1
+00001614  3439 000018FC            935              MOVE.W  SGMPOSY, D2             ; VEMOS LA POSICIÓN INICIAL DEL SEGMENTO
+0000161A  4EB9 0000165C            936              JSR     CINDMTRZ
+00001620  4EB9 000016D8            937              JSR     SGMOCPD                 ; MARCAMOS LA POSICIÓN DEL SEGMENTO
+00001626                           938              
+00001626  3239 000018F6            939              MOVE.W  COLPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA COLA
+0000162C  3439 000018F8            940              MOVE.W  COLPOSY, D2
+00001632  4EB9 0000165C            941              JSR     CINDMTRZ
+00001638  4EB9 000016EE            942              JSR     COLOCPD                 ; MARCAMOS LA POSICIÓN DE LA COLA
+0000163E                           943              
+0000163E  3239 000018EA            944              MOVE.W  MNZPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA MANZANA
+00001644  3439 000018EC            945              MOVE.W  MNZPOSY, D2
+0000164A  4EB9 0000165C            946              JSR     CINDMTRZ
+00001650  4EB9 00001704            947              JSR     MNZOCPD                 ; MARCAMOS LA POSICIÓN DE LA MANZANA
+00001656                           948              
+00001656                           949              
+00001656  4C9F 0107                950              MOVEM.W (A7)+,D0-D2/A0
+0000165A                           951  
+0000165A  4E75                     952              RTS
+0000165C                           953  
+0000165C                           954  ;-----------------------------------------------------------------------------
+0000165C                           955  CINDMTRZ
+0000165C                           956  ; CALCULA EL ÍNDICE DE UNA CELDA
+0000165C                           957  ; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
+0000165C                           958  ; OUTPUT   : D0 = índice de la celda en ESTDCLDS
+0000165C                           959  ; MODIFIES : NONE
+0000165C                           960  ; ----------------------------------------------------------------------------
+0000165C                           961  
+0000165C  48A7 7000                962               MOVEM.W D1-D3,-(A7)     ; Guarda los registros D1-D3 en la pila
+00001660                           963  
+00001660                           964              ; Divide X por SIZECLDA
+00001660  3601                     965              MOVE.W  D1, D3          ; Copia X a D3
+00001662  4241                     966              CLR.W   D1              ; Inicializa el cociente de X
+00001664                           967  
+00001664  B67C 0014                968  DIVX:       CMP.W   #SIZECLDA, D3    ; Compara D3 con SIZECLDA
+00001668  6D00 000A                969              BLT     ENDDIVX         ; Si D3 < SIZECLDA, salta a ENDDIVX
+0000166C  0443 0014                970              SUB.W   #SIZECLDA, D3   ; Resta SIZECLDA de D3
+00001670  5241                     971              ADDQ.W  #1, D1          ; Incrementa el cociente de X
+00001672  60F0                     972              BRA     DIVX            ; Repite el bucle
+00001674                           973  
+00001674                           974  ENDDIVX:
+00001674                           975  
+00001674                           976              ; Divide Y por SIZECLDA
+00001674  3602                     977              MOVE.W  D2, D3          ; Copia Y a D3
+00001676  4242                     978              CLR.W   D2              ; Inicializa el cociente de Y
+00001678                           979  
+00001678  B67C 0014                980  DIVY:       CMP.W   #SIZECLDA, D3    ; Compara D3 con SIZECLDA
+0000167C  6D00 000A                981              BLT     ENDDIVY         ; Si D3 < SIZECLDA, salta a ENDDIVY
+00001680  0443 0014                982              SUB.W   #SIZECLDA, D3   ; Resta SIZECLDA de D3
+00001684  5242                     983              ADDQ.W  #1, D2          ; Incrementa el cociente de Y
+00001686  60F0                     984              BRA     DIVY            ; Repite el bucle
+00001688                           985  
+00001688                           986  ENDDIVY:
+00001688                           987  
+00001688                           988              ; Calcula el índice
+00001688  4240                     989              CLR.W   D0
+0000168A  3002                     990              MOVE.W  D2, D0          ; D0 = Y_CELDA
+0000168C  EB40                     991              ASL.W   #5, D0          ; D0 = Y_CELDA * NUMCLMNS (32 = 2^5)
+0000168E  D041                     992              ADD.W   D1, D0          ; D0 = Y_CELDA * NUMCLMNS + X_CELDA
+00001690                           993  
+00001690  4C9F 000E                994              MOVEM.W (A7)+,D1-D3     ; Restaura los registros D1-D3 desde la pila
+00001694                           995  
+00001694  4E75                     996              RTS  
+00001696                           997              
+00001696                           998  ;-----------------------------------------------------------------------------
+00001696                           999  CBZOCPD
+00001696                          1000  ; MARCA UNA CELDA COMO OCUPADA POR LA CABEZA
+00001696                          1001  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+00001696                          1002  ; OUTPUT   : NONE
+00001696                          1003  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+00001696                          1004  ; ----------------------------------------------------------------------------
+00001696                          1005  
+00001696  48A7 0080               1006              MOVEM.W A0,-(A7)
+0000169A                          1007  
+0000169A  41F9 00001904           1008              LEA     ESTDCLDS, A0                ; Dirección de la matriz en A0
+000016A0  11B9 000018FE 0000      1009              MOVE.B  TRZPLOT, (A0, D0.W)           ; Marca la celda como ocupada
+000016A8                          1010              
+000016A8  4C9F 0100               1011              MOVEM.W (A7)+,A0
+000016AC                          1012              
+000016AC  4E75                    1013              RTS
+000016AE                          1014              
+000016AE                          1015              
+000016AE                          1016              
+000016AE                          1017  ;-----------------------------------------------------------------------------
+000016AE                          1018  RSTCLD
+000016AE                          1019  ; RESTA 1 A LA CELDA PASADA POR PARÁMETRO
+000016AE                          1020  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+000016AE                          1021  ; OUTPUT   : NONE
+000016AE                          1022  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+000016AE                          1023  ; ----------------------------------------------------------------------------
+000016AE                          1024  
+000016AE  48A7 0080               1025              MOVEM.W A0,-(A7)
+000016B2                          1026  
+000016B2  41F9 00001904           1027              LEA     ESTDCLDS, A0              ; Dirección de la matriz en A0
+000016B8  5330 0000               1028              SUBQ.B   #1, (A0, D0.W)           ; Marca la celda como ocupada
+000016BC                          1029              
+000016BC  4C9F 0100               1030              MOVEM.W (A7)+,A0
+000016C0                          1031              
+000016C0  4E75                    1032              RTS
+000016C2                          1033             
+000016C2                          1034  ;-----------------------------------------------------------------------------
+000016C2                          1035  MCLDVCIA
+000016C2                          1036  ; MARCA UNA CELDA COMO VACÍA
+000016C2                          1037  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+000016C2                          1038  ; OUTPUT   : NONE
+000016C2                          1039  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+000016C2                          1040  ; ----------------------------------------------------------------------------
+000016C2                          1041  
+000016C2  48A7 0080               1042              MOVEM.W A0,-(A7)
+000016C6                          1043  
+000016C6  41F9 00001904           1044              LEA ESTDCLDS, A0                ; Direccion de la matriz en A0
+000016CC  11BC 0000 0000          1045              MOVE.B #0, (A0, D0.W)           ; Marca la celda como vacía
+000016D2                          1046              
+000016D2  4C9F 0100               1047              MOVEM.W (A7)+,A0
+000016D6                          1048              
+000016D6  4E75                    1049              RTS
+000016D8                          1050  
+000016D8                          1051  ;-----------------------------------------------------------------------------
+000016D8                          1052  SGMOCPD
+000016D8                          1053  ; MARCA UNA CELDA COMO OCUPADA POR EL SEGMENTO
+000016D8                          1054  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+000016D8                          1055  ; OUTPUT   : NONE
+000016D8                          1056  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+000016D8                          1057  ; ----------------------------------------------------------------------------
+000016D8                          1058  
+000016D8  48A7 0080               1059              MOVEM.W A0,-(A7)
+000016DC                          1060  
+000016DC  41F9 00001904           1061              LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
+000016E2  11BC 0002 0000          1062              MOVE.B #2, (A0, D0.W)           ; Marca la celda como ocupada
+000016E8                          1063              
+000016E8  4C9F 0100               1064              MOVEM.W (A7)+,A0
+000016EC                          1065              
+000016EC  4E75                    1066              RTS
+000016EE                          1067              
+000016EE                          1068  ;-----------------------------------------------------------------------------
+000016EE                          1069  COLOCPD
+000016EE                          1070  ; MARCA UNA CELDA COMO OCUPADA POR LA COLA
+000016EE                          1071  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+000016EE                          1072  ; OUTPUT   : NONE
+000016EE                          1073  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+000016EE                          1074  ; ----------------------------------------------------------------------------
+000016EE                          1075  
+000016EE  48A7 0080               1076              MOVEM.W A0,-(A7)
+000016F2                          1077  
+000016F2  41F9 00001904           1078              LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
+000016F8  11BC 0001 0000          1079              MOVE.B #1, (A0, D0.W)           ; Marca la celda como ocupada
+000016FE                          1080              
+000016FE  4C9F 0100               1081              MOVEM.W (A7)+,A0
+00001702                          1082              
+00001702  4E75                    1083              RTS
+00001704                          1084  
+00001704                          1085  
+00001704                          1086  ;-----------------------------------------------------------------------------
+00001704                          1087  MNZOCPD
+00001704                          1088  ; MARCA UNA CELDA COMO OCUPADA POR LA MANZANA
+00001704                          1089  ; INPUT    : D0 = índice de la celda en ESTDCLDS
+00001704                          1090  ; OUTPUT   : NONE
+00001704                          1091  ; MODIFIES : Estado de la celda en la variable ESTDCLDS
+00001704                          1092  ; ----------------------------------------------------------------------------
+00001704                          1093  
+00001704  48A7 0080               1094              MOVEM.W A0,-(A7)
+00001708                          1095  
+00001708  41F9 00001904           1096              LEA ESTDCLDS, A0                ; Dirección de la matriz en A0
+0000170E  11BC 0004 0000          1097              MOVE.B #4, (A0, D0.W)           ; Marca la celda como ocupada
+00001714                          1098              
+00001714  4C9F 0100               1099              MOVEM.W (A7)+,A0
+00001718                          1100              
+00001718  4E75                    1101              RTS
+0000171A                          1102  
+0000171A                          1103              
+0000171A                          1104  ;-----------------------------------------------------------------------------
+0000171A                          1105  CNVICOOR
+0000171A                          1106  ; Convierte un índice de celda a coordenadas de pantalla (X, Y)
+0000171A                          1107  ; INPUT    : D0 = índice de la celda en ESTADO_CELDAS
+0000171A                          1108  ; OUTPUT   : D1 = coordenada X, D2 = coordenada Y
+0000171A                          1109  ; MODIFIES : NONE
+0000171A                          1110  ; ----------------------------------------------------------------------------
+0000171A                          1111  
+0000171A  48A7 9800               1112              MOVEM.W D0/D3-D4,-(A7)
+0000171E                          1113  
+0000171E  3400                    1114              MOVE.W  D0,D2         ; Copia índice a D2 para calcular la fila
+00001720  EA4A                    1115              LSR.W   #5,D2         ; D2 = índice / NUM_COLUMNAS (32 = 2^5)
+00001722  3200                    1116              MOVE.W  D0,D1         ; Copia índice a D1 para calcular la columna
+00001724  C27C 001F               1117              AND.W   #$1F,D1       ; D1 = índice % NUM_COLUMNAS (31 = 0x1F) (CREO)
+00001728                          1118  
+00001728                          1119              ; Multiplica por TAMAÑO_CELDA = 10
+00001728  363C 0014               1120              MOVE.W  #SIZECLDA, D3
+0000172C  3801                    1121              MOVE.W  D1,D4         ; Copia D1 para multiplicar por 10
+0000172E  4241                    1122              CLR.W   D1            ; Inicializa resultado
+00001730                          1123  
+00001730                          1124  
+00001730                          1125  MULTLOOPX: 
+00001730  B87C 0000               1126              CMP.W   #0, D4        ; ¿Quedan iteraciones?
+00001734  6700 0008               1127              BEQ     ENDMULTX
+00001738  D243                    1128              ADD.W   D3,D1         ; Suma TAMANO_CELDA (10) repetidamente
+0000173A                          1129  
+0000173A  5344                    1130              SUBQ.W  #1,D4         ; Cuenta las iteraciones restantes
+0000173C  60F2                    1131              BRA     MULTLOOPX     ; Repite mientras no sea 0
+0000173E                          1132  ENDMULTX: 
+0000173E  3802                    1133              MOVE.W  D2,D4         ; Copia D2 para multiplicar por 10
+00001740  4242                    1134              CLR.W   D2            ; Inicializa resultado
+00001742                          1135  
+00001742                          1136  MULTLOOPY: 
+00001742  B87C 0000               1137              CMP.W   #0, D4        ; ¿Quedan iteraciones?
+00001746  6700 0008               1138              BEQ     ENDMULTY
+0000174A  D443                    1139              ADD.W   D3,D2         ; Suma TAMANO_CELDA (10) repetidamente
+0000174C  5344                    1140              SUBQ.W  #1,D4         ; Cuenta las iteraciones restantes
+0000174E  60F2                    1141              BRA     MULTLOOPY     ; Repite mientras no sea 0
+00001750                          1142  ENDMULTY:
+00001750  4C9F 0019               1143              MOVEM.W (A7)+,D0/D3-D4
+00001754                          1144  
+00001754  4E75                    1145              RTS
+00001756                          1146  
+00001756                          1147  ; ----------------------------------------------------------------------------
+00001756                          1148  CHECKCLD
+00001756                          1149  ; INPUT: D0 = índice de la celda
+00001756                          1150  ; OUTPUT: D0 = 0 si está vacía, 1 si está ocupada
+00001756                          1151  ; MODIFIES: Ninguno
+00001756                          1152  ; ----------------------------------------------------------------------------
+00001756                          1153  
+00001756  41F9 00001904           1154              LEA     ESTDCLDS, A0    ; Carga la dirección de la matriz ESTDCLDS
+0000175C  1230 0000               1155              MOVE.B  (A0, D0.W),D1   ; Carga el estado de la celda en D1
+00001760  B23C 0000               1156              CMP.B   #0, D1          ; Compara si está vacía (0)
+00001764  6700 0008               1157              BEQ     CLDFREE         ; Si está vacía
+00001768  303C 0001               1158              MOVE.W  #1, D0          ; Si está ocupada, devuelve 1 (ocupada)
+0000176C                          1159  
+0000176C  4E75                    1160              RTS
+0000176E                          1161  
+0000176E                          1162  CLDFREE:
+0000176E  303C 0000               1163              MOVE.W  #0, D0                 ; Devuelve 0 (libre)
+00001772                          1164  
+00001772  4E75                    1165              RTS
+00001774                          1166  
+00001774                          1167  
+00001774                          1168  ;-----------------------------------------------------------------------------
+00001774                          1169  FONPLOT
+00001774                          1170  ; DIBUJADO DEL FONDO
+00001774                          1171  ; INPUT    : NONE
+00001774                          1172  ; OUTPUT   : NONE
+00001774                          1173  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+00001774                          1174  ; ----------------------------------------------------------------------------
+00001774                          1175  
+00001774  3F00                    1176              MOVE.W  D0,-(A7)
+00001776  3003                    1177              MOVE.W  D3,D0
+00001778  4EB8 171A               1178              JSR     CNVICOOR
+0000177C  2F01                    1179              MOVE.L  D1,-(A7)
+0000177E                          1180              
+0000177E  103C 0050               1181              MOVE.B  #80,D0
+00001782  223C 0090EE90           1182              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
+00001788  4E4F                    1183              TRAP    #15
+0000178A                          1184              
+0000178A  103C 0051               1185              MOVE.B  #81,D0
+0000178E  223C 0090EE90           1186              MOVE.L  #COLFND,D1            ; PONEMOS EL COLOR DE DIBUJADO A COLORFONDO
+00001794  4E4F                    1187              TRAP    #15
+00001796                          1188              
+00001796  103C 0057               1189              MOVE.B  #87,D0
+0000179A  221F                    1190              MOVE.L  (A7)+,D1
+0000179C  3F03                    1191              MOVE.W  D3,-(A7)
+0000179E  3601                    1192              MOVE.W  D1,D3
+000017A0  0643 0014               1193              ADD.W   #SIZECLDA,D3
+000017A4  3802                    1194              MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+000017A6  0644 0014               1195              ADD.W   #SIZECLDA,D4
+000017AA  4E4F                    1196              TRAP    #15                     
+000017AC                          1197                          
+000017AC  361F                    1198              MOVE.W  (A7)+,D3  
+000017AE  301F                    1199              MOVE.W  (A7)+,D0
+000017B0  4E75                    1200              RTS         
+000017B2                          1201  
+000017B2                          1202  
+000017B2                          1203  
+000017B2                          1204  ;-----------------------------------------------------------------------------
+000017B2                          1205  MTZUPD
+000017B2                          1206  ; ACTUALIZA LA MATRIZ CASILLA A CASILLA
+000017B2                          1207  ; INPUT    : NONE
+000017B2                          1208  ; OUTPUT   : NONE
+000017B2                          1209  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+000017B2                          1210  ; ----------------------------------------------------------------------------
+000017B2                          1211  
+000017B2                          1212  
+000017B2  48A7 E080               1213              MOVEM.W D0-D2/A0,-(A7)
+000017B6                          1214              
+000017B6  41F9 00001904           1215              LEA ESTDCLDS, A0       ; Apunta al inicio de ESTDCLDS
+000017BC  303C 0300               1216              MOVE.W #TCELDAS, D0    ; Número total de celdas
+000017C0                          1217  
+000017C0                          1218  .CLNCLDS:
+000017C0  4218                    1219              CLR.B (A0)+            ; Coloca 0 en cada celda
+000017C2  5340                    1220              SUBI.W #1, D0          ; Decrementa el contador de celdas
+000017C4  66FA                    1221              BNE .CLNCLDS           ; Repite hasta que esten vacías
+000017C6                          1222              
+000017C6                          1223              
+000017C6  3239 000018EE           1224              MOVE.W  CBZPOSX, D1             ; VEMOS LA POSICION INICIAL DE LA CABEZA             
+000017CC  3439 000018F0           1225              MOVE.W  CBZPOSY, D2
+000017D2  4EB8 165C               1226              JSR     CINDMTRZ
+000017D6  4EB8 1696               1227              JSR     CBZOCPD                 ; MARCAMOS LA POSICIÓN COMO CABEZA
+000017DA                          1228              
+000017DA  3239 000018FA           1229              MOVE.W  SGMPOSX, D1
+000017E0  3439 000018FC           1230              MOVE.W  SGMPOSY, D2             ; VEMOS LA POSICIÓN INICIAL DEL SEGMENTO
+000017E6  4EB8 165C               1231              JSR     CINDMTRZ
+000017EA  4EB8 16D8               1232              JSR     SGMOCPD                 ; MARCAMOS LA POSICIÓN DEL SEGMENTO
+000017EE                          1233              
+000017EE  3239 000018F6           1234              MOVE.W  COLPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA COLA
+000017F4  3439 000018F8           1235              MOVE.W  COLPOSY, D2
+000017FA  4EB8 165C               1236              JSR     CINDMTRZ
+000017FE  4EB8 16EE               1237              JSR     COLOCPD                 ; MARCAMOS LA POSICIÓN DE LA COLA
+00001802                          1238              
+00001802  3239 000018EA           1239              MOVE.W  MNZPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA MANZANA
+00001808  3439 000018EC           1240              MOVE.W  MNZPOSY, D2
+0000180E  4EB8 165C               1241              JSR     CINDMTRZ
+00001812  4EB8 1704               1242              JSR     MNZOCPD                 ; MARCAMOS LA POSICIÓN DE LA MANZANA
+00001816                          1243              
+00001816                          1244              
+00001816  4C9F 0107               1245              MOVEM.W (A7)+,D0-D2/A0
+0000181A                          1246  
+0000181A  4E75                    1247              RTS
+0000181C                          1248  
+0000181C                          1249  
+0000181C                          1250  
+0000181C                          1251  ;-----------------------------------------------------------------------------
+0000181C                          1252  MTZPLOT
+0000181C                          1253  ; DIBUJA LA MATRIZ CASILLA A CASILLA
+0000181C                          1254  ; INPUT    : NONE
+0000181C                          1255  ; OUTPUT   : NONE
+0000181C                          1256  ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+0000181C                          1257  ; ----------------------------------------------------------------------------
+0000181C  48E7 F080               1258              MOVEM.L D0-D3/A0,-(A7)
+00001820                          1259  
+00001820  4240                    1260              CLR.W   D0
+00001822  4243                    1261              CLR.W   D3
+00001824  41F9 00001904           1262              LEA     ESTDCLDS, A0            ; Apunta al inicio de ESTDCLDS
+0000182A  303C 0300               1263              MOVE.W  #TCELDAS, D0            ; Número total de celdas
+0000182E  363C 0000               1264              MOVE.W  #0,D3                   ; LO UTILIZAMOS PARA SABER EL INDICE EN EL QUE NOS ENCONTRAMOS
+00001832  4241                    1265              CLR.W   D1
+00001834  4242                    1266              CLR.W   D2
+00001836                          1267              
+00001836                          1268  
+00001836                          1269  PLOTCLDS:
+00001836  1218                    1270              MOVE.B  (A0)+,D1                ; MOVEMOS EL VALOR DE LA CELDA A D1
+00001838  B23C 0000               1271              CMP.B   #0,D1
+0000183C  6700 0036               1272              BEQ     PLOTVAC                 ; SALTA A DIBUJAR POSICIÓN VACÍA
+00001840  B23C 0001               1273              CMP.B   #1,D1 
+00001844  6700 0034               1274              BEQ     PLOTCOL                 ; SALTA A DIBUJAR COLA
+00001848  B23C 0002               1275              CMP.B   #2,D1
+0000184C  6700 0032               1276              BEQ     PLOTSEG                 ; SALTA A DIBUJAR SEGMENTO
+00001850  B239 000018FE           1277              CMP.B   TRZPLOT,D1
+00001856  6700 0016               1278              BEQ     PLOTCBZ                 ; SALTA A DIBUJAR CABEZA
+0000185A  B23C 0004               1279              CMP.B   #4,D1                 
+0000185E  6700 0026               1280              BEQ     PLOTAPPLE               ; SALTA A DIBUJAR MANZANA
+00001862                          1281    
+00001862                          1282  DONEPLOT            
+00001862  5243                    1283              ADDQ    #1,D3                   ; AUMENTAMOS EL INDICE DE CELDA PARA LA SIGUIENTE
+00001864  5340                    1284              SUBI.W  #1, D0                  ; Decrementa el contador de celdas
+00001866  66CE                    1285              BNE     PLOTCLDS                ; Repite hasta que esten vacías
+00001868  4CDF 010F               1286              MOVEM.L (A7)+,D0-D3/A0
+0000186C  4E75                    1287              RTS
+0000186E                          1288  PLOTCBZ:
+0000186E  4EB8 130C               1289              JSR     HEADPLOT
+00001872  60EE                    1290              BRA     DONEPLOT
+00001874                          1291  
+00001874                          1292  PLOTVAC:    
+00001874  4EB8 1774               1293              JSR     FONPLOT
+00001878  60E8                    1294              BRA     DONEPLOT                ; DIBUJADO HECHO 
+0000187A                          1295  
+0000187A                          1296  PLOTCOL:   
+0000187A  4EB8 1444               1297              JSR     TAILPLOT 
+0000187E  60E2                    1298              BRA     DONEPLOT                ; DIBUJADO HECHO 
+00001880                          1299              
+00001880                          1300  PLOTSEG:    
+00001880  4EB8 13D0               1301              JSR     SEGPLOT
+00001884  60DC                    1302              BRA     DONEPLOT                ; DIBUJADO HECHO    
+00001886                          1303  
+00001886                          1304  PLOTAPPLE:
+00001886  4EB8 14F4               1305              JSR     APPLEPLOT
+0000188A  60D6                    1306              BRA     DONEPLOT            
+0000188C                          1307  
+0000188C                          1308  
+0000188C                          1309  
+0000188C                          1310  
+0000188C                          1311  
+0000188C                          1312  
+0000188C                          1313  
+0000188C                          1314  
+0000188C                          1315  
+0000188C                          1316  
+0000188C                          1317  
+0000188C                          1318  
+0000188C                          1319  
+0000188C                          1320  
+0000188C                          1321  -------------------- end include --------------------
+0000188C                          1322  START:
+0000188C                          1323                  
+0000188C                          1324  ; --- INIZIALIZACIÓN ---------------------------------------------------------
+0000188C                          1325  
+0000188C  4EB8 1000               1326              JSR     SYSINIT
+00001890  4EB8 1100               1327              JSR     UTLINIT
+00001894  4EB8 1066               1328              JSR     KBDINIT
+00001898  4EB8 15E2               1329              JSR     MTZINIT
+0000189C  4EB8 1234               1330              JSR     HEADINIT                
+000018A0  4EB8 1390               1331              JSR     SEGINIT
+000018A4  4EB8 1410               1332              JSR     TAILINIT
+000018A8  4EB8 15A4               1333              JSR     SCOINIT
+000018AC  4EB8 1484               1334              JSR     APPLEINIT
+000018B0                          1335              
+000018B0                          1336  
+000018B0                          1337  .LOOP
+000018B0                          1338  
+000018B0                          1339  ; --- ACTUALIZAR -------------------------------------------------------------
+000018B0                          1340  
+000018B0                          1341  ; LEER DISPOSITIVOS DE ENTRADA
+000018B0                          1342  
+000018B0  4E41                    1343              TRAP    #1
+000018B2                          1344  
+000018B2                          1345  ; ACTUALIZAR LÓGICA DEL JUEGO
+000018B2                          1346              
+000018B2  4EB8 1422               1347              JSR     TAILUPD
+000018B6  4EB8 13A2               1348              JSR     SEGUPD
+000018BA  4EB8 1262               1349              JSR     HEADUPD
+000018BE                          1350              ;JSR     APPLEUPD  
+000018BE  4EB8 17B2               1351              JSR     MTZUPD
+000018C2                          1352              
+000018C2                          1353  ; --- SINCRONIZACIÓN ---------------------------------------------------------
+000018C2                          1354              ; THE FOLLOWING SYNC STRATEGY IS ****WRONG****
+000018C2  103C 0017               1355              MOVE.B  #23,D0
+000018C6  7201                    1356              MOVE.L  #1,D1
+000018C8  4E4F                    1357              TRAP    #15
+000018CA                          1358  
+000018CA                          1359  
+000018CA                          1360  ;---DIBUJAR-------------------------------------------------------------------
+000018CA  4EB8 130C               1361               JSR    HEADPLOT
+000018CE  4EB8 13D0               1362               JSR    SEGPLOT
+000018D2  4EB8 1444               1363               JSR    TAILPLOT
+000018D6  4EB8 14F4               1364               JSR    APPLEPLOT
+000018DA  4EB8 181C               1365               JSR    MTZPLOT
+000018DE  4EB8 15AE               1366               JSR    SCOPLOT
+000018E2                          1367              
+000018E2  4E40                    1368              TRAP    #0                      ; ACTUALIZA DOBLE BUFFER
+000018E4                          1369  
+000018E4                          1370  
+000018E4  60CA                    1371              BRA     .LOOP
+000018E6                          1372  
+000018E6  FFFF FFFF               1373              SIMHALT
+000018EA                          1374              
+000018EA                          1375              INCLUDE 'VARS.X68'
+000018EA                          1376  ; ----------------------------------------------------------------------------
+000018EA                          1377  ; VARIABLES DEL JUEGO
+000018EA                          1378  ; ----------------------------------------------------------------------------
+000018EA                          1379  
+000018EA                          1380  ; --- VARIABLES DE LA MANZANA ------------------------------------------------
+000018EA                          1381  
+000018EA                          1382  MNZPOSX     DS.W    1                       ; COORDENADA X DE LA MANZANA
+000018EC                          1383  MNZPOSY     DS.W    1                       ; COORDENADA Y DE LA MANZANA
+000018EE                          1384  
+000018EE                          1385  ; --- VARIABLES DE LA SERPIENTE ----------------------------------------------
+000018EE                          1386  
+000018EE                          1387  CBZPOSX     DS.W    1                       ; COORDENADA X CABEZA
+000018F0                          1388  CBZPOSY     DS.W    1                       ; COORDENADA Y CABEZA
+000018F2                          1389  CBZVELX     DS.W    1                       ; VELOCIDAD X CABEZA
+000018F4                          1390  CBZVELY     DS.W    1                       ; VELOCIDAD Y CABEZA
+000018F6                          1391  COLPOSX     DS.W    1                       ; COORDENADA X COLA
+000018F8                          1392  COLPOSY     DS.W    1                       ; COORDENADA Y COLA
+000018FA                          1393  SGMPOSX     DS.W    1                       ; COORDENADA X SEGMENTO
+000018FC                          1394  SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
+000018FE                          1395  TRZPLOT     DS.B    1                       ; NÚMERO DE TROZOS A DIBUJAR
+000018FF                          1396  
+000018FF                          1397  ; --- VARIABLES DEL MARCADOR -------------------------------------------------
+000018FF                          1398  
+00001900                          1399  JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
+00001902                          1400  
+00001902                          1401  
+00001902                          1402  
+00001902                          1403  
+00001902                          1404  -------------------- end include --------------------
+00001902                          1405              INCLUDE 'LIB/UTLVARS.X68'
+00001902                          1406  ; =============================================================================
+00001902                          1407  ; UTILITY VARIABLES
+00001902                          1408  ; =============================================================================
+00001902                          1409  
+00001902                          1410  UTLRNDIX    DS.B    1                       ; NEXT INDEX TO RANDOM NUMBER
+00001904                          1411              DS.W    0
+00001904                          1412  -------------------- end include --------------------
+00001904                          1413              INCLUDE 'SYSVARS.X68'
+00001904                          1414  ; ----------------------------------------------------------------------------
+00001904                          1415  ; VARIABLES DEL SISTEMA
+00001904                          1416  ; ----------------------------------------------------------------------------
+00001904                          1417  
+00001904                          1418  ; --- VARIABLES DE LA MATRIZ -------------------------------------------------
+00001904                          1419  
+00001904                          1420  ESTDCLDS    DS.B    TCELDAS                 ; ESTADO DE LAS CELDAS 0=VACÍO  1=COLA   2=SEGMENTO  TRZPLOT=CABEZA  4?=MANZANA    
+00001C04                          1421  ESTDCBZ     DS.B    1                       ; 0= DERECHA, 1=ARRIBA, 2=IZQUIERDA, 3=ABAJO
+00001C05                          1422  
+00001C05                          1423  ; --- VARIABLES DE TECLADO ---------------------------------------------------
+00001C05                          1424  
+00001C05                          1425  KBDVAL      DS.B    1
+00001C06                          1426  KBDEDGE     DS.B    1                       ; KEY EDGE
+00001C08                          1427  LASTKEY     DS.L    1                       
+00001C0C                          1428  
+00001C0C                          1429  
+00001C0C                          1430  
+00001C0C                          1431  
+00001C0C                          1432  
+00001C0C                          1433  
+00001C0C                          1434  
+00001C0C                          1435  
+00001C0C                          1436  
+00001C0C                          1437  
+00001C0C                          1438  
+00001C0C                          1439  
+00001C0C                          1440  
+00001C0C                          1441  
+00001C0C                          1442  
+00001C0C                          1443  
+00001C0C                          1444  -------------------- end include --------------------
+00001C0C                          1445      
+00001C0C                          1446      
+00001C0C                          1447              END    START        
 
 No errors detected
 No warnings generated
@@ -1387,78 +1457,84 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-APPLEINIT           146C
-APPLEPLOT           14DC
-APPLEUPD            149E
+APPLEINIT           1484
+APPLEPLOT           14F4
+APPLEUPD            14B6
 CBZFCOL             AA00
 CBZHEIGH            14
-CBZOCPD             167E
+CBZOCPD             1696
 CBZPCOL             FF00
-CBZPOSX             18D6
-CBZPOSY             18D8
+CBZPOSX             18EE
+CBZPOSY             18F0
 CBZVEL              14
-CBZVELX             18DA
-CBZVELY             18DC
+CBZVELX             18F2
+CBZVELY             18F4
 CBZWIDTH            14
-CHCKUPDT            14B6
-CHECK               1478
-CHECKCLD            173E
-CINDMTRZ            1644
-CLDFREE             1756
-CLNCLDS             15D8
-CNVICOOR            1702
+CHCKUPDT            14CE
+CHECK               1490
+CHECKCLD            1756
+CHKARR              10BC
+CHKDER              10D0
+CHKDWN              10E4
+CINDMTRZ            165C
+CLDFREE             176E
+CLNCLDS             15F0
+CNVICOOR            171A
 COLFCOL             AA00
 COLFND              90EE90
 COLHEIGH            A
-COLOCPD             16D6
+COLOCPD             16EE
 COLPCOL             FF00
-COLPOSX             18DE
-COLPOSY             18E0
+COLPOSX             18F6
+COLPOSY             18F8
 COLWIDTH            A
-DIVX                164C
-DIVY                1660
-DONEPLOT            184A
-ENDDIVX             165C
-ENDDIVY             1670
-ENDMULTX            1726
-ENDMULTY            1738
-ESTDCBZ             1BEC
-ESTDCLDS            18EC
-FIN                 12EE
-FONPLOT             175C
-GENPOSMNZ           155A
-HEADINIT            11DA
-HEADPLOT            12F4
-HEADUPD             1208
-JGOPNTS             18E8
+CONTINU             10F4
+DIVX                1664
+DIVY                1678
+DONEPLOT            1862
+ENDDIVX             1674
+ENDDIVY             1688
+ENDMULTX            173E
+ENDMULTY            1750
+ESTDCBZ             1C04
+ESTDCLDS            1904
+FIN                 1306
+FONPLOT             1774
+GAMEOVER            1302
+GENPOSMNZ           1572
+HEADINIT            1234
+HEADPLOT            130C
+HEADUPD             1262
+JGOPNTS             1900
 KBDDOWN             28
-KBDEDGE             1BEE
+KBDEDGE             1C06
 KBDINIT             1066
 KBDLEFT             25
 KBDRIGHT            27
 KBDUP               26
-KBDUPD              106E
-KBDUPD:LOOP         1082
-KBDVAL              1BED
-LASTKEY             1BF0
+KBDUPD              1074
+KBDUPD:LOOP         108A
+KBDVAL              1C05
+LASTKEY             1C08
 LNGINI              1
-MARKMNZ             1490
+MARKCLD             12F8
+MARKMNZ             14A8
 MAXSGM              1
-MCLDVCIA            16AA
+MCLDVCIA            16C2
 MNZFCOL             FF
 MNZHEIGH            14
-MNZOCPD             16EC
+MNZOCPD             1704
 MNZPCOL             AAFF
-MNZPOSX             18D2
-MNZPOSY             18D4
+MNZPOSX             18EA
+MNZPOSY             18EC
 MNZWIDTH            14
-MTZINIT             15CA
-MTZPLOT             1804
-MTZUPD              179A
-MTZUPD:CLNCLDS      17A8
-MULTLOOPX           1718
-MULTLOOPY           172A
-NEWMNZ              14CE
+MTZINIT             15E2
+MTZPLOT             181C
+MTZUPD              17B2
+MTZUPD:CLNCLDS      17C0
+MULTLOOPX           1730
+MULTLOOPY           1742
+NEWMNZ              14E6
 NUMCLMNS            20
 NUMFILAS            18
 OJOFCOL             FFFFFF
@@ -1467,45 +1543,46 @@ OJOPCOL             0
 OJOWIDTH            A
 PANHEIGH            1E0
 PANWIDTH            280
-PLOTAPPLE           186E
-PLOTCBZ             1856
-PLOTCLDS            181E
-PLOTCOL             1862
-PLOTSEG             1868
-PLOTVAC             185C
+PLOTAPPLE           1886
+PLOTCBZ             186E
+PLOTCLDS            1836
+PLOTCOL             187A
+PLOTSEG             1880
+PLOTVAC             1874
 PNTSFCOL            0
 PNTSTEXT            65
-RSTCLD              1696
-SCOINIT             158C
-SCOPLOT             1596
-SCOPLOT:TXT1        15C0
-SCOUPD              1594
+RSTCLD              16AE
+SCOINIT             15A4
+SCOPLOT             15AE
+SCOPLOT:TXT1        15D8
+SCOUPD              15AC
 SCRINIT             101E
 SCRPLOT             104C
-SEGINIT             1378
-SEGPLOT             13B8
-SEGUPD              138A
+SEGINIT             1390
+SEGPLOT             13D0
+SEGUPD              13A2
 SGMFCOL             AA00
 SGMHEIGH            14
-SGMOCPD             16C0
+SGMOCPD             16D8
 SGMPCOL             FF00
-SGMPOSX             18E2
-SGMPOSY             18E4
+SGMPOSX             18FA
+SGMPOSY             18FC
 SGMWIDTH            14
-SIGABA              12CA
-SIGARR              1282
-SIGDER              125E
-SIGIZQ              12A6
+SIGABA              12CC
+SIGARR              12B4
+SIGDER              12A8
+SIGIZQ              12C0
 SIZECLDA            14
-START               1874
-START:LOOP          1898
+START               188C
+START:LOOP          18B0
 SYSINIT             1000
-TAILINIT            13F8
-TAILPLOT            142C
-TAILUPD             140A
+TAILINIT            1410
+TAILPLOT            1444
+TAILUPD             1422
 TCELDAS             300
-TRZPLOT             18E6
-UTLINIT             10A6
-UTLRAND             10BC
-UTLRAND:RANDVEC     10DA
-UTLRNDIX            18EA
+TRZPLOT             18FE
+UPDMTRZ             12D4
+UTLINIT             1100
+UTLRAND             1116
+UTLRAND:RANDVEC     1134
+UTLRNDIX            1902

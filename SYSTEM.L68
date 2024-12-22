@@ -1,6 +1,6 @@
-000018A0 Starting Address
+000018AA Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 20/12/2024 17:21:22
+Created On: 22/12/2024 16:50:07
 
 00000000                             1  *-----------------------------------------------------------------------------
 00000000                             2  * SISTEMA
@@ -16,7 +16,7 @@ Created On: 20/12/2024 17:21:22
 00000000  4EB9 0000001E             12              JSR     SCRINIT
 00000006                            13              
 00000006  21FC 0000004C 0080        14              MOVE.L  #SCRPLOT,($80)
-0000000E  21FC 0000006E 0084        15              MOVE.L  #KBDUPD,($84)
+0000000E  21FC 00000074 0084        15              MOVE.L  #KBDUPD,($84)
 00000016                            16              
 00000016  40E7                      17              MOVE.W  SR,-(A7)
 00000018  0257 DFFF                 18              ANDI.W  #$DFFF,(A7)
@@ -92,152 +92,153 @@ Line 80 ERROR: Symbol value differs between first and second pass
 00000060                            85  ; ------------------------------------------------------------------------------
 00000060                            86  
 Line 87 ERROR: Undefined symbol
-00000060  4239 004DBD16             87              CLR.B   (KBDEDGE)
-00000066  4E75                      88              RTS
-00000068                            89  
-00000068                            90  ; ------------------------------------------------------------------------------
-Line 91 ERROR: Symbol value differs between first and second pass
-00000068                            91  KBDUPD
-00000068                            92  ; UPDATE KEYBOARD INFO.  
-00000068                            93  ; 7 -> PAUSE
-00000068                            94  ; 6 -> FIRE 3
-00000068                            95  ; 5 -> FIRE 2
-00000068                            96  ; 4 -> FIRE 1
-00000068                            97  ; 3 -> DOWN
-00000068                            98  ; 2 -> RIGHT
-00000068                            99  ; 1 -> UP
-00000068                           100  ; 0 -> LEFT
-00000068                           101  ; INPUT    : NONE
-00000068                           102  ; OUTPUT   : NONE
-00000068                           103  ; MODIFIES : NONE
-00000068                           104  ; ------------------------------------------------------------------------------
-00000068                           105  
-00000068  48E7 F000                106              MOVEM.L D0-D3,-(A7)
-0000006C                           107  
-0000006C                           108              ; LEE ESTADO DEL TECLADO
-0000006C  103C 0013                109              MOVE.B  #19,D0
-Line 110 ERROR: Invalid syntax
-00000070                           110              MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
-00000070  4E4F                     111              TRAP    #15                  ; Lee las teclas y guarda en D1
-00000072                           112  
-00000072                           113              ; CONVERT TO DESIRED FORMAT
-00000072  363C 0003                114              MOVE.W  #3,D3
-Line 115 ERROR: Symbol value differs between first and second pass
-00000076                           115  .LOOP       LSL.L   #8,D1
-00000076  E312                     116              ROXL.B  #1,D2
-00000078  51CB 0008                117              DBRA.W  D3,.LOOP
-0000007C                           118  
-0000007C                           119              ; PROCESA FLANCOS ASCENDENTES
-Line 120 ERROR: Undefined symbol
-0000007C  1039 004DBD16            120              MOVE.B  (KBDEDGE),D0         ; Estado anterior
-00000082  4600                     121              NOT.B   D0                   ; Invertir bits (teclas no presionadas)
-00000084  C002                     122              AND.B   D2,D0                ; Detectar flancos ascendentes
-Line 123 ERROR: Undefined symbol
-00000086  13C0 005455D0            123              MOVE.B  D0,(KBDEDGE)         ; Almacena los flancos en KBDEDGE
-0000008C                           124              
-0000008C                           125              ; STORE KBDVAL
-Line 126 ERROR: Undefined symbol
-0000008C  13C2 005455B8            126              MOVE.B  D2,(KBDEDGE)
-00000092                           127  
-00000092                           128              ; ACTUALIZA EL ESTADO DE LA DIRECCIÓN
-00000092  4240                     129              CLR.W   D0
-Line 130 ERROR: Undefined symbol
-00000094  1039 004DBD16            130              MOVE.B  (KBDEDGE),D0         ; Lee teclas con flanco ascendente
-0000009A                           131  
-0000009A                           132              ; Detecta pulsaciones y actualiza ESTDCBZ
-0000009A  B0BC 000000FF            133              CMP.L   #$000000FF,D0        ; Tecla ABAJO
-000000A0  6700 0056                134              BEQ     DWN
-000000A4  B0BC 0000FF00            135              CMP.L   #$0000FF00,D0        ; Tecla DERECHA
-000000AA  6700 0028                136              BEQ     DER
-000000AE  B0BC 00FF0000            137              CMP.L   #$00FF0000,D0        ; Tecla ARRIBA
-000000B4  6700 002A                138              BEQ     ARR
-000000B8  B0BC FF000000            139              CMP.L   #$FF000000,D0        ; Tecla IZQUIERDA
-000000BE  6700 002C                140              BEQ     IZQ
-000000C2                           141              
-000000C2                           142              ; Si no hay pulsaciones, mantener estado
-000000C2  6000 0040                143              BRA     CONTINU
-000000C6                           144  
-Line 145 ERROR: Symbol value differs between first and second pass
-000000C6                           145  DER:        MOVE.W  #0,ESTDCBZ           ; Actualiza estado a DERECHA
-000000C6  6000 003C                146              BRA     CONTINU
-000000CA                           147              
-Line 148 ERROR: Symbol value differs between first and second pass
-000000CA                           148  ARR:        MOVE.W  #1,ESTDCBZ           ; Actualiza estado a ARRIBA
-000000CA  6000 0038                149              BRA     CONTINU
-000000CE                           150  
-Line 151 ERROR: Symbol value differs between first and second pass
-000000CE                           151  IZQ:        MOVE.W  #2,ESTDCBZ           ; Actualiza estado a IZQUIERDA
-000000CE  6000 0034                152              BRA     CONTINU                    
-000000D2                           153  
-Line 154 ERROR: Symbol value differs between first and second pass
-000000D2                           154  DWN:        MOVE.W  #3,ESTDCBZ           ; Actualiza estado a ABAJO
-000000D2  6000 0030                155              BRA     CONTINU
-000000D6                           156  
-Line 157 ERROR: Symbol value differs between first and second pass
-000000D6                           157  CONTINU:
-000000D6  4CDF 000F                158              MOVEM.L (A7)+,D0-D3
-000000DA  4E73                     159              RTE
-000000DC                           160  
-000000DC                           161  
+00000060  4239 004DBD16             87              CLR.B   (KBDVAL)
+Line 88 ERROR: Undefined symbol
+00000066  4239 004DBD16             88              CLR.B   (KBDEDGE)
+0000006C  4E75                      89              RTS
+0000006E                            90  
+0000006E                            91  ; ------------------------------------------------------------------------------
+Line 92 ERROR: Symbol value differs between first and second pass
+0000006E                            92  KBDUPD
+0000006E                            93  ; UPDATE KEYBOARD INFO.  
+0000006E                            94  ; 7 -> PAUSE
+0000006E                            95  ; 6 -> FIRE 3
+0000006E                            96  ; 5 -> FIRE 2
+0000006E                            97  ; 4 -> FIRE 1
+0000006E                            98  ; 3 -> DOWN
+0000006E                            99  ; 2 -> RIGHT
+0000006E                           100  ; 1 -> UP
+0000006E                           101  ; 0 -> LEFT
+0000006E                           102  ; INPUT    : NONE
+0000006E                           103  ; OUTPUT   : NONE
+0000006E                           104  ; MODIFIES : NONE
+0000006E                           105  ; ------------------------------------------------------------------------------
+0000006E                           106  
+0000006E  48E7 F000                107              MOVEM.L D0-D3,-(A7)
+00000072                           108  
+00000072                           109              ; LEE ESTADO DEL TECLADO
+00000072  103C 0013                110              MOVE.B  #19,D0
+Line 111 ERROR: Invalid syntax
+00000076                           111              MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
+00000076  4E4F                     112              TRAP    #15                  ; Lee las teclas y guarda en D1
+00000078                           113  
+00000078                           114              ; CONVERT TO DESIRED FORMAT
+00000078  363C 0003                115              MOVE.W  #3,D3
+0000007C  4282                     116              CLR.L   D2
+Line 117 ERROR: Symbol value differs between first and second pass
+0000007E                           117  .LOOP       LSL.L   #8,D1
+0000007E  E312                     118              ROXL.B  #1,D2
+00000080  51CB 0008                119              DBRA.W  D3,.LOOP
+00000084                           120  
+00000084                           121              ; PROCESA FLANCOS ASCENDENTES
+Line 122 ERROR: Undefined symbol
+00000084  1039 004DBD16            122              MOVE.B  (KBDVAL),D0         ; Estado anterior
+0000008A  4600                     123              NOT.B   D0                   ; Invertir bits (teclas no presionadas)
+0000008C  C002                     124              AND.B   D2,D0                ; Detectar flancos ascendentes
+Line 125 ERROR: Undefined symbol
+0000008E  13C0 005455D0            125              MOVE.B  D0,(KBDEDGE)         ; Almacena los flancos en KBDEDGE
+00000094                           126              
+00000094                           127              ; STORE KBDEDGE
+Line 128 ERROR: Undefined symbol
+00000094  13C2 005455B8            128              MOVE.B  D2,(KBDVAL)
+0000009A                           129  
+0000009A                           130              ; ACTUALIZA EL ESTADO DE LA DIRECCIÓN
+0000009A  4240                     131              CLR.W   D0
+Line 132 ERROR: Undefined symbol
+0000009C  1039 004DBD16            132              MOVE.B  (KBDEDGE),D0         ; Lee teclas con flanco ascendente
+000000A2                           133  
+000000A2                           134              ; Detecta pulsaciones y actualiza ESTDCBZ
+000000A2  0800 0008                135              BTST.L   #8,D0
+000000A6  6700 0044                136              BEQ      IZQ
+000000AA  0800 0004                137              BTST.L   #4,D0
+000000AE  6700 0030                138              BEQ      ARR
+000000B2  0800 0002                139              BTST.L   #2,D0
+000000B6  6700 001C                140              BEQ      DER
+000000BA  0800 0001                141              BTST.L   #1,D0
+000000BE  6700 0038                142              BEQ      DWN
+000000C2                           143            
+000000C2                           144              ; Si no hay pulsaciones, mantener estado
+000000C2  6000 0040                145              BRA     CONTINU
+000000C6                           146  
+Line 147 ERROR: Symbol value differs between first and second pass
+000000C6                           147  DER:        MOVE.W  #0,(ESTDCBZ)           ; Actualiza estado a DERECHA
+000000C6  6000 003C                148              BRA     CONTINU
+000000CA                           149              
+Line 150 ERROR: Symbol value differs between first and second pass
+000000CA                           150  ARR:        MOVE.W  #1,(ESTDCBZ)           ; Actualiza estado a ARRIBA
+000000CA  6000 0038                151              BRA     CONTINU
+000000CE                           152  
+Line 153 ERROR: Symbol value differs between first and second pass
+000000CE                           153  IZQ:        MOVE.W  #2,(ESTDCBZ)           ; Actualiza estado a IZQUIERDA
+000000CE  6000 0034                154              BRA     CONTINU                    
+000000D2                           155  
+Line 156 ERROR: Symbol value differs between first and second pass
+000000D2                           156  DWN:        MOVE.W  #3,(ESTDCBZ)           ; Actualiza estado a ABAJO
+000000D2  6000 0030                157              BRA     CONTINU
+000000D6                           158  
+Line 159 ERROR: Symbol value differs between first and second pass
+000000D6                           159  CONTINU:
+000000D6  4CDF 000F                160              MOVEM.L (A7)+,D0-D3
+000000DA  4E73                     161              RTE
 000000DC                           162  
-000000DC                           163  *            MOVEM.L D0-D3,-(A7)
-000000DC                           164  *
-000000DC                           165  *            ; READ FIRST PART
-000000DC                           166  *            MOVE.B  #19,D0
-000000DC                           167  *            MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
-000000DC                           168  *            TRAP    #15
-000000DC                           169  *            
-000000DC                           170  *            MOVE.L  D1,(KBDEDGE)
-000000DC                           171  *          
-000000DC                           172  *            ; CONVERT TO DESIRED FORMAT
-000000DC                           173  *            MOVE.W  #3,D3
-000000DC                           174  *.LOOP       LSL.L   #8,D1
-000000DC                           175  *            ROXL.B  #1,D2
-000000DC                           176  *            DBRA.W  D3,.LOOP
-000000DC                           177  *            
-000000DC                           178  *            ; COMPUTE KBDEDGE
-000000DC                           179  *            MOVE.B  (KBDVAL),D0
-000000DC                           180  *            NOT.B   D0
-000000DC                           181  *            AND.B   D2,D0
-000000DC                           182  *            MOVE.B  D0,(KBDEDGE)
-000000DC                           183  *            
-000000DC                           184  *            ; STORE KBDVAL
-000000DC                           185  *            MOVE.B  D2,(KBDVAL)
-000000DC                           186  *            
-000000DC                           187  *            CLR.W   D0
-000000DC                           188  *            MOVE.L  (KBDEDGE),D0
-000000DC                           189  *            CMP.L   #$000000FF,D0
-000000DC                           190  *            BEQ     DWN
-000000DC                           191  *            CMP.L   #$0000FF00,D0
-000000DC                           192  *            BEQ     DER
-000000DC                           193  *            CMP.L   #$00FF0000,D0
-000000DC                           194  *            BEQ     ARR
-000000DC                           195  *            CMP.L   #$FF000000,D0
-000000DC                           196  *            BEQ     IZQ
-000000DC                           197  *            
-000000DC                           198  *DER:        MOVE.W  #0,ESTDCBZ
-000000DC                           199  *            BRA     CONTINU
-000000DC                           200  *            
-000000DC                           201  *ARR:        MOVE.W  #1,ESTDCBZ
-000000DC                           202  *            BRA     CONTINU
-000000DC                           203  *
-000000DC                           204  *IZQ:        MOVE.W  #2,ESTDCBZ
-000000DC                           205  *            BRA     CONTINU                    
-000000DC                           206  *
-000000DC                           207  *DWN:        MOVE.W  #3,ESTDCBZ
-000000DC                           208  *            BRA     CONTINU
-000000DC                           209  *
+000000DC                           163  
+000000DC                           164  
+000000DC                           165  ; CODIGO ANTERIOR
+000000DC                           166  
+000000DC                           167  *            MOVEM.L D0-D3,-(A7)
+000000DC                           168  *
+000000DC                           169  *            ; READ FIRST PART
+000000DC                           170  *            MOVE.B  #19,D0
+000000DC                           171  *            MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
+000000DC                           172  *            TRAP    #15
+000000DC                           173  *            
+000000DC                           174  *            MOVE.L  D1,(KBDEDGE)
+000000DC                           175  *          
+000000DC                           176  *            ; CONVERT TO DESIRED FORMAT
+000000DC                           177  *            MOVE.W  #3,D3
+000000DC                           178  *.LOOP       LSL.L   #8,D1
+000000DC                           179  *            ROXL.B  #1,D2
+000000DC                           180  *            DBRA.W  D3,.LOOP
+000000DC                           181  *            
+000000DC                           182  *            ; COMPUTE KBDEDGE
+000000DC                           183  *            MOVE.B  (KBDVAL),D0
+000000DC                           184  *            NOT.B   D0
+000000DC                           185  *            AND.B   D2,D0
+000000DC                           186  *            MOVE.B  D0,(KBDEDGE)
+000000DC                           187  *            
+000000DC                           188  *            ; STORE KBDVAL
+000000DC                           189  *            MOVE.B  D2,(KBDVAL)
+000000DC                           190  *            
+000000DC                           191  *            CLR.W   D0
+000000DC                           192  *            MOVE.L  (KBDEDGE),D0
+000000DC                           193  *            CMP.L   #$000000FF,D0
+000000DC                           194  *            BEQ     DWN
+000000DC                           195  *            CMP.L   #$0000FF00,D0
+000000DC                           196  *            BEQ     DER
+000000DC                           197  *            CMP.L   #$00FF0000,D0
+000000DC                           198  *            BEQ     ARR
+000000DC                           199  *            CMP.L   #$FF000000,D0
+000000DC                           200  *            BEQ     IZQ
+000000DC                           201  *            
+000000DC                           202  *DER:        MOVE.W  #0,ESTDCBZ
+000000DC                           203  *            BRA     CONTINU
+000000DC                           204  *            
+000000DC                           205  *ARR:        MOVE.W  #1,ESTDCBZ
+000000DC                           206  *            BRA     CONTINU
+000000DC                           207  *
+000000DC                           208  *IZQ:        MOVE.W  #2,ESTDCBZ
+000000DC                           209  *            BRA     CONTINU                    
 000000DC                           210  *
-000000DC                           211  *    
-000000DC                           212  *CONTINU:
-000000DC                           213  *            
-000000DC                           214  *            MOVEM.L (A7)+,D0-D3
-000000DC                           215  *
-000000DC                           216  *            RTE
-000000DC                           217  
-000000DC                           218  
-000000DC                           219  
-000000DC                           220  
+000000DC                           211  *DWN:        MOVE.W  #3,ESTDCBZ
+000000DC                           212  *            BRA     CONTINU
+000000DC                           213  *
+000000DC                           214  *
+000000DC                           215  *    
+000000DC                           216  *CONTINU:
+000000DC                           217  *            
+000000DC                           218  *            MOVEM.L (A7)+,D0-D3
+000000DC                           219  *
+000000DC                           220  *            RTE
 000000DC                           221  
 000000DC                           222  
 000000DC                           223  
@@ -246,9 +247,25 @@ Line 157 ERROR: Symbol value differs between first and second pass
 000000DC                           226  
 000000DC                           227  
 000000DC                           228  
-Line 229 WARNING: END directive missing, starting address not set
+000000DC                           229  
+000000DC                           230  
+000000DC                           231  
+000000DC                           232  
+000000DC                           233  
+000000DC                           234  
+000000DC                           235  
+000000DC                           236  
+000000DC                           237  
+000000DC                           238  
+000000DC                           239  
+000000DC                           240  
+000000DC                           241  
+000000DC                           242  
+000000DC                           243  
+000000DC                           244  
+Line 245 WARNING: END directive missing, starting address not set
 
-16 errors detected
+17 errors detected
 1 warning generated
 
 
@@ -261,8 +278,8 @@ DER                 D4
 DWN                 F8
 IZQ                 EC
 KBDINIT             66
-KBDUPD              6E
-KBDUPD:LOOP         82
+KBDUPD              74
+KBDUPD:LOOP         8A
 SCRINIT             1E
 SCRPLOT             4C
 SYSINIT             0
