@@ -36,7 +36,7 @@ HEADUPD
             MOVE.W  (CBZPOSX),D1
             MOVE.W  (CBZPOSY),D2
             JSR     CINDMTRZ
-            JSR     MCLDVCIA               ; Marcar celda vacía
+            JSR     RSTCLD               ; RESTAMOS 1 A LA CELDA ACTUAL
             
 *            MOVE.W  CBZPOSX,D1
 *            MOVE.W  D1,SGMPOSX
@@ -169,21 +169,34 @@ HEADPLOT
             MOVE.L  (A7)+,D1
             MOVE.L  D1,-(A7)
             MOVE.L  D2,-(A7)
-            ADD.W   #OJOWIDTH/2,D1            
+            ADD.W   #OJOWIDTH,D1            
             MOVE.W  D1,D3
-            ADD.W   #OJOWIDTH,D3
-            ADD.W   #OJOHEIGH/2,D2
+            ADD.W   #OJOWIDTH/2,D3
+            ADD.W   #OJOHEIGH/4,D2
             MOVE.W  D2,D4
-            ADD.W   #OJOHEIGH,D4
-            TRAP    #15
+            ADD.W   #OJOHEIGH/2,D4
+            TRAP    #15                     ; DIBUJAMOS EL PRIMER OJO
+            ADD.W   #OJOHEIGH,D2
+            MOVE.W  D2,D4
+            ADD.W   #OJOHEIGH/2,D4
+            TRAP    #15                     ; Y EL SEGUNDO
+
+            
 
             ; DEFINIR COORDENADAS IRIS
             MOVE.L  (A7)+,D2
             MOVE.L  (A7)+,D1
             ADD.W   #OJOWIDTH,D1
-            ADD.W   #OJOHEIGH,D2
+            ADD.W   #OJOWIDTH/3,D1
+            ADD.W   #OJOHEIGH/4,D2
+            ADD.W   #OJOHEIGH/4,D2
             MOVE.B  #82,D0
-            TRAP    #15
+            TRAP    #15                     ; DIBUJAMOS EL PRIMER IRIS
+            
+           
+            ADD.W   #OJOHEIGH,D2
+            ADD.W   #1,D2
+            TRAP    #15                     ; DIBUJAMOS EL SEGUNDO IRIS
             
             
             MOVE.W  (A7)+,D3
@@ -191,6 +204,7 @@ HEADPLOT
 
 
             RTS
+
 
 
 
