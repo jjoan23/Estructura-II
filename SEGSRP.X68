@@ -22,12 +22,28 @@ SEGUPD
 ; ------------------------------------------------------------------------------
             MOVEM.W D1-D2,-(A7)
             
-            MOVE.W  SGMPOSX,D1
-            MOVE.W  D1,COLPOSX
-            MOVE.W  SGMPOSY,D2
-            MOVE.W  D2,COLPOSY
-            JSR     CINDMTRZ
-            JSR     RSTCLD
+            ; Marcar posición anterior del segmento como vacía
+            MOVE.W  (SGMPOSX),D1             ; Cargar posición X actual del segmento
+            MOVE.W  (SGMPOSY),D2             ; Cargar posición Y actual del segmento
+            JSR     CINDMTRZ                ; Obtener índice de celda en D0
+            JSR     MCLDVCIA                ; Marcar celda como vacía
+            
+            ; Actualizar posición del segmento para seguir a la cabeza
+            MOVE.W  (CBZPOSX),(SGMPOSX)        ; Actualizar X del segmento con la X de la cabeza
+            MOVE.W  (CBZPOSY),(SGMPOSY)        ; Actualizar Y del segmento con la Y de la cabeza
+
+            ; Marcar nueva posición del segmento como ocupada
+            MOVE.W  (SGMPOSX),D1             ; Cargar nueva posición X
+            MOVE.W  (SGMPOSY),D2             ; Cargar nueva posición Y
+            JSR     CINDMTRZ                ; Obtener índice de celda en D0
+            JSR     SGMOCPD                 ; Marcar celda como ocupada por segmento
+            
+*            MOVE.W  SGMPOSX,D1
+*            MOVE.W  D1,COLPOSX
+*            MOVE.W  SGMPOSY,D2
+*            MOVE.W  D2,COLPOSY
+*            JSR     CINDMTRZ
+*            JSR     RSTCLD
             
             MOVEM.W (A7)+,D1-D2            
             RTS
@@ -66,6 +82,8 @@ SEGPLOT
 
 
             RTS
+
+
 
 
 

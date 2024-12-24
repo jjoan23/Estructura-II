@@ -104,53 +104,84 @@ KBDUPD
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
 
-            MOVEM.L D0-D3,-(A7)
+            MOVEM.L D0-D1,-(A7)
 
             ; LEE ESTADO DEL TECLADO
             MOVE.B  #19,D0
             MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
             TRAP    #15                  ; Lee las teclas y guarda en D1
 
-            ; CONVERT TO DESIRED FORMAT
-            MOVE.W  #3,D3
-            CLR.L   D2
-.LOOP       LSL.L   #8,D1
-            ROXL.B  #1,D2
-            DBRA.W  D3,.LOOP
+            CMP.L   #$000000FF,D1
+            BEQ     DWN
+            CMP.L   #$0000FF00,D1
+            BEQ     DER
+            CMP.L   #$00FF0000,D1
+            BEQ     ARR
+            CMP.L   #$FF000000,D1
+            BEQ     IZQ
 
-            ; PROCESA FLANCOS ASCENDENTES
-            MOVE.B  (KBDVAL),D0         ; Estado anterior
-            NOT.B   D0                   ; Invertir bits (teclas no presionadas)
-            AND.B   D2,D0                ; Detectar flancos ascendentes
-            MOVE.B  D0,(KBDEDGE)         ; Almacena los flancos en KBDEDGE
-            
-            
-            ; ACTUALIZA EL ESTADO DE LA DIRECCIÓN
-            MOVE.B  (KBDEDGE),D0         ; Lee teclas con flanco ascendente
-
-            ; Detecta pulsaciones y actualiza ESTDCBZ
-            BTST    #0,D0                  ; Verifica si la tecla IZQUIERDA está pulsada
-            BEQ     CHKARR
-            MOVE.W  #2,(ESTDCBZ)           ; Actualiza a IZQUIERDA
+            ; Si no hay pulsaciones, mantener estado
             BRA     CONTINU
 
-CHKARR:
-            BTST    #1,D0                  ; Verifica si la tecla ARRIBA está pulsada
-            BEQ     CHKDER
-            MOVE.W  #1,(ESTDCBZ)           ; Actualiza a ARRIBA
+DER:        MOVE.W  #0,(ESTDCBZ)           ; Actualiza estado a DERECHA
             BRA     CONTINU
-
-CHKDER:
-            BTST    #2,D0                  ; Verifica si la tecla DERECHA está pulsada
-            BEQ     CHKDWN
-            MOVE.W  #0,(ESTDCBZ)           ; Actualiza a DERECHA
-            BRA     CONTINU
-
-CHKDWN:
-            BTST    #3,D0                  ; Verifica si la tecla ABAJO está pulsada
-            BEQ     CONTINU
-            MOVE.W  #3,(ESTDCBZ)           ; Actualiza a ABAJO
             
+ARR:        MOVE.W  #1,(ESTDCBZ)           ; Actualiza estado a ARRIBA
+            BRA     CONTINU
+
+IZQ:        MOVE.W  #2,(ESTDCBZ)           ; Actualiza estado a IZQUIERDA
+            BRA     CONTINU                    
+
+DWN:        MOVE.W  #3,(ESTDCBZ)           ; Actualiza estado a ABAJO
+
+CONTINU:
+            MOVEM.L (A7)+,D0-D1
+            RTE
+            
+; RESIDUOS CODIGO ANTERIOR 
+
+            ;MOVE.B  D2,(KBDVAL)
+            
+*            ; CONVERT TO DESIRED FORMAT
+*            MOVE.W  #3,D3
+*            CLR.L   D2
+*.LOOP       LSL.L   #8,D1
+*            ROXL.B  #1,D2
+*            DBRA.W  D3,.LOOP
+*
+*            ; PROCESA FLANCOS ASCENDENTES
+*            MOVE.B  (KBDVAL),D0          ; Estado anterior
+*            NOT.B   D0                   ; Invertir bits (teclas no presionadas)
+*            AND.B   D2,D0                ; Detectar flancos ascendentes
+*            MOVE.B  D0,(KBDEDGE)         ; Almacena los flancos en KBDEDGE
+*            
+*            
+*            ; ACTUALIZA EL ESTADO DE LA DIRECCIÓN
+*            MOVE.B  (KBDEDGE),D0         ; Lee teclas con flanco ascendente
+*
+*            ; Detecta pulsaciones y actualiza ESTDCBZ
+*            BTST    #0,D0                  ; Verifica si la tecla IZQUIERDA está pulsada
+*            BEQ     CHKARR
+*            MOVE.W  #2,(ESTDCBZ)           ; Actualiza a IZQUIERDA
+*            BRA     CONTINU
+*
+*CHKARR:
+*            BTST    #1,D0                  ; Verifica si la tecla ARRIBA está pulsada
+*            BEQ     CHKDER
+*            MOVE.W  #1,(ESTDCBZ)           ; Actualiza a ARRIBA
+*            BRA     CONTINU
+*
+*CHKDER:
+*            BTST    #2,D0                  ; Verifica si la tecla DERECHA está pulsada
+*            BEQ     CHKDWN
+*            MOVE.W  #0,(ESTDCBZ)           ; Actualiza a DERECHA
+*            BRA     CONTINU
+*
+*CHKDWN:
+*            BTST    #3,D0                  ; Verifica si la tecla ABAJO está pulsada
+*            BEQ     CONTINU
+*            MOVE.W  #3,(ESTDCBZ)           ; Actualiza a ABAJO
+
 *            ; Detecta pulsaciones y actualiza ESTDCBZ
 *            CMP.L   #8,D0
 *            BEQ      IZQ
@@ -160,30 +191,10 @@ CHKDWN:
 *            BEQ      DER
 *            CMP.L   #1,D0
 *            BEQ      DWN
-*          
-*            ; Si no hay pulsaciones, mantener estado
-*            BRA     CONTINU
-*
-*DER:        MOVE.W  #0,(ESTDCBZ)           ; Actualiza estado a DERECHA
-*            BRA     CONTINU
-*            
-*ARR:        MOVE.W  #1,(ESTDCBZ)           ; Actualiza estado a ARRIBA
-*            BRA     CONTINU
-*
-*IZQ:        MOVE.W  #2,(ESTDCBZ)           ; Actualiza estado a IZQUIERDA
-*            BRA     CONTINU                    
-*
-*DWN:        MOVE.W  #3,(ESTDCBZ)           ; Actualiza estado a ABAJO
-
-CONTINU:
-            ; STORE KBDEDGE
-            MOVE.B  D2,(KBDVAL)
-            MOVEM.L (A7)+,D0-D3
-            RTE
 
 
 
-; CODIGO ANTERIOR
+; CODIGO ANTERIOR ANTERIOR
 
 *            MOVEM.L D0-D3,-(A7)
 *
@@ -239,6 +250,8 @@ CONTINU:
 *            MOVEM.L (A7)+,D0-D3
 *
 *            RTE
+
+
 
 
 

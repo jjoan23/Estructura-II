@@ -11,6 +11,7 @@ TAILINIT
 ; ------------------------------------------------------------------------------
             MOVE.W  #(PANWIDTH/2)-CBZWIDTH-SGMWIDTH+(COLWIDTH/2),(COLPOSX)
             MOVE.W  #(PANHEIGH/2),(COLPOSY)
+            
             RTS
             
             
@@ -23,10 +24,26 @@ TAILUPD
 ; ------------------------------------------------------------------------------
             MOVEM.W D1-D2,-(A7)
             
-            MOVE.W  COLPOSX,D1
-            MOVE.W  COLPOSY,D2
-            JSR     CINDMTRZ
-            JSR     RSTCLD 
+            ; Marcar posición actual de la cola como vacía
+            MOVE.W  (COLPOSX),D1             ; Cargar posición actual de la cola (X)
+            MOVE.W  (COLPOSY),D2             ; Cargar posición actual de la cola (Y)
+            JSR     CINDMTRZ                ; Convertir a índice en la matriz
+            JSR     MCLDVCIA                ; Marcar celda como vacía
+
+            ; Actualizar posición de la cola para seguir al último segmento
+            MOVE.W  (SGMPOSX),(COLPOSX)        ; Posición X de la cola = posición X del segmento
+            MOVE.W  (SGMPOSY),(COLPOSY)        ; Posición Y de la cola = posición Y del segmento
+
+            ; Marcar nueva posición de la cola como ocupada
+            MOVE.W  (COLPOSX),D1             ; Nueva posición X
+            MOVE.W  (COLPOSY),D2             ; Nueva posición Y
+            JSR     CINDMTRZ                ; Convertir a índice en la matriz
+            JSR     COLOCPD                 ; Marcar celda como ocupada por la cola
+            
+*            MOVE.W  COLPOSX,D1
+*            MOVE.W  COLPOSY,D2
+*            JSR     CINDMTRZ
+*            JSR     RSTCLD 
             
             MOVEM.W (A7)+,D1-D2            
             RTS
@@ -64,6 +81,7 @@ TAILPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
 
 
 
