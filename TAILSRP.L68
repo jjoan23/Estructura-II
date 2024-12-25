@@ -1,0 +1,260 @@
+00001936 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 25/12/2024 16:37:58
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * MANEJO DE LA COLA DE LA SERPIENTE
+00000000                             3  *-----------------------------------------------------------
+00000000                             4     
+00000000                             5  ; ------------------------------------------------------------------------------
+00000000                             6  TAILINIT
+00000000                             7  ; INICIALIZAR COLA.
+00000000                             8  ; INPUT    : NONE 
+00000000                             9  ; OUTPUT   : NONE
+00000000                            10  ; MODIFIES : NONE
+00000000                            11  ; ------------------------------------------------------------------------------
+00000000                            12  
+Line 13 ERROR: Invalid syntax
+00000000                            13              MOVE.W  #(PANWIDTH/2)-CBZWIDTH-SGMWIDTH+(COLWIDTH/2),(COLPOSX)
+Line 14 ERROR: Invalid syntax
+00000000                            14              MOVE.W  #(PANHEIGH/2),(COLPOSY)
+00000000                            15              
+00000000  4E75                      16              RTS
+00000002                            17              
+00000002                            18              
+00000002                            19  ; ------------------------------------------------------------------------------
+Line 20 ERROR: Symbol value differs between first and second pass
+00000002                            20  TAILUPD
+00000002                            21  ; ACTUALIZAR COLA.
+00000002                            22  ; INPUT    : NONE 
+00000002                            23  ; OUTPUT   : NONE
+00000002                            24  ; MODIFIES : NONE
+00000002                            25  ; ------------------------------------------------------------------------------
+00000002  48A7 60C0                 26              MOVEM.W D1-D2/A0-A1,-(A7)
+00000006                            27              
+00000006                            28  *            ; Marca la posición actual de la cola como vacía
+00000006                            29  *            MOVE.W  (COLPOSX),D1
+00000006                            30  *            MOVE.W  (COLPOSY),D2
+00000006                            31  *            JSR     CINDMTRZ
+00000006                            32  *            JSR     MCLDVCIA
+00000006                            33  *
+00000006                            34  *            ; Actualiza la posición de la cola para seguir al último segmento
+00000006                            35  *            MOVE.W  (SGMPOSX),(COLPOSX)
+00000006                            36  *            MOVE.W  (SGMPOSY),(COLPOSY)
+00000006                            37  
+00000006                            38  *            ; Guarda la última posición de la cola
+00000006                            39  *            MOVE.W  (COLPOSX),(LASTCOLX)
+00000006                            40  *            MOVE.W  (COLPOSY),(LASTCOLY)
+00000006                            41  *
+00000006                            42  *            ; Marca la nueva posición de la cola como ocupada
+00000006                            43  *            MOVE.W  (COLPOSX),D1             ; Nueva posición X
+00000006                            44  *            MOVE.W  (COLPOSY),D2             ; Nueva posición Y
+00000006                            45  *            JSR     CINDMTRZ
+00000006                            46  *            JSR     COLOCPD
+00000006                            47  *            
+00000006                            48  *            ; Verifica si se debe crecer
+00000006                            49  *            MOVE.W  NUMSGMS, D0
+00000006                            50  *            CMP.W   #0, D0
+00000006                            51  *            BEQ     FINUPD
+00000006                            52  *            
+00000006                            53  *            ; Incrementa el tamaño de la cola
+00000006                            54  *            SUBQ.W  #1, NUMSGMS
+00000006                            55  *            MOVE.W  (LASTCOLX),(COLPOSX)     ; Restaura la posición anterior
+00000006                            56  *            MOVE.W  (LASTCOLY),(COLPOSY)
+00000006                            57  *            
+00000006                            58  *            ; Marca la nueva posición como cola
+00000006                            59  *            MOVE.W  COLPOSX, D1
+00000006                            60  *            MOVE.W  COLPOSY, D2
+00000006                            61  *            JSR     CINDMTRZ
+00000006                            62  *            JSR     COLOCPD
+00000006                            63  
+00000006                            64  
+00000006                            65              ; Actualizar segmentos de la cola
+Line 66 ERROR: Undefined symbol
+00000006  3039 004DBD16             66              MOVE.W  (COLSIZE),D0           ; Número actual de segmentos
+0000000C  B07C 0000                 67              CMP.W   #0,D0
+00000010  6700 002E                 68              BEQ     NO_SEGS               ; Si no hay segmentos, salir
+00000014                            69  
+00000014                            70              ; Desplazar los segmentos hacia atrás
+Line 71 ERROR: Undefined symbol
+00000014  41F9 004DBD16             71              LEA     COLSEGSX,A0
+Line 72 ERROR: Undefined symbol
+0000001A  43F9 004DBD16             72              LEA     COLSEGSY,A1
+Line 73 ERROR: Undefined symbol
+00000020  31B9 004DBD16 0000        73              MOVE.W  (COLPOSX), (A0,D0.W)  ; Guardar posición de la cola
+Line 74 ERROR: Undefined symbol
+00000028  33B9 004DBD16 0000        74              MOVE.W  (COLPOSY), (A1,D0.W)
+00000030                            75  
+Line 76 ERROR: Symbol value differs between first and second pass
+00000030                            76  NO_SEGS:
+00000030                            77              ; Crecer si es necesario
+Line 78 ERROR: Undefined symbol
+00000030  3239 004DBD16             78              MOVE.W  (NUMSGMS),D1
+00000036  B27C 0000                 79              CMP.W   #0,D1
+0000003A  6700 001E                 80              BEQ     FINUPD               ; Si no hay crecimiento pendiente, salir
+0000003E                            81  
+Line 82 ERROR: Undefined symbol
+0000003E  5379 005455D0             82              SUBQ.W  #1,(NUMSGMS)           ; Reducir el contador de crecimiento
+Line 83 ERROR: Undefined symbol
+00000044  5279 005455D4             83              ADDQ.W  #1,(COLSIZE)           ; Incrementar el tamaño de la cola
+0000004A                            84              
+0000004A                            85  *            MOVE.W  COLPOSX,D1
+0000004A                            86  *            MOVE.W  COLPOSY,D2
+0000004A                            87  *            JSR     CINDMTRZ
+0000004A                            88  *            JSR     RSTCLD 
+0000004A                            89  
+Line 90 ERROR: Symbol value differs between first and second pass
+0000004A                            90  FINUPD
+0000004A  4C9F 0306                 91              MOVEM.W (A7)+,D1-D2/A0-A1
+0000004E  4E75                      92              RTS
+00000050                            93              
+00000050                            94  ; ------------------------------------------------------------------------------
+Line 95 ERROR: Symbol value differs between first and second pass
+00000050                            95  TAILPLOT
+00000050                            96  ; DIBUJAR COLA
+00000050                            97  ; INPUT    : NONE 
+00000050                            98  ; OUTPUT   : NONE
+00000050                            99  ; MODIFIES : NONE
+00000050                           100  ; ------------------------------------------------------------------------------
+00000050                           101  
+00000050  48E7 FC00                102              MOVEM.L D0-D5,-(A7)
+00000054                           103  
+00000054                           104              ; Itera sobre cada segmento de la cola y lo dibuja
+00000054                           105  *DRAW_LOOP:
+00000054                           106              ; Convierte la posición de segmento actual a coordenadas
+00000054                           107  *            MOVE.W  (COLPOSX),D1
+00000054                           108  *            MOVE.W  (COLPOSY),D2
+00000054                           109  *            JSR     CNVICOOR
+00000054                           110  
+00000054                           111              ; Dibuja segmento actual
+00000054                           112  *           MOVE.B  #80, D0
+00000054                           113  *            MOVE.L  #COLPCOL, D1
+00000054                           114  *            TRAP    #15
+00000054                           115  *            MOVE.B  #81, D0
+00000054                           116  *            MOVE.L  #COLFCOL, D1
+00000054                           117  *            TRAP    #15
+00000054                           118  *            MOVE.B  #87, D0
+00000054                           119  *            TRAP    #15
+00000054                           120  
+00000054                           121              ; Ir al siguiente segmento
+00000054                           122              ; (Lógica de iteración según cómo estén almacenados los segmentos)
+00000054                           123  
+00000054                           124  *            BRA     DRAW_LOOP  ; Repetir para cada segmento para cada segmento
+00000054                           125  
+00000054                           126  
+00000054                           127              ; Inicializar contador de segmentos
+Line 128 ERROR: Undefined symbol
+00000054  3A39 004DBD16            128              MOVE.W  (COLSIZE),D5           ; Número de segmentos en la cola
+0000005A  BA7C 0000                129              CMP.W   #0,D5                ; Si no hay segmentos, salir
+0000005E  6700 0056                130              BEQ     FIN_PLOT
+00000062                           131  
+00000062                           132              ; Configurar colores
+00000062  103C 0050                133              MOVE.B  #80,D0
+Line 134 ERROR: Undefined symbol
+00000066  223C 004DBD16            134              MOVE.L  #COLPCOL,D1          ; Color del contorno
+0000006C  4E4F                     135              TRAP    #15
+0000006E                           136  
+0000006E  103C 0051                137              MOVE.B  #81,D0
+Line 138 ERROR: Undefined symbol
+00000072  223C 004DBD16            138              MOVE.L  #COLFCOL,D1          ; Color de relleno
+00000078  4E4F                     139              TRAP    #15
+0000007A                           140  
+0000007A                           141              ; Iterar sobre los segmentos de la cola
+Line 142 ERROR: Undefined symbol
+0000007A  41F9 004DBD16            142              LEA     COLSEGSX,A0          ; Apuntar al inicio de las coordenadas X
+Line 143 ERROR: Undefined symbol
+00000080  43F9 004DBD16            143              LEA     COLSEGSY,A1          ; Apuntar al inicio de las coordenadas Y
+00000086                           144  
+Line 145 ERROR: Symbol value differs between first and second pass
+00000086                           145  PLOT_LOOP:  
+00000086  3218                     146              MOVE.W  (A0)+,D1             ; Leer coordenada X del segmento actual
+00000088  3419                     147              MOVE.W  (A1)+,D2             ; Leer coordenada Y del segmento actual
+0000008A                           148  
+0000008A                           149              ; Convertir posición de la celda a coordenadas de pantalla
+Line 150 ERROR: Undefined symbol
+0000008A  4EB9 004DBD16            150              JSR     CNVICOOR
+00000090                           151  
+00000090                           152              ; Dibujar el segmento actual
+00000090  103C 0057                153              MOVE.B  #87,D0
+00000094  3601                     154              MOVE.W  D1,D3
+Line 155 ERROR: Undefined symbol
+00000096  0643 BD16                155              ADD.W   #SIZECLDA,D3
+0000009A  3802                     156              MOVE.W  D2,D4
+Line 157 ERROR: Undefined symbol
+0000009C  0644 BD16                157              ADD.W   #SIZECLDA,D4
+000000A0  4E4F                     158              TRAP    #15
+000000A2                           159  
+000000A2                           160              ; Decrementar el contador y continuar
+000000A2  5345                     161              SUBQ.W  #1, D5
+000000A4  66F0                     162              BNE     PLOT_LOOP
+000000A6                           163  
+000000A6                           164  
+000000A6                           165  
+Line 166 ERROR: Symbol value differs between first and second pass
+000000A6                           166  FIN_PLOT:
+000000A6  4CDF 003F                167              MOVEM.L (A7)+,D0-D5
+000000AA  4E75                     168              RTS
+000000AC                           169  
+000000AC                           170  
+000000AC                           171  
+000000AC                           172  
+000000AC                           173  
+000000AC                           174  
+000000AC                           175  
+000000AC                           176  
+000000AC                           177  *            MOVE.W  D0,-(A7)
+000000AC                           178  *            MOVE.W  D3,D0
+000000AC                           179  *            JSR     CNVICOOR
+000000AC                           180  *            MOVE.L  D1,-(A7)
+000000AC                           181  *            
+000000AC                           182  *            MOVE.B  #80,D0
+000000AC                           183  *            MOVE.L  #COLPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA COLA
+000000AC                           184  *            TRAP    #15
+000000AC                           185  *            
+000000AC                           186  *            MOVE.B  #81,D0
+000000AC                           187  *            MOVE.L  #COLFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA COLA
+000000AC                           188  *            TRAP    #15
+000000AC                           189  *            
+000000AC                           190  *            MOVE.B  #87,D0
+000000AC                           191  *            MOVE.L  (A7)+,D1
+000000AC                           192  *            MOVE.W  D3,-(A7)
+000000AC                           193  *            MOVE.W  D1,D3
+000000AC                           194  *            ADD.W   #SIZECLDA,D3
+000000AC                           195  *            MOVE.W  D2,D4                    
+000000AC                           196  *            ADD.W   #SIZECLDA,D4
+000000AC                           197  *            TRAP    #15                    ; DIBUJAMOS EL CUADRADO 
+000000AC                           198  *                        
+000000AC                           199  *            MOVE.W  (A7)+,D3  
+000000AC                           200  *            MOVE.W  (A7)+,D0
+000000AC                           201  
+000000AC                           202  *            RTS
+000000AC                           203  
+000000AC                           204  
+000000AC                           205  
+000000AC                           206  
+000000AC                           207  
+000000AC                           208  
+000000AC                           209  
+000000AC                           210  
+000000AC                           211  
+000000AC                           212  
+000000AC                           213  
+000000AC                           214  
+000000AC                           215  
+000000AC                           216  
+Line 217 WARNING: END directive missing, starting address not set
+
+24 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+FINUPD              5A
+FIN_PLOT            B6
+NO_SEGS             40
+PLOT_LOOP           96
+TAILINIT            0
+TAILPLOT            60
+TAILUPD             12

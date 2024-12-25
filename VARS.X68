@@ -19,9 +19,21 @@ SGMPOSX     DS.W    1                       ; COORDENADA X SEGMENTO
 SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
 TRZPLOT     DS.B    1                       ; NÚMERO DE TROZOS A DIBUJAR
 
+*NUMSGMS     DS.W    1           ; Número de segmentos de la serpiente
+*LASTCOLX    DS.W    1           ; Última posición X de la cola
+*LASTCOLY    DS.W    1           ; Última posición Y de la cola
+*
+*COLSEGSX    DS.W    100        ; Máximo 100 segmentos, coordenadas X
+*COLSEGSY    DS.W    100        ; Máximo 100 segmentos, coordenadas Y
+*COLSIZE     DS.W    1          ; Tamaño actual de la cola
+
+
 ; --- VARIABLES DEL MARCADOR -------------------------------------------------
 
 JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
+
+
+
 
 
 

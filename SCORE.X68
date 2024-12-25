@@ -19,6 +19,16 @@ SCOUPD
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
+            
+            MOVEM.L D0,-(A7)
+            
+            ;Incrementa el marcador
+            MOVE.W  (JGOPNTS),D0
+            ADD.W  #25,D0
+            MOVE.W  D0,(JGOPNTS)
+            
+            MOVEM.L (A7)+,D0
+
             RTS
             
 ; ------------------------------------------------------------------------------
@@ -56,6 +66,8 @@ SCOPLOT
 
 
 .TXT1       DC.B    'PUNTOS : ',0
+
+
 
 
 *~Font name~Courier New~

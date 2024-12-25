@@ -45,6 +45,7 @@ HEADUPD
 *            JSR     CINDMTRZ
 *            JSR     RSTCLD
             
+            ; Actualiza la posición de la cabeza según ESTDCBZ
             ;CLR.W   D0
             MOVE.W  (ESTDCBZ),D0
             CMP.W   #0,D0
@@ -74,50 +75,66 @@ HEADUPD
 *            CMP.L   #$000000FF, D0         ; Derecha
 *            BEQ     MOVE_RIGHT
 
-            ; Si no hay dirección válida, salir
+            ; Si no hay dirección válida, sale
             BRA     FIN
 
 SIGDER:
             ADD.W   #CBZVEL, (CBZPOSX)
-            BRA     UPDMTRZ
+            BRA     CHKCOL
 
 SIGARR:
             SUB.W   #CBZVEL, (CBZPOSY)
-            BRA     UPDMTRZ
+            BRA     CHKCOL
 
 SIGIZQ:
             SUB.W   #CBZVEL, (CBZPOSX)
-            BRA     UPDMTRZ
+            BRA     CHKCOL
 
 SIGABA:
             ADD.W   #CBZVEL, (CBZPOSY)
+            
+CHKCOL:
+            ; Verifica la colisión con la manzana
+            MOVE.W  (CBZPOSX),D1
+            MOVE.W  (CBZPOSY),D2
+            CMP.W   (MNZPOSX),D1
+            BNE     NOCOL
+            CMP.W   (MNZPOSY),D2
+            BNE     NOCOL
+            
+            ; Colisión detectada
+            JSR     APPLEUPD
+            JSR     SCOUPD
+            
+            
 
-UPDMTRZ:
-            ; Convertir posición nueva a índice
+NOCOL:
+            ; Convierte la posición nueva a índice
             MOVE.W  (CBZPOSX),D1
             MOVE.W  (CBZPOSY),D2
             JSR     CINDMTRZ
+            JSR     CBZOCPD                 ; Marca la celda como ocupada
 
-            ; Verificar colisiones
-            JSR     CHECKCLD
-            CMP.W   #0,D0                 ; Si celda está libre
-            BEQ     MARKCLD
-            BRA     GAMEOVER              ; Colisión consigo misma
-
-MARKCLD:
-            ; Marcar nueva posición como ocupada por la cabeza
-            JSR     CBZOCPD
-            BRA     FIN
-
-GAMEOVER:
-            ; Implementar lógica de fin de juego
-            ; Por ahora, simplemente retornar
-            BRA     FIN
+*            ; Verificar colisiones
+*            JSR     CHECKCLD
+*            CMP.W   #0,D0                 ; Si celda está libre
+*            BEQ     MARKCLD
+*            BRA     GAMEOVER              ; Colisión consigo misma
+*
+*MARKCLD:
+*            ; Marcar nueva posición como ocupada por la cabeza
+*            JSR     CBZOCPD
+*            BRA     FIN
+*
+*GAMEOVER:
+*            ; Implementar lógica de fin de juego
+*            ; Por ahora, simplemente retornar
+*            BRA     FIN
 
 FIN:
-            MOVEM.W (A7)+,D0-D2            ; Restaurar registros
+            MOVEM.W (A7)+,D0-D2
 
-    RTS
+            RTS
             
 ; ------------------------------------------------------------------------------
 HEADPLOT
@@ -190,6 +207,8 @@ HEADPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
+
 
 
 

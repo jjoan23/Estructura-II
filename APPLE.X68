@@ -46,6 +46,11 @@ APPLEUPD
 ; MODIFIES : MNZPOSX, MNZPOSY, ESTDCLDS
 ; ------------------------------------------------------------------------------
 
+*            ; Incrementar el tamaño de la serpiente
+*            MOVE.W  NUMSGMS, D0
+*            ADD.W   #1,D0
+*            MOVE.W  D0,(NUMSGMS)
+
             ; Convierte las coordenadas actuales de la manzana a índice de la matriz
             JSR     CINDMTRZ
 
@@ -161,6 +166,8 @@ GENPOSMNZ
             
             MOVEM.L (A7)+,D0
             RTS 
+
+
 
 
 

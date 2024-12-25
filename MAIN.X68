@@ -47,6 +47,7 @@ START:
             JSR     HEADUPD
             ;JSR     APPLEUPD  
             JSR     MTZUPD
+            ;JSR     SCOUPD
             
 ; --- SINCRONIZACIÓN ---------------------------------------------------------
             ; THE FOLLOWING SYNC STRATEGY IS ****WRONG****
@@ -76,6 +77,8 @@ START:
     
     
             END    START        
+
+
 
 
 
