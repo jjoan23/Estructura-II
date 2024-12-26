@@ -79,19 +79,19 @@ HEADUPD
             BRA     FIN
 
 SIGDER:
-            ADD.W   #CBZVEL, (CBZPOSX)
+            ADD.W   #CBZVEL,(CBZPOSX)
             BRA     CHKCOL
 
 SIGARR:
-            SUB.W   #CBZVEL, (CBZPOSY)
+            SUB.W   #CBZVEL,(CBZPOSY)
             BRA     CHKCOL
 
 SIGIZQ:
-            SUB.W   #CBZVEL, (CBZPOSX)
+            SUB.W   #CBZVEL,(CBZPOSX)
             BRA     CHKCOL
 
 SIGABA:
-            ADD.W   #CBZVEL, (CBZPOSY)
+            ADD.W   #CBZVEL,(CBZPOSY)
             
 CHKCOL:
             ; Verifica la colisión con la manzana
@@ -105,7 +105,7 @@ CHKCOL:
             ; Colisión detectada
             JSR     APPLEUPD
             JSR     SCOUPD
-            
+            ;JSR     SEGADD
             
 
 NOCOL:
@@ -207,6 +207,8 @@ HEADPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
+
 
 
 

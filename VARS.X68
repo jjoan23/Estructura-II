@@ -19,6 +19,10 @@ SGMPOSX     DS.W    1                       ; COORDENADA X SEGMENTO
 SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
 TRZPLOT     DS.B    1                       ; NÚMERO DE TROZOS A DIBUJAR
 
+*MAXSEG      EQU     100                      ;TAMAÑO MAXIMO DE LA SERPIENTE
+*SEGMENTS    DS.W    MAXSEG*2           ;ALMACENA POSICIONES X,Y DE LOS SEGMENTOS
+*SEGCOUNT    DS.W    1                       ;CANTIDAD DE SEGMENTOS
+
 *NUMSGMS     DS.W    1           ; Número de segmentos de la serpiente
 *LASTCOLX    DS.W    1           ; Última posición X de la cola
 *LASTCOLY    DS.W    1           ; Última posición Y de la cola
@@ -31,6 +35,8 @@ TRZPLOT     DS.B    1                       ; NÚMERO DE TROZOS A DIBUJAR
 ; --- VARIABLES DEL MARCADOR -------------------------------------------------
 
 JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
+
+
 
 
 

@@ -34,9 +34,6 @@ MARKMNZ:
             JSR     APPLEPLOT
 
             RTS
-            
-            ;MOVE.W  #30,(MNZPOSX)   ;DE MOMENTO PONGO X E Y ELEGIDAS MANUALMENTE, EN TEORÍA DEBE SER ALEATORIO
-            ;MOVE.W  #30,(MNZPOSY)
 
 ; ------------------------------------------------------------------------------
 APPLEUPD
@@ -166,6 +163,7 @@ GENPOSMNZ
             
             MOVEM.L (A7)+,D0
             RTS 
+
 
 
 

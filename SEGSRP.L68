@@ -1,0 +1,193 @@
+000018F2 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 26/12/2024 15:57:17
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * MANEJO DEL SEGMENTO DE LA SERPIENTE
+00000000                             3  *-----------------------------------------------------------
+00000000                             4  
+00000000                             5  ; ------------------------------------------------------------------------------
+00000000                             6  SEGINIT
+00000000                             7  ; INICIALIZAR SEGMENTO.
+00000000                             8  ; INPUT    : NONE 
+00000000                             9  ; OUTPUT   : NONE
+00000000                            10  ; MODIFIES : NONE
+00000000                            11  ; ------------------------------------------------------------------------------
+Line 12 ERROR: Invalid syntax
+00000000                            12              MOVE.W  #(PANWIDTH/2)-CBZWIDTH,(SGMPOSX)
+Line 13 ERROR: Comma expected
+00000000                            13              MOVE.W  #PANHEIGH/2,(SGMPOSY)
+00000000  4E75                      14              RTS
+00000002                            15              
+00000002                            16  ; ------------------------------------------------------------------------------
+Line 17 ERROR: Symbol value differs between first and second pass
+00000002                            17  SEGUPD
+00000002                            18  ; ACTUALIZAR SEGMENTO.
+00000002                            19  ; INPUT    : NONE 
+00000002                            20  ; OUTPUT   : NONE
+00000002                            21  ; MODIFIES : NONE
+00000002                            22  ; ------------------------------------------------------------------------------
+00000002                            23  
+00000002  48E7 E080                 24              MOVEM.L D0-D2/A0,-(A7)
+00000006                            25  
+Line 26 ERROR: Comma expected
+00000006                            26              MOVE.W  #MAXSEGMENTS-1,D0   ; Número máximo de segmentos - 1
+Line 27 ERROR: Undefined symbol
+00000006  41F9 004DBD16             27              LEA     SEGMENTS,A0         ; Apunta al inicio del array de segmentos
+0000000C                            28  
+0000000C                            29  
+Line 30 ERROR: Symbol value differs between first and second pass
+0000000C                            30  UPD_LOOP:
+0000000C                            31              ; Mover posición del segmento N-1 al segmento N
+0000000C  3210                      32              MOVE.W  (A0),D1             ; Carga X del segmento actual
+0000000E  3428 0002                 33              MOVE.W  2(A0),D2            ; Carga Y del segmento actual
+00000012  3141 0004                 34              MOVE.W  D1,4(A0)            ; Copia X al siguiente segmento
+00000016  3142 0006                 35              MOVE.W  D2,6(A0)            ; Copia Y al siguiente segmento
+0000001A                            36  
+0000001A                            37              ; Avanza al siguiente segmento
+0000001A  5888                      38              ADDQ.L  #4,A0               ; Mueve el puntero al siguiente par X,Y
+0000001C  5340                      39              SUBQ.W  #1,D0               ; Decrementa contador de segmentos
+0000001E  6A00 0000                 40              BPL     UPD_LOOP             ; Si D0 >= 0, sigue iterando
+00000022                            41  
+00000022                            42              ; Actualizar la cabeza con la posición actual
+Line 43 ERROR: Undefined symbol
+00000022  33F9 004DBD16 005455D0    43              MOVE.W  CBZPOSX,(SEGMENTS)  ; Actualiza X de la cabeza
+Line 44 ERROR: Invalid syntax
+0000002C                            44              MOVE.W  CBZPOSY,2(SEGMENTS) ; Actualiza Y de la cabeza
+0000002C                            45  
+0000002C  4CDF 0107                 46              MOVEM.L (A7)+,D0-D2/A0
+00000030  4E75                      47              RTS
+00000032                            48  
+00000032                            49  
+00000032                            50  ;CODIGO FUNCIONA (SIN AUMENTO DE SERPIENTE)
+00000032                            51  *            MOVEM.W D1-D2,-(A7)
+00000032                            52  *            
+00000032                            53  *            ; Marcar posición anterior del segmento como vacía
+00000032                            54  *            MOVE.W  (SGMPOSX),D1             ; Cargar posición X actual del segmento
+00000032                            55  *            MOVE.W  (SGMPOSY),D2             ; Cargar posición Y actual del segmento
+00000032                            56  *            JSR     CINDMTRZ                ; Obtener índice de celda en D0
+00000032                            57  *            JSR     MCLDVCIA                ; Marcar celda como vacía
+00000032                            58  *            
+00000032                            59  *            ; Actualizar posición del segmento para seguir a la cabeza
+00000032                            60  *            MOVE.W  (CBZPOSX),(SGMPOSX)        ; Actualizar X del segmento con la X de la cabeza
+00000032                            61  *            MOVE.W  (CBZPOSY),(SGMPOSY)        ; Actualizar Y del segmento con la Y de la cabeza
+00000032                            62  *
+00000032                            63  *            ; Marcar nueva posición del segmento como ocupada
+00000032                            64  *            MOVE.W  (SGMPOSX),D1             ; Cargar nueva posición X
+00000032                            65  *            MOVE.W  (SGMPOSY),D2             ; Cargar nueva posición Y
+00000032                            66  *            JSR     CINDMTRZ                ; Obtener índice de celda en D0
+00000032                            67  *            JSR     SGMOCPD                 ; Marcar celda como ocupada por segmento
+00000032                            68  *            
+00000032                            69  *            MOVEM.W (A7)+,D1-D2            
+00000032                            70  *            RTS
+00000032                            71  *            
+00000032                            72  ;CODIGO ANTIGUO
+00000032                            73  *            MOVE.W  SGMPOSX,D1
+00000032                            74  *            MOVE.W  D1,COLPOSX
+00000032                            75  *            MOVE.W  SGMPOSY,D2
+00000032                            76  *            MOVE.W  D2,COLPOSY
+00000032                            77  *            JSR     CINDMTRZ
+00000032                            78  *            JSR     RSTCLD
+00000032                            79              
+00000032                            80              
+00000032                            81              
+00000032                            82  ; ------------------------------------------------------------------------------
+Line 83 ERROR: Symbol value differs between first and second pass
+00000032                            83  SEGPLOT
+00000032                            84  ; DIBUJAR SEGMENTO.
+00000032                            85  ; INPUT    : NONE 
+00000032                            86  ; OUTPUT   : NONE
+00000032                            87  ; MODIFIES : NONE
+00000032                            88  ; ------------------------------------------------------------------------------
+00000032  3F00                      89              MOVE.W  D0,-(A7)
+00000034  3003                      90              MOVE.W  D3,D0
+Line 91 ERROR: Undefined symbol
+00000036  4EB9 004DBD16             91              JSR     CNVICOOR
+0000003C  2F01                      92              MOVE.L  D1,-(A7)
+0000003E                            93              
+0000003E  103C 0050                 94              MOVE.B  #80,D0
+Line 95 ERROR: Undefined symbol
+00000042  223C 004DBD16             95              MOVE.L  #SGMPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DEL SEGMENTO
+00000048  4E4F                      96              TRAP    #15
+0000004A                            97              
+0000004A  103C 0051                 98              MOVE.B  #81,D0
+Line 99 ERROR: Undefined symbol
+0000004E  223C 004DBD16             99              MOVE.L  #SGMFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DEL SEGMENTO
+00000054  4E4F                     100              TRAP    #15
+00000056                           101              
+00000056  103C 0057                102              MOVE.B  #87,D0
+0000005A  221F                     103              MOVE.L  (A7)+,D1
+0000005C  3F03                     104              MOVE.W  D3,-(A7)
+0000005E  3601                     105              MOVE.W  D1,D3
+Line 106 ERROR: Undefined symbol
+00000060  0643 BD16                106              ADD.W   #SIZECLDA,D3
+00000064  3802                     107              MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+Line 108 ERROR: Undefined symbol
+00000066  0644 BD16                108              ADD.W   #SIZECLDA,D4
+0000006A  4E4F                     109              TRAP    #15                     
+0000006C                           110                          
+0000006C  361F                     111              MOVE.W  (A7)+,D3  
+0000006E  301F                     112              MOVE.W  (A7)+,D0
+00000070                           113  
+00000070  4E75                     114              RTS
+00000072                           115              
+00000072                           116  ; ------------------------------------------------------------------------------
+Line 117 ERROR: Symbol value differs between first and second pass
+00000072                           117  SEADD
+00000072                           118  ; DIBUJAR SEGMENTO.
+00000072                           119  ; INPUT    : NONE 
+00000072                           120  ; OUTPUT   : NONE
+00000072                           121  ; MODIFIES : NONE
+00000072                           122  ; ------------------------------------------------------------------------------            
+00000072                           123              
+00000072  48E7 E080                124              MOVEM.L D0-D2/A0,-(A7)
+00000076                           125  
+00000076                           126              ; Asegurar que no se exceda el tamaño máximo
+Line 127 ERROR: Undefined symbol
+00000076  3039 004DBD16            127              MOVE.W  (SEGCOUNT),D0
+Line 128 ERROR: Undefined symbol
+0000007C  B07C BD16                128              CMP.W   #MAXSEG,D0
+00000080  6C00 0020                129              BGE     FINSEGADD
+00000084                           130  
+00000084                           131              ; Obtener posición actual de la cola
+Line 132 ERROR: Undefined symbol
+00000084  41F9 004DBD16            132              LEA     SEGMENTS,A0
+Line 133 ERROR: Invalid syntax
+0000008A                           133              MOVE.W  (COLPOSX),(A0,D0*4)    ; Guardar X
+Line 134 ERROR: Invalid syntax
+0000008A                           134              MOVE.W  (COLPOSY),2(A0,D0*4)  ; Guardar Y
+0000008A                           135  
+0000008A                           136              ; Incrementar contador de segmentos
+Line 137 ERROR: Undefined symbol
+0000008A  5279 005455B8            137              ADDQ.W  #1,(SEGCOUNT)
+00000090                           138  
+Line 139 ERROR: Symbol value differs between first and second pass
+00000090                           139  FINSEGADD:
+00000090  4CDF 0107                140              MOVEM.L (A7)+,D0-D2/A0
+00000094  4E75                     141              RTS
+00000096                           142  
+00000096                           143  
+00000096                           144  
+00000096                           145  
+00000096                           146  
+00000096                           147  
+00000096                           148  
+00000096                           149  
+00000096                           150  
+00000096                           151  
+00000096                           152  
+Line 153 WARNING: END directive missing, starting address not set
+
+22 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+FINSEGADD           A2
+SEADD               84
+SEGINIT             0
+SEGPLOT             44
+SEGUPD              12
+UPD_LOOP            20

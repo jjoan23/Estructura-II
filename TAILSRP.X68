@@ -99,6 +99,34 @@ TAILPLOT
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
 
+            MOVE.W  D0,-(A7)
+            MOVE.W  D3,D0
+            JSR     CNVICOOR
+            MOVE.L  D1,-(A7)
+            
+            MOVE.B  #80,D0
+            MOVE.L  #COLPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA COLA
+            TRAP    #15
+            
+            MOVE.B  #81,D0
+            MOVE.L  #COLFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA COLA
+            TRAP    #15
+            
+            MOVE.B  #87,D0
+            MOVE.L  (A7)+,D1
+            MOVE.W  D3,-(A7)
+            MOVE.W  D1,D3
+            ADD.W   #SIZECLDA,D3
+            MOVE.W  D2,D4                    
+            ADD.W   #SIZECLDA,D4
+            TRAP    #15                    ; DIBUJAMOS EL CUADRADO 
+                        
+            MOVE.W  (A7)+,D3  
+            MOVE.W  (A7)+,D0
+
+            RTS
+
+
 *            MOVEM.L D0-D5,-(A7)
 *
 *; CODIGO SEGMENTOS
@@ -167,36 +195,6 @@ TAILPLOT
 *FIN_PLOT:
 *            MOVEM.L (A7)+,D0-D5
 *            RTS
-
-
-
-
-            MOVE.W  D0,-(A7)
-            MOVE.W  D3,D0
-            JSR     CNVICOOR
-            MOVE.L  D1,-(A7)
-            
-            MOVE.B  #80,D0
-            MOVE.L  #COLPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA COLA
-            TRAP    #15
-            
-            MOVE.B  #81,D0
-            MOVE.L  #COLFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA COLA
-            TRAP    #15
-            
-            MOVE.B  #87,D0
-            MOVE.L  (A7)+,D1
-            MOVE.W  D3,-(A7)
-            MOVE.W  D1,D3
-            ADD.W   #SIZECLDA,D3
-            MOVE.W  D2,D4                    
-            ADD.W   #SIZECLDA,D4
-            TRAP    #15                    ; DIBUJAMOS EL CUADRADO 
-                        
-            MOVE.W  (A7)+,D3  
-            MOVE.W  (A7)+,D0
-
-            RTS
 
 
 
