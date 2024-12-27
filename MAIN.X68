@@ -21,6 +21,7 @@ START:
                 
 ; --- INIZIALIZACIÓN ---------------------------------------------------------
 
+            ORI.W   #$0700,SR
             JSR     SYSINIT
             JSR     UTLINIT
             JSR     KBDINIT
@@ -50,10 +51,10 @@ START:
             ;JSR     SCOUPD
             
 ; --- SINCRONIZACIÓN ---------------------------------------------------------
-            ; THE FOLLOWING SYNC STRATEGY IS ****WRONG****
-            MOVE.B  #23,D0
-            MOVE.L  #1,D1
-            TRAP    #15
+            
+.WINT       TST.B   (SCRINTCT)
+            BEQ     .WINT   
+            CLR.B   (SCRINTCT)         
 
 
 ;---DIBUJAR-------------------------------------------------------------------
@@ -77,6 +78,7 @@ START:
     
     
             END    START        
+
 
 
 

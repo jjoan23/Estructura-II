@@ -13,7 +13,10 @@ KBDVAL      DS.B    1
 KBDEDGE     DS.B    1                       ; KEY EDGE
 LASTKEY     DS.L    1                       
 
-
+;--- TIMED INTERRUPT RELATED VARIABLES ---------------------------------------
+            
+SCRINTCT    DS.B    1                       ; INTERRUPT COUNTER
+            DS.W    0
 
 
 

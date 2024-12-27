@@ -9,20 +9,21 @@ SYSINIT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ----------------------------------------------------------------------------
-            JSR     SCRINIT
             
             MOVE.L  #SCRPLOT,($80)
             MOVE.L  #KBDUPD,($84)
+            MOVE.L  #SCRTIM,($64)
             
+            JSR     SCRINIT
             MOVE.W  SR,-(A7)
-            ANDI.W  #$DFFF,(A7)
+            ANDI.W  #$D8FF,(A7)
             
             RTE
             
 ; ------------------------------------------------------------------------------
 SCRINIT
 ; INIT SCREEN. SET SCREEN RESOLUTION, SET WINDOWED MODE, CLEAR SCREEN,
-; ENABLE DOUBLE BUFFER.
+; ENABLE DOUBLE BUFFER, ENABLED TIMED INTERRUPT.
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
@@ -49,9 +50,30 @@ SCRINIT
             MOVE.B  #17,D1
             TRAP    #15
             
+            ; ENABLE TIMED INTERRUPT
+            MOVE.B  #32,D0
+            MOVE.B  #6,D1
+            MOVE.B  #$81,D2
+            MOVE.L  #20,D3                  ; CON 20 SE CONSIUGUEN 50 FPS
+            TRAP    #15
+            
+            ; CLEAR INTERRUPT COUNTER
+            CLR.B   (SCRINTCT)
+            
             MOVEM.L (A7)+,D0-D1
             
             RTS    
+            
+; ------------------------------------------------------------------------------
+SCRTIM
+; TIMED INTERRUPT SERVICE ROUTINE
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+            ADDQ.B  #1,(SCRINTCT)
+            RTE
+            
 
 ; ------------------------------------------------------------------------------
 SCRPLOT
@@ -250,6 +272,7 @@ CONTINU:
 *            MOVEM.L (A7)+,D0-D3
 *
 *            RTE
+
 
 
 
