@@ -32,8 +32,8 @@ TAILUPD
             JSR     MCLDVCIA
 *
             ; Actualiza la posición de la cola para seguir al último segmento
-            MOVE.W  (SGMPOSX),(COLPOSX)
-            MOVE.W  (SGMPOSY),(COLPOSY)
+            MOVE.W  (SGMPOSX2),(COLPOSX)
+            MOVE.W  (SGMPOSY2),(COLPOSY)    ; MARCAMOS LA COOORDENADA DE LA COLA COMO COORDENADA DEL SEGMENTO 2
 
 *            ; Guarda la última posición de la cola
 *            MOVE.W  (COLPOSX),(LASTCOLX)
@@ -195,6 +195,7 @@ TAILPLOT
 *FIN_PLOT:
 *            MOVEM.L (A7)+,D0-D5
 *            RTS
+
 
 
 

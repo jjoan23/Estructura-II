@@ -11,6 +11,9 @@ SEGINIT
 ; ------------------------------------------------------------------------------
             MOVE.W  #(PANWIDTH/2)-CBZWIDTH,(SGMPOSX)
             MOVE.W  #PANHEIGH/2,(SGMPOSY)
+            MOVE.W  (SGMPOSX),(SGMPOSX2)
+            MOVE.W  (SGMPOSY),(SGMPOSY2)
+            SUB.W   #SGMWIDTH,(SGMPOSX2)
             RTS
             
 ; ------------------------------------------------------------------------------
@@ -24,18 +27,25 @@ SEGUPD
             MOVEM.W D1-D2,-(A7)
             
             ; Marcar posición anterior del segmento como vacía
-            MOVE.W  (SGMPOSX),D1             ; Cargar posición X actual del segmento
-            MOVE.W  (SGMPOSY),D2             ; Cargar posición Y actual del segmento
+            MOVE.W  (SGMPOSX2),D1             ; Cargar posición X actual del segmento2
+            MOVE.W  (SGMPOSY2),D2             ; Cargar posición Y actual del segmento2
             JSR     CINDMTRZ                ; Obtener índice de celda en D0
             JSR     MCLDVCIA                ; Marcar celda como vacía
             
             ; Actualizar posición del segmento para seguir a la cabeza
+            MOVE.W  (SGMPOSX),(SGMPOSX2)    ; MARCAMOS LOS SEGMENTOS COMO SEGUNDA COORDENADA X
+            MOVE.W  (SGMPOSY),(SGMPOSY2)    ; MARCAMOS LOS SEGMENTOS COMO SEGUNDA COORDENADA Y
             MOVE.W  (CBZPOSX),(SGMPOSX)        ; Actualizar X del segmento con la X de la cabeza
             MOVE.W  (CBZPOSY),(SGMPOSY)        ; Actualizar Y del segmento con la Y de la cabeza
 
             ; Marcar nueva posición del segmento como ocupada
             MOVE.W  (SGMPOSX),D1             ; Cargar nueva posición X
             MOVE.W  (SGMPOSY),D2             ; Cargar nueva posición Y
+            JSR     CINDMTRZ                ; Obtener índice de celda en D0
+            JSR     SGMOCPD                 ; Marcar celda como ocupada por segmento
+            
+            MOVE.W  (SGMPOSX2),D1             ; Cargar nueva posición X DEL SEGMENTO 2
+            MOVE.W  (SGMPOSY2),D2             ; Cargar nueva posición Y DEL SEGMENTO 2
             JSR     CINDMTRZ                ; Obtener índice de celda en D0
             JSR     SGMOCPD                 ; Marcar celda como ocupada por segmento
             
@@ -140,6 +150,7 @@ SEGPLOT
 *FINSEGADD:
 *            MOVEM.L (A7)+,D0-D2/A0
 *            RTS
+
 
 
 

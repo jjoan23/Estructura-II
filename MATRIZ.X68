@@ -27,11 +27,16 @@ CLNCLDS:
             JSR     CBZOCPD                 ; MARCAMOS LA POSICIÓN COMO CABEZA
             
             MOVE.W  SGMPOSX, D1
-            MOVE.W  SGMPOSY, D2             ; VEMOS LA POSICIÓN INICIAL DEL SEGMENTO
+            MOVE.W  SGMPOSY, D2             ; VEMOS LA POSICIÓN DEL SEGMENTO
             JSR     CINDMTRZ
             JSR     SGMOCPD                 ; MARCAMOS LA POSICIÓN DEL SEGMENTO
             
-            MOVE.W  COLPOSX, D1             ; VEMOS LA POSICIÓN INICIAL DE LA COLA
+            MOVE.W  SGMPOSX2, D1
+            MOVE.W  SGMPOSY2, D2            ; VEMOS LA POSICIÓN DEL SEGMENTO 2
+            JSR     CINDMTRZ
+            JSR     SGMOCPD                 ; MARCAMOS LA POSICION DEL SEGMENTO 2
+            
+            MOVE.W  COLPOSX, D1             ; VEMOS LA POSICIÓN DE LA COLA
             MOVE.W  COLPOSY, D2
             JSR     CINDMTRZ
             JSR     COLOCPD                 ; MARCAMOS LA POSICIÓN DE LA COLA
@@ -399,6 +404,7 @@ PLOTSEG:
 PLOTAPPLE:
             JSR     APPLEPLOT
             BRA     DONEPLOT            
+
 
 
 
