@@ -11,8 +11,7 @@ HEADINIT
 ; ------------------------------------------------------------------------------
             MOVE.W  #PANWIDTH/2,(CBZPOSX)
             MOVE.W  #PANHEIGH/2,(CBZPOSY)
-            CLR     (TRZPLOT)
-            MOVE.B  #3,(TRZPLOT)
+            ;ADD.W   #20,(CBZVEL)
             CLR.W   (ESTDCBZ)
             MOVE.W  #0,(ESTDCBZ)
             RTS
@@ -25,28 +24,18 @@ HEADUPD
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
 
-            MOVEM.W D0-D2,-(A7)            ; Guardar registros
-
-*            ; Limpiar registros
-*            CLR.W   D0
-*            CLR.W   D1
-*            CLR.W   D2
+            MOVEM.W D0-D2,-(A7)
 
             ; Marcar celda actual como vacía
             MOVE.W  (CBZPOSX),D1
             MOVE.W  (CBZPOSY),D2
             JSR     CINDMTRZ
-            JSR     MCLDVCIA               ; RESTAMOS 1 A LA CELDA ACTUAL
+            JSR     MCLDVCIA
             
-*            MOVE.W  CBZPOSX,D1
-*            MOVE.W  D1,SGMPOSX
-*            MOVE.W  CBZPOSY,D2
-*            MOVE.W  D2,SGMPOSY
-*            JSR     CINDMTRZ
-*            JSR     RSTCLD
+*            CLR.W   D3
+*            MOVE.W  (CBZVEL),D3
             
             ; Actualiza la posición de la cabeza según ESTDCBZ
-            ;CLR.W   D0
             MOVE.W  (ESTDCBZ),D0
             CMP.W   #0,D0
             BEQ     SIGDER
@@ -56,24 +45,6 @@ HEADUPD
             BEQ     SIGIZQ
             CMP.W   #3,D0
             BEQ     SIGABA
-
-*            ; Marcar celda actual de la cabeza como vacía
-*
-*            MOVE.W  CBZPOSX, D1
-*            MOVE.W  CBZPOSY, D2
-*            JSR     CINDMTRZ               ; Obtener índice en D0
-*            JSR     MCLDVCIA               ; Marcar celda como vacía
-
-*            ; Leer estado de KBDEDGE y determinar dirección
-*            MOVE.B  (KBDEDGE),D0
-*            CMP.L   #$FF000000, D0         ; Abajo
-*            BEQ     MOVE_DOWN
-*            CMP.L   #$00FF0000, D0         ; Izquierda
-*            BEQ     MOVE_LEFT
-*            CMP.L   #$0000FF00, D0         ; Arriba
-*            BEQ     MOVE_UP
-*            CMP.L   #$000000FF, D0         ; Derecha
-*            BEQ     MOVE_RIGHT
 
             ; Si no hay dirección válida, sale
             BRA     FIN
@@ -105,8 +76,7 @@ CHKCOL:
             ; Colisión detectada
             JSR     APPLEUPD
             JSR     SCOUPD
-            ;JSR     SEGADD
-            
+            ;ADDQ.W  #2,(CBZVEL)
 
 NOCOL:
             ; Convierte la posición nueva a índice
@@ -207,6 +177,13 @@ HEADPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
+
+
+
+
+
+
 
 
 

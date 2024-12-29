@@ -1,0 +1,64 @@
+0000196A Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 29/12/2024 12:08:45
+
+00000000                             1  ; ----------------------------------------------------------------------------
+00000000                             2  ; VARIABLES DEL JUEGO
+00000000                             3  ; ----------------------------------------------------------------------------
+00000000                             4  
+00000000                             5  ; --- VARIABLES DE LA MANZANA ------------------------------------------------
+00000000                             6  
+00000000                             7  MNZPOSX     DS.W    1                       ; COORDENADA X DE LA MANZANA
+00000002                             8  MNZPOSY     DS.W    1                       ; COORDENADA Y DE LA MANZANA
+00000004                             9  
+00000004                            10  ; --- VARIABLES DE LA SERPIENTE ----------------------------------------------
+00000004                            11  
+00000004                            12  CBZPOSX     DS.W    1                       ; COORDENADA X CABEZA
+00000006                            13  CBZPOSY     DS.W    1                       ; COORDENADA Y CABEZA
+00000008                            14  CBZVELX     DS.W    1                       ; VELOCIDAD X CABEZA
+0000000A                            15  CBZVELY     DS.W    1                       ; VELOCIDAD Y CABEZA
+0000000C                            16  COLPOSX     DS.W    1                       ; COORDENADA X COLA
+0000000E                            17  COLPOSY     DS.W    1                       ; COORDENADA Y COLA
+00000010                            18  SGMPOSX     DS.W    1                       ; COORDENADA X SEGMENTO
+00000012                            19  SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
+00000014                            20  SGMPOSX2    DS.W    1                       ; COORDENADA X SEGMENTO 2
+00000016                            21  SGMPOSY2    DS.W    1                       ; COORDENADA Y SEGMENTO 2
+00000018                            22  ;TRZPLOT     DS.B    1                       ; NÚMERO DE TROZOS A DIBUJAR
+00000018                            23  
+00000018                            24  
+00000018                            25  
+00000018                            26  ; --- VARIABLES DEL MARCADOR -------------------------------------------------
+00000018                            27  
+00000018                            28  JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
+0000001A                            29  
+0000001A                            30  
+0000001A                            31  
+0000001A                            32  
+0000001A                            33  
+0000001A                            34  
+0000001A                            35  
+0000001A                            36  
+0000001A                            37  
+0000001A                            38  
+Line 39 WARNING: END directive missing, starting address not set
+
+No errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+CBZPOSX             4
+CBZPOSY             6
+CBZVELX             8
+CBZVELY             A
+COLPOSX             C
+COLPOSY             E
+JGOPNTS             18
+MNZPOSX             0
+MNZPOSY             2
+SGMPOSX             10
+SGMPOSX2            14
+SGMPOSY             12
+SGMPOSY2            16

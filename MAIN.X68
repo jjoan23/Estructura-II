@@ -46,9 +46,7 @@ START:
             JSR     TAILUPD
             JSR     SEGUPD
             JSR     HEADUPD
-            ;JSR     APPLEUPD  
             JSR     MTZUPD
-            ;JSR     SCOUPD
             
 ; --- SINCRONIZACIÓN ---------------------------------------------------------
             
@@ -78,6 +76,10 @@ START:
     
     
             END    START        
+
+
+
+
 
 
 
