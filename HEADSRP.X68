@@ -76,6 +76,8 @@ CHKCOL:
             ; Colisión detectada
             JSR     APPLEUPD
             JSR     SCOUPD
+            MOVE.B  #SNDEAT,D7
+            TRAP    #SNDPLTN
             ;ADDQ.W  #2,(CBZVEL)
 
 NOCOL:
@@ -90,6 +92,8 @@ NOCOL:
 *            CMP.W   #0,D0                 ; Si celda está libre
 *            BEQ     MARKCLD
 *            BRA     GAMEOVER              ; Colisión consigo misma
+*            MOVE.B  #SNDGMOV,D7             ;PONER SONIDO GAME OVER
+*            TRAP    #SNDPLTN
 *
 *MARKCLD:
 *            ; Marcar nueva posición como ocupada por la cabeza
@@ -177,6 +181,7 @@ HEADPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
 
 
 

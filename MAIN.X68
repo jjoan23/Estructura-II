@@ -24,7 +24,6 @@ START:
             ORI.W   #$0700,SR
             JSR     SYSINIT
             JSR     UTLINIT
-            JSR     KBDINIT
             JSR     MTZINIT
             JSR     HEADINIT                
             JSR     SEGINIT
@@ -39,7 +38,7 @@ START:
 
 ; LEER DISPOSITIVOS DE ENTRADA
 
-            TRAP    #1
+            TRAP    #KBDUPTN
 
 ; ACTUALIZAR LÓGICA DEL JUEGO
             
@@ -63,7 +62,7 @@ START:
              JSR    MTZPLOT
              JSR    SCOPLOT
             
-            TRAP    #0                      ; ACTUALIZA DOBLE BUFFER
+            TRAP    #SCRUPTN                      ; ACTUALIZA DOBLE BUFFER
 
 
             BRA     .LOOP
@@ -76,6 +75,10 @@ START:
     
     
             END    START        
+
+
+
+
 
 
 

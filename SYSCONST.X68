@@ -7,6 +7,7 @@
 PANWIDTH    EQU     640                     ; ANCHO DE LA PANTALLA
 PANHEIGH    EQU     480                     ; ALTURA DE LA PANTALLA
 COLFND      EQU     $90EE90                 ; COLOR DEL FONDO DE LA PANTALLA
+SCRFPS      EQU     50
 
 ; ---CONSTANTES DE LA MATRIZ--------------------------------------------------
 
@@ -21,6 +22,24 @@ KBDLEFT     EQU     $25
 KBDUP       EQU     $26
 KBDRIGHT    EQU     $27
 KBDDOWN     EQU     $28
+
+; --- IDENTIFICADORES DE SONIDO ----------------------------------------------
+
+SNDEAT      EQU     0
+SNDGMOV     EQU     1
+
+; --- NÚMEROS DE TRAP --------------------------------------------------------
+
+SCRUPTN     EQU     0                       ; SCREEN UPDATE TRAP NUMBER
+KBDUPTN     EQU     1                       ; KEYBOARD TRAP NUMBER
+SNDPLTN     EQU     2                       ; SOUND TRAP NUMBER
+
+; --- NÚMEROS DE INTERRUPCIÓN ------------------------------------------------
+
+SCRINTN     EQU     1     
+
+
+
 
 
 *~Font name~Courier New~

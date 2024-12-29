@@ -10,24 +10,73 @@ SYSINIT
 ; MODIFIES : NONE
 ; ----------------------------------------------------------------------------
             
-            MOVE.L  #SCRPLOT,($80)
-            MOVE.L  #KBDUPD,($84)
-            MOVE.L  #SCRTIM,($64)
+            MOVE.L  #SCRPLOT,($80+SCRUPTN*4)
+            MOVE.L  #KBDUPD,($80+KBDUPTN*4)
+            MOVE.L  #SNDPLAY,($80+SNDPLTN*4)
+            MOVE.L  #SCRTIM,($60+SCRINTN*4)
             
             JSR     SCRINIT
+            JSR     KBDINIT
+            JSR     SNDINIT
+            
             MOVE.W  SR,-(A7)
             ANDI.W  #$D8FF,(A7)
             
             RTE
             
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
+SNDINIT
+; SOUND SYSTEM INIT
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ----------------------------------------------------------------------------
+
+            MOVEM.L D0-D1/A0-A1,-(A7)
+
+            CLR.B   D1
+            LEA     .SNDLIST,A0
+.LOOP       MOVE.L  (A0)+,D0
+            BEQ     .DONE
+            MOVE.L  D0,A1
+            MOVE.B  #71,D0
+            TRAP    #15
+            ADDQ.B  #1,D1
+            BRA     .LOOP
+            
+.DONE       MOVEM.L (A7)+,D0-D1/A0-A1
+            RTS
+            
+.SNDEAT     DC.B    'SND/EAT.wav',0
+.SNDGMOV    DC.B    'SND/GAMEOVER.wav',0
+.SNDLIST    DC.L    .SNDEAT,.SNDGMOV,0
+            
+; ----------------------------------------------------------------------------
+SNDPLAY
+; PLAY SOUND
+; INPUT    : D7 SOUND ID
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ----------------------------------------------------------------------------            
+            
+            MOVEM.W D0-D1,-(A7)
+            
+            MOVE.B  #72,D0
+            MOVE.B  D7,D1
+            TRAP    #15
+            
+            MOVEM.W (A7)+,D0-D1
+            RTE
+             
+            
+; ----------------------------------------------------------------------------
 SCRINIT
 ; INIT SCREEN. SET SCREEN RESOLUTION, SET WINDOWED MODE, CLEAR SCREEN,
 ; ENABLE DOUBLE BUFFER, ENABLED TIMED INTERRUPT.
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 
             MOVEM.L D0-D1,-(A7)
 
@@ -53,8 +102,8 @@ SCRINIT
             ; ENABLE TIMED INTERRUPT
             MOVE.B  #32,D0
             MOVE.B  #6,D1
-            MOVE.B  #$81,D2
-            MOVE.L  #20,D3                  ; CON 20 SE CONSIUGUEN 50 FPS
+            MOVE.B  #$80|SCRINTN,D2
+            MOVE.L  #1000/SCRFPS,D3                  ; CON 20 SE CONSIUGUEN 50 FPS
             TRAP    #15
             
             ; CLEAR INTERRUPT COUNTER
@@ -272,6 +321,14 @@ CONTINU:
 *            MOVEM.L (A7)+,D0-D3
 *
 *            RTE
+
+
+
+
+
+
+
+
 
 
 

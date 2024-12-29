@@ -29,14 +29,18 @@ CBZFCOL     EQU     $0000AA00               ; COLOR RELLENO CABEZA (PROVISIONAL)
 OJOWIDTH    EQU     10                      ; ANCHURA DE OJO DE SERPIENTE
 OJOHEIGH    EQU     10                      ; ALTURA DE OJO DE SERPIENTE
 OJOPCOL     EQU     $00000000               ; COLOR CONTORNO OJO
-OJOFCOL     EQU     $00FFFFFF               ; COLOR RELLENO OJO
-
-
+OJOFCOL     EQU     $00FFFFFF               ; COLOR RELLENO OJO            
 
 ; --- CONSTANTES MARCADOR ----------------------------------------------------
 
 PNTSFCOL    EQU     $00000000               ; COLOR FONDO MARCADOR (a determinar)
 PNTSTEXT    EQU     0101                    ; COORDENADAS DEL MARCADOR (a determinar)
+
+
+
+
+
+
 
 
 
