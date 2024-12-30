@@ -19,11 +19,11 @@ SGMPOSX     DS.W    1                       ; COORDENADA X SEGMENTO
 SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
 SGMPOSX2    DS.W    1                       ; COORDENADA X SEGMENTO 2
 SGMPOSY2    DS.W    1                       ; COORDENADA Y SEGMENTO 2
-;TRZPLOT     DS.B    1                       ; NÚMERO DE TROZOS A DIBUJAR
-
+SRPVEL      DS.W    1                       ; VELOCIDAD DE LA SERPIENTE
 ; --- VARIABLES DEL MARCADOR -------------------------------------------------
 
 JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
+
 
 
 

@@ -11,6 +11,7 @@ HEADINIT
 ; ------------------------------------------------------------------------------
             MOVE.W  #PANWIDTH/2,(CBZPOSX)
             MOVE.W  #PANHEIGH/2,(CBZPOSY)
+            CLR.W   (SRPVEL)
             ;ADD.W   #20,(CBZVEL)
             CLR.W   (ESTDCBZ)
             MOVE.W  #0,(ESTDCBZ)
@@ -181,6 +182,7 @@ HEADPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
 
 
 
