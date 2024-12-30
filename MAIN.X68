@@ -17,7 +17,13 @@
             INCLUDE 'TAILSRP.X68'
             INCLUDE 'APPLE.X68'
             INCLUDE 'SCORE.X68'
+            INCLUDE 'GAME.X68'
             INCLUDE 'MATRIZ.X68'
+            INCLUDE 'INTRO.X68'
+            INCLUDE 'INSTRUCTIONS.X68'
+            INCLUDE 'GAMEOVER.X68'
+            INCLUDE 'STATES.X68'
+            
 START:
                 
 ; --- INIZIALIZACIÓN ---------------------------------------------------------
@@ -25,13 +31,8 @@ START:
             ORI.W   #$0700,SR
             JSR     SYSINIT
             JSR     UTLINIT
-            JSR     MTZINIT
-            JSR     HEADINIT                
-            JSR     SEGINIT
-            JSR     TAILINIT
-            JSR     SCOINIT
-            JSR     APPLEINIT
-            
+            JSR     STAINIT
+
 
 .LOOP
 
@@ -43,10 +44,7 @@ START:
 
 ; ACTUALIZAR LÓGICA DEL JUEGO
             
-            JSR     TAILUPD
-            JSR     SEGUPD
-            JSR     HEADUPD
-            JSR     MTZUPD
+            JSR     STAUPD
             
 ; --- SINCRONIZACIÓN ---------------------------------------------------------
             
@@ -55,13 +53,15 @@ START:
             CLR.B   (SCRINTCT)         
 
 
-;---DIBUJAR-------------------------------------------------------------------
-             JSR    HEADPLOT
-             JSR    SEGPLOT
-             JSR    TAILPLOT
-             JSR    APPLEPLOT
-             JSR    MTZPLOT
-             JSR    SCOPLOT
+; --- DIBUJAR ----------------------------------------------------------------
+            
+            JSR     STAPLOT
+
+*            LEA     .TSTSTR,A0
+*            MOVE.B  #5,D0
+*            JSR     UTLPRINT
+*            LEA     .STR2,A0
+*            JSR     UTLPRINT
             
             TRAP    #SCRUPTN                      ; ACTUALIZA DOBLE BUFFER
 
@@ -70,12 +70,29 @@ START:
 
             SIMHALT
             
+*.TSTSTR     DC.B    'THIS IS THE TEST STRING TO BE CENTEREED',0
+*.STR2       DC.B    'HOLA MUNDO',0
+
             INCLUDE 'VARS.X68'
             INCLUDE 'LIB/UTLVARS.X68'
             INCLUDE 'SYSVARS.X68'
     
     
             END    START        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

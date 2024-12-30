@@ -16,7 +16,9 @@ LASTKEY     DS.L    1
 ;--- TIMED INTERRUPT RELATED VARIABLES ---------------------------------------
             
 SCRINTCT    DS.B    1                       ; INTERRUPT COUNTER
+SCRCYCCT    DS.B    1                       ;CYCLE COUNTER
             DS.W    0
+
 
 
 

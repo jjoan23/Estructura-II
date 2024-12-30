@@ -100,7 +100,8 @@ UTLRAND
             DC.B    148, 91 , 35 , 242, 139, 205, 248, 237
             DC.B    116, 51 , 236, 185, 15 , 213, 221, 6
 
+
 *~Font name~Fixedsys~
-*~Font size~24~
+*~Font size~9~
 *~Tab type~0~
 *~Tab size~4~

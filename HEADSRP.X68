@@ -79,7 +79,6 @@ CHKCOL:
             JSR     SCOUPD
             MOVE.B  #SNDEAT,D7
             TRAP    #SNDPLTN
-            ;ADDQ.W  #2,(CBZVEL)
 
 NOCOL:
             ; Convierte la posición nueva a índice
@@ -182,6 +181,7 @@ HEADPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
 
 
 

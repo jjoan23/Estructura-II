@@ -107,7 +107,7 @@ SCRINIT
             TRAP    #15
             
             ; CLEAR INTERRUPT COUNTER
-            CLR.B   (SCRINTCT)
+            CLR.W   (SCRINTCT)
             
             MOVEM.L (A7)+,D0-D1
             
@@ -121,6 +121,7 @@ SCRTIM
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             ADDQ.B  #1,(SCRINTCT)
+            ADDQ.B  #1,(SCRCYCCT)
             RTE
             
 
@@ -321,6 +322,7 @@ CONTINU:
 *            MOVEM.L (A7)+,D0-D3
 *
 *            RTE
+
 
 
 

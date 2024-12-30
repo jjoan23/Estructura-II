@@ -36,18 +36,9 @@ OJOFCOL     EQU     $00FFFFFF               ; COLOR RELLENO OJO
 PNTSFCOL    EQU     $00000000               ; COLOR FONDO MARCADOR (a determinar)
 PNTSTEXT    EQU     0101                    ; COORDENADAS DEL MARCADOR (a determinar)
 
+; --- CONSTANTES RELACIONADAS CON LOS ESTADOS --------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
+STANONE     EQU     -1                      ; NÚMERO DE ESTADO NO EXISTENTE
 
 
 

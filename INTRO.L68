@@ -1,0 +1,108 @@
+00001D7A Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 30/12/2024 16:28:03
+
+00000000                             1  ; ==============================================================================
+00000000                             2  ; INTRO SCREEN
+00000000                             3  ; ==============================================================================
+00000000                             4  
+00000000                             5  ; ------------------------------------------------------------------------------
+00000000                             6  ISCINIT
+00000000                             7  ; INTRO SCREEN INIT
+00000000                             8  ; INPUT    : NONE
+00000000                             9  ; OUTPUT   : NONE
+00000000                            10  ; MODIFIES : NONE
+00000000                            11  ; ------------------------------------------------------------------------------
+00000000                            12  
+Line 13 ERROR: Undefined symbol
+00000000  4279 004DBD16             13              CLR.W   (ISCTIMER)
+00000006                            14              
+00000006  4E75                      15              RTS
+00000008                            16  
+00000008                            17  ; ------------------------------------------------------------------------------
+00000008                            18  ISCUPD
+00000008                            19  ; INTRO SCREEN UPDATE
+00000008                            20  ; INPUT    : NONE
+00000008                            21  ; OUTPUT   : NONE
+00000008                            22  ; MODIFIES : NONE
+00000008                            23  ; ------------------------------------------------------------------------------
+00000008                            24  
+Line 25 ERROR: Undefined symbol
+00000008  0839 0004 005455B8        25              BTST.B  #4,(KBDEDGE)
+00000010  6700 000A                 26              BEQ     .CONT                   
+Line 27 ERROR: Undefined symbol
+00000014  33FC 0002 005455B8        27              MOVE.W  #2,(STANEXT)
+0000001C                            28              
+Line 29 ERROR: Undefined symbol
+0000001C  5279 005455B8             29  .CONT       ADDQ.W  #1,(ISCTIMER)
+Line 30 ERROR: Undefined symbol
+00000022  0C79 01F4 005455B8        30              CMP.W   #500,(ISCTIMER)
+Line 31 ERROR: Undefined symbol
+0000002A  6D00 BCEA                 31              BLT     .DONE
+Line 32 ERROR: Undefined symbol
+0000002E  33FC 0001 005455B8        32              MOVE.W  #1,(STANEXT)       
+00000036                            33       
+00000036  4E75                      34              RTS
+00000038                            35  
+00000038                            36  ; ------------------------------------------------------------------------------
+00000038                            37  ISCPLOT
+00000038                            38  ; INTRO SCREEN PLOT
+00000038                            39  ; INPUT    : NONE
+00000038                            40  ; OUTPUT   : NONE
+00000038                            41  ; MODIFIES : NONE
+00000038                            42  ; ------------------------------------------------------------------------------
+00000038  48E7 C080                 43              MOVEM.L D0-D1/A0,-(A7)
+0000003C                            44              
+0000003C                            45              ;JSR     FONPLOT
+0000003C                            46              
+0000003C  4281                      47              CLR.L   D1
+0000003E  103C 0051                 48              MOVE.B  #81,D0
+00000042  4E4F                      49              TRAP    #15
+00000044                            50              
+00000044  41F9 00000076             51              LEA     .TXT1,A0
+0000004A  103C 000A                 52              MOVE.B  #10,D0
+Line 53 ERROR: Undefined symbol
+0000004E  4EB9 004DBD16             53              JSR     UTLPRINT
+00000054                            54              
+Line 55 ERROR: Undefined symbol
+00000054  0839 0004 005455B8        55              BTST.B  #4,(SCRCYCCT)
+0000005C  6700 0012                 56              BEQ     .DONE
+00000060                            57              
+00000060  41F9 00000088             58              LEA     .TXT2,A0
+00000066  103C 0019                 59              MOVE.B  #25,D0
+Line 60 ERROR: Undefined symbol
+0000006A  4EB9 004DBD16             60              JSR     UTLPRINT
+00000070                            61              
+00000070  4CDF 0103                 62  .DONE       MOVEM.L (A7)+,D0-D1/A0
+00000074                            63  
+00000074  4E75                      64              RTS
+00000076                            65              
+00000076= 53 4E 41 4B 45 20 ...     66  .TXT1       DC.B    'SNAKE TIMER 68000',0
+00000088= 50 52 45 53 53 20 ...     67  .TXT2       DC.B    'PRESS TO START',0
+00000098                            68              DS.W    0
+00000098                            69  
+00000098                            70  
+00000098                            71  
+00000098                            72  
+00000098                            73  
+00000098                            74  
+00000098                            75  
+00000098                            76  
+00000098                            77  
+00000098                            78  
+Line 79 WARNING: END directive missing, starting address not set
+
+10 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ISCINIT             0
+ISCPLOT             38
+ISCPLOT:DONE        70
+ISCPLOT:TXT1        76
+ISCPLOT:TXT2        88
+ISCUPD              8
+ISCUPD:CONT         1C
