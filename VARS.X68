@@ -19,7 +19,6 @@ SGMPOSX     DS.W    1                       ; COORDENADA X SEGMENTO
 SGMPOSY     DS.W    1                       ; COORDENADA Y SEGMENTO
 SGMPOSX2    DS.W    1                       ; COORDENADA X SEGMENTO 2
 SGMPOSY2    DS.W    1                       ; COORDENADA Y SEGMENTO 2
-SRPVEL      DS.W    1                       ; VELOCIDAD DE LA SERPIENTE
 
 ; --- VARIABLES DEL MARCADOR -------------------------------------------------
 
@@ -29,10 +28,20 @@ JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
 
 ISCTIMER    DS.W    1                       ; INTRO TIMER
 
+; --- INSTRUCTIONS  STATE RELATED VARIABLES ----------------------------------
+INSTIMER    DS.W    1                       ;INTRUCTIONS TIMER
+
+; -- GAME OVER STATE RELATED VARIABLES ---------------------------------------
+
+GOVTIMER    DS.W    1
+
 ; --- VARIABLES RELACIONADAS CON LOS ESTADOS ---------------------------------
 
 STACUR      DS.W    1                       ; ESTADO ACTUAL
 STANEXT     DS.W    1                       ; ESTADO SIGUIENTE
+
+
+
 
 
 

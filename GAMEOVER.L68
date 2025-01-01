@@ -1,0 +1,101 @@
+00001E62 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 01/01/2025 18:36:58
+
+00000000                             1  ; ==============================================================================
+00000000                             2  ; GAME OVER SCREEN
+00000000                             3  ; ==============================================================================
+00000000                             4  
+00000000                             5  ; ------------------------------------------------------------------------------
+00000000                             6  GOVINIT
+00000000                             7  ; GAME OVER SCREEN INIT
+00000000                             8  ; INPUT    : NONE
+00000000                             9  ; OUTPUT   : NONE
+00000000                            10  ; MODIFIES : NONE
+00000000                            11  ; ------------------------------------------------------------------------------
+00000000                            12  
+Line 13 ERROR: Undefined symbol
+00000000  4279 004DBD16             13              CLR.W  (GOVTIMER)
+00000006  4E75                      14              RTS
+00000008                            15  
+00000008                            16  ; ------------------------------------------------------------------------------
+00000008                            17  GOVUPD
+00000008                            18  ; GAME OVER SCREEN UPDATE
+00000008                            19  ; INPUT    : NONE
+00000008                            20  ; OUTPUT   : NONE
+00000008                            21  ; MODIFIES : NONE
+00000008                            22  ; ------------------------------------------------------------------------------
+00000008                            23  
+Line 24 ERROR: Undefined symbol
+00000008  5279 005455B8             24              ADDQ.W  #1,(GOVTIMER)
+Line 25 ERROR: Undefined symbol
+0000000E  0C79 01F4 005455B8        25              CMP.W   #500,(GOVTIMER)
+00000016  6D00 0008                 26              BLT     .DONE
+Line 27 ERROR: Undefined symbol
+0000001A  4279 004DBD16             27              CLR.W   (STANEXT)
+00000020                            28  .DONE
+00000020  4E75                      29              RTS
+00000022                            30              
+00000022                            31  ; ------------------------------------------------------------------------------
+00000022                            32  GOVPLOT
+00000022                            33  ; GAME OVER SCREEN PLOT
+00000022                            34  ; INPUT    : NONE
+00000022                            35  ; OUTPUT   : NONE
+00000022                            36  ; MODIFIES : NONE
+00000022                            37  ; ------------------------------------------------------------------------------
+00000022  48E7 C080                 38              MOVEM.L D0-D1/A0,-(A7)
+00000026                            39              
+00000026                            40              ;JSR     FONPLOT
+00000026                            41              
+00000026  4281                      42              CLR.L   D1
+00000028  103C 0051                 43              MOVE.B  #81,D0
+0000002C  4E4F                      44              TRAP    #15
+0000002E                            45              
+0000002E  41F9 00000054             46              LEA     .TXT1,A0
+00000034  103C 000A                 47              MOVE.B  #10,D0
+Line 48 ERROR: Undefined symbol
+00000038  4EB9 004DBD16             48              JSR     UTLPRINT
+0000003E                            49              
+0000003E  41F9 0000005E             50              LEA     .TXT2,A0
+00000044  103C 0014                 51              MOVE.B  #20,D0
+Line 52 ERROR: Undefined symbol
+00000048  4EB9 004DBD16             52              JSR     UTLPRINT
+0000004E                            53              
+0000004E  4CDF 0103                 54  .DONE       MOVEM.L (A7)+,D0-D1/A0
+00000052                            55  
+00000052  4E75                      56              RTS
+00000054= 47 41 4D 45 20 4F ...     57  .TXT1       DC.B    'GAME OVER',0
+0000005E= 57 41 49 54 20 54 ...     58  .TXT2       DC.B    'WAIT TO RETURN TO MAIN PAGE',0
+0000007A                            59              DS.W    0
+0000007A                            60  
+0000007A                            61  
+0000007A                            62  
+0000007A                            63  
+0000007A                            64  
+0000007A                            65  
+0000007A                            66  
+0000007A                            67  
+0000007A                            68  
+0000007A                            69  
+0000007A                            70  
+0000007A                            71  
+0000007A                            72  
+0000007A                            73  
+0000007A                            74  
+0000007A                            75  
+Line 76 WARNING: END directive missing, starting address not set
+
+6 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+GOVINIT             0
+GOVPLOT             22
+GOVPLOT:DONE        4E
+GOVPLOT:TXT1        54
+GOVPLOT:TXT2        5E
+GOVUPD              8
+GOVUPD:DONE         20

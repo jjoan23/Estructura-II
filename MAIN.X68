@@ -31,6 +31,7 @@ START:
             ORI.W   #$0700,SR
             JSR     SYSINIT
             JSR     UTLINIT
+            ;JSR     GAMINIT
             JSR     STAINIT
 
 
@@ -43,7 +44,7 @@ START:
             TRAP    #KBDUPTN
 
 ; ACTUALIZAR LÓGICA DEL JUEGO
-            
+            ;JSR     GAMUPD
             JSR     STAUPD
             
 ; --- SINCRONIZACIÓN ---------------------------------------------------------
@@ -55,13 +56,9 @@ START:
 
 ; --- DIBUJAR ----------------------------------------------------------------
             
+            ;JSR     GAMPLOT
             JSR     STAPLOT
-
-*            LEA     .TSTSTR,A0
-*            MOVE.B  #5,D0
-*            JSR     UTLPRINT
-*            LEA     .STR2,A0
-*            JSR     UTLPRINT
+            
             
             TRAP    #SCRUPTN                      ; ACTUALIZA DOBLE BUFFER
 
@@ -69,9 +66,6 @@ START:
             BRA     .LOOP
 
             SIMHALT
-            
-*.TSTSTR     DC.B    'THIS IS THE TEST STRING TO BE CENTEREED',0
-*.STR2       DC.B    'HOLA MUNDO',0
 
             INCLUDE 'VARS.X68'
             INCLUDE 'LIB/UTLVARS.X68'
@@ -79,6 +73,10 @@ START:
     
     
             END    START        
+
+
+
+
 
 
 

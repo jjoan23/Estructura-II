@@ -1,6 +1,6 @@
-00001D7A Starting Address
+00001DD2 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 30/12/2024 16:28:03
+Created On: 01/01/2025 16:27:28
 
 00000000                             1  ; ==============================================================================
 00000000                             2  ; INTRO SCREEN
@@ -27,72 +27,104 @@ Line 13 ERROR: Undefined symbol
 00000008                            22  ; MODIFIES : NONE
 00000008                            23  ; ------------------------------------------------------------------------------
 00000008                            24  
-Line 25 ERROR: Undefined symbol
-00000008  0839 0004 005455B8        25              BTST.B  #4,(KBDEDGE)
-00000010  6700 000A                 26              BEQ     .CONT                   
-Line 27 ERROR: Undefined symbol
-00000014  33FC 0002 005455B8        27              MOVE.W  #2,(STANEXT)
-0000001C                            28              
-Line 29 ERROR: Undefined symbol
-0000001C  5279 005455B8             29  .CONT       ADDQ.W  #1,(ISCTIMER)
-Line 30 ERROR: Undefined symbol
-00000022  0C79 01F4 005455B8        30              CMP.W   #500,(ISCTIMER)
-Line 31 ERROR: Undefined symbol
-0000002A  6D00 BCEA                 31              BLT     .DONE
-Line 32 ERROR: Undefined symbol
-0000002E  33FC 0001 005455B8        32              MOVE.W  #1,(STANEXT)       
-00000036                            33       
-00000036  4E75                      34              RTS
-00000038                            35  
-00000038                            36  ; ------------------------------------------------------------------------------
-00000038                            37  ISCPLOT
-00000038                            38  ; INTRO SCREEN PLOT
-00000038                            39  ; INPUT    : NONE
-00000038                            40  ; OUTPUT   : NONE
-00000038                            41  ; MODIFIES : NONE
-00000038                            42  ; ------------------------------------------------------------------------------
-00000038  48E7 C080                 43              MOVEM.L D0-D1/A0,-(A7)
-0000003C                            44              
-0000003C                            45              ;JSR     FONPLOT
-0000003C                            46              
-0000003C  4281                      47              CLR.L   D1
-0000003E  103C 0051                 48              MOVE.B  #81,D0
-00000042  4E4F                      49              TRAP    #15
-00000044                            50              
-00000044  41F9 00000076             51              LEA     .TXT1,A0
-0000004A  103C 000A                 52              MOVE.B  #10,D0
-Line 53 ERROR: Undefined symbol
-0000004E  4EB9 004DBD16             53              JSR     UTLPRINT
-00000054                            54              
-Line 55 ERROR: Undefined symbol
-00000054  0839 0004 005455B8        55              BTST.B  #4,(SCRCYCCT)
-0000005C  6700 0012                 56              BEQ     .DONE
-00000060                            57              
-00000060  41F9 00000088             58              LEA     .TXT2,A0
-00000066  103C 0019                 59              MOVE.B  #25,D0
+00000008  48E7 FF00                 25              MOVEM.L D0-D7,-(A7)
+0000000C                            26              
+0000000C  323C 0107                 27              MOVE.W  #$0107,D1               ;HABILITAR IRQ
+00000010  303C 003C                 28              MOVE.W  #60,D0
+00000014  4E4F                      29              TRAP    #15
+00000016                            30              
+00000016                            31  .MAINLOOP            
+00000016  123C 0000                 32              MOVE.B  #0,D1                   ;LEER ESTADO ACTUAL RATON
+0000001A  303C 003D                 33              MOVE.   #61,D0
+0000001E  4E4F                      34              TRAP    #15
+00000020                            35              
+00000020  2401                      36              MOVE.L  D1,D2                   ;GUARDAR COORDENADAS RATON EN D2
+00000022  0200 0001                 37              ANDI.B  #1,D0                   ;COMPROBAR click izquierdo
+00000026  4A40                      38              TST     D0
+00000028  6700 0032                 39              BEQ     .CONT
+0000002C                            40              
+0000002C                            41              ;MIRAMOS SI SE HA PULSADO EN EL TEXTO CORRESPONDIENTE
+0000002C  263C 00000108             42              MOVE.L  #$108,D3                 ;(640 - 112) / 2 = 264 PIXELES -> COORDENADA X
+00000032  7819                      43              MOVE.L  #$19,D4                  ;COORDENADA Y DEL TEXTO 25
+00000034                            44              
+00000034  2E02                      45              MOVE.L  D2,D7                   ;COORDENADA Y RATON
+00000036  0287 0000FFFF             46              ANDI.L  #$0000FFFF,D7
+0000003C  BE84                      47              CMP.L   D4,D7
+0000003E  6D00 001C                 48              BLT     .CONT                   ;SI Y < TEXTO
+00000042                            49  
+00000042  2E02                      50              MOVE.L  D2,D7                   ;COORDENADA X RATON
+00000044  0287 0000FFFF             51              ANDI.L  #$FFFF,D7               ;EXTRAER X (BITS BAJOS)
+0000004A  BE83                      52              CMP.L   D3,D7
+0000004C  6D00 000E                 53              BLT     .CONT                   ;SI X < TEXTO
+00000050                            54              
+00000050                            55              ;SI EL CLICK ESTA DENTRO DEL AREA DEL TEXTO
+Line 56 ERROR: Undefined symbol
+00000050  33FC 0002 005455CC        56              MOVE.W  #2,(STANEXT)            ; SI COINCIDE INICIAR JUEGO
+00000058  6000 001C                 57              BRA     .DONE            
+0000005C                            58              
+0000005C                            59  .CONT       
 Line 60 ERROR: Undefined symbol
-0000006A  4EB9 004DBD16             60              JSR     UTLPRINT
-00000070                            61              
-00000070  4CDF 0103                 62  .DONE       MOVEM.L (A7)+,D0-D1/A0
-00000074                            63  
-00000074  4E75                      64              RTS
-00000076                            65              
-00000076= 53 4E 41 4B 45 20 ...     66  .TXT1       DC.B    'SNAKE TIMER 68000',0
-00000088= 50 52 45 53 53 20 ...     67  .TXT2       DC.B    'PRESS TO START',0
-00000098                            68              DS.W    0
-00000098                            69  
-00000098                            70  
-00000098                            71  
-00000098                            72  
-00000098                            73  
-00000098                            74  
-00000098                            75  
-00000098                            76  
-00000098                            77  
-00000098                            78  
-Line 79 WARNING: END directive missing, starting address not set
+0000005C  5279 005455B8             60              ADDQ.W  #1,(ISCTIMER)
+Line 61 ERROR: Undefined symbol
+00000062  0C79 01F4 005455B8        61              CMP.W   #500,(ISCTIMER)
+0000006A  6D00 000A                 62              BLT     .DONE
+Line 63 ERROR: Undefined symbol
+0000006E  33FC 0001 005455B8        63              MOVE.W  #1,(STANEXT)
+00000076                            64              
+00000076                            65  .DONE       
+00000076  4CDF 00FF                 66              MOVEM.L (A7)+,D0-D7
+0000007A  4E75                      67              RTS
+0000007C                            68  
+0000007C                            69  ; ------------------------------------------------------------------------------
+0000007C                            70  ISCPLOT
+0000007C                            71  ; INTRO SCREEN PLOT
+0000007C                            72  ; INPUT    : NONE
+0000007C                            73  ; OUTPUT   : NONE
+0000007C                            74  ; MODIFIES : NONE
+0000007C                            75  ; ------------------------------------------------------------------------------
+0000007C  48E7 C080                 76              MOVEM.L D0-D1/A0,-(A7)
+00000080                            77              
+00000080                            78              ;JSR     FONPLOT
+00000080                            79              
+00000080  4281                      80              CLR.L   D1
+00000082  103C 0051                 81              MOVE.B  #81,D0
+00000086  4E4F                      82              TRAP    #15
+00000088                            83              
+00000088  41F9 000000AE             84              LEA     .TXT1,A0
+0000008E  103C 000A                 85              MOVE.B  #10,D0
+Line 86 ERROR: Undefined symbol
+00000092  4EB9 004DBD16             86              JSR     UTLPRINT
+00000098                            87              
+00000098                            88  *            BTST.B  #4,(SCRCYCCT)
+00000098                            89  *            BEQ     .DONE
+00000098                            90              
+00000098  41F9 000000C0             91              LEA     .TXT2,A0
+0000009E  103C 0019                 92              MOVE.B  #25,D0
+Line 93 ERROR: Undefined symbol
+000000A2  4EB9 004DBD16             93              JSR     UTLPRINT
+000000A8                            94              
+000000A8  4CDF 0103                 95  .DONE       MOVEM.L (A7)+,D0-D1/A0
+000000AC                            96  
+000000AC  4E75                      97              RTS
+000000AE                            98              
+000000AE                            99  
+000000AE                           100              
+000000AE= 53 4E 41 4B 45 20 ...    101  .TXT1       DC.B    'SNAKE TIMER 68000',0
+000000C0= 50 52 45 53 53 20 ...    102  .TXT2       DC.B    'PRESS TO START',0
+000000D0                           103              DS.W    0
+000000D0                           104  
+000000D0                           105  
+000000D0                           106  
+000000D0                           107  
+000000D0                           108  
+000000D0                           109  
+000000D0                           110  
+000000D0                           111  
+000000D0                           112  
+000000D0                           113  
+Line 114 WARNING: END directive missing, starting address not set
 
-10 errors detected
+7 errors detected
 1 warning generated
 
 
@@ -100,9 +132,11 @@ SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
 ISCINIT             0
-ISCPLOT             38
-ISCPLOT:DONE        70
-ISCPLOT:TXT1        76
-ISCPLOT:TXT2        88
+ISCPLOT             7C
+ISCPLOT:DONE        A8
+ISCPLOT:TXT1        AE
+ISCPLOT:TXT2        C0
 ISCUPD              8
-ISCUPD:CONT         1C
+ISCUPD:CONT         5C
+ISCUPD:DONE         76
+ISCUPD:MAINLOOP     16

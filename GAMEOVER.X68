@@ -9,6 +9,8 @@ GOVINIT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
+
+            CLR.W  (GOVTIMER)
             RTS
 
 ; ------------------------------------------------------------------------------
@@ -18,8 +20,14 @@ GOVUPD
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            RTS
 
+            ADDQ.W  #1,(GOVTIMER)
+            CMP.W   #500,(GOVTIMER)
+            BLT     .DONE
+            CLR.W   (STANEXT)
+.DONE
+            RTS
+            
 ; ------------------------------------------------------------------------------
 GOVPLOT
 ; GAME OVER SCREEN PLOT
@@ -39,19 +47,26 @@ GOVPLOT
             MOVE.B  #10,D0
             JSR     UTLPRINT
             
-            BTST.B  #4,(SCRCYCCT)
-            BEQ     .DONE
-            
             LEA     .TXT2,A0
-            MOVE.B  #25,D0
+            MOVE.B  #20,D0
             JSR     UTLPRINT
             
 .DONE       MOVEM.L (A7)+,D0-D1/A0
 
             RTS
 .TXT1       DC.B    'GAME OVER',0
-.TXT2       DC.B    'PRESS TO CONTINUE',0
+.TXT2       DC.B    'WAIT TO RETURN TO MAIN PAGE',0
             DS.W    0
+
+
+
+
+
+
+
+
+
+
 
 
 

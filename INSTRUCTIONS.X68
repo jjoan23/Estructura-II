@@ -9,6 +9,10 @@ INSINIT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
+
+            CLR.W   (INSTIMER)
+            ;INSMAXTM
+
             RTS
 
 ; ------------------------------------------------------------------------------
@@ -18,6 +22,12 @@ INSUPD
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
+
+            ADDQ.W  #1,(INSTIMER)
+            CMP.W   #INSMAXTM,(INSTIMER)
+            BLT     .DONE
+            CLR.W   (STANEXT)
+.DONE
             RTS
 
 ; ------------------------------------------------------------------------------
@@ -50,6 +60,10 @@ INSPLOT
 .TXT6       DC.B    'IT IS EASY: JUST USE THE UP, DOWN, LEFT, RIGHT KEYS TO MOVE THE SNAKE',0
 .TXT7       DC.B    'BE CAREFUL WITH THE WALLS! TRY NOT TO HIT THEM.',0
 .TXTLST     DC.L    .TXT1,.TXT2,.TXT3,.TXT4,.TXT5,.TXT6,.TXT7,0
+
+
+
+
 
 
 

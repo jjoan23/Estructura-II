@@ -39,6 +39,9 @@ PNTSTEXT    EQU     0101                    ; COORDENADAS DEL MARCADOR (a determ
 ; --- CONSTANTES RELACIONADAS CON LOS ESTADOS --------------------------------
 
 STANONE     EQU     -1                      ; NÚMERO DE ESTADO NO EXISTENTE
+ISCMAXTM    EQU     500                     ;INTRO SCREEN WAITING CYCLES
+INSMAXTM    EQU     500                     ;INTRUCTIONS SCREEN WAINTING CYCLES
+
 
 
 

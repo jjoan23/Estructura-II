@@ -11,8 +11,6 @@ HEADINIT
 ; ------------------------------------------------------------------------------
             MOVE.W  #PANWIDTH/2,(CBZPOSX)
             MOVE.W  #PANHEIGH/2,(CBZPOSY)
-            CLR.W   (SRPVEL)
-            ;ADD.W   #20,(CBZVEL)
             CLR.W   (ESTDCBZ)
             MOVE.W  #0,(ESTDCBZ)
             RTS
@@ -25,16 +23,13 @@ HEADUPD
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
 
-            MOVEM.W D0-D2,-(A7)
+            MOVEM.W D0-D2/D7,-(A7)
 
             ; Marcar celda actual como vacía
             MOVE.W  (CBZPOSX),D1
             MOVE.W  (CBZPOSY),D2
             JSR     CINDMTRZ
             JSR     MCLDVCIA
-            
-*            CLR.W   D3
-*            MOVE.W  (CBZVEL),D3
             
             ; Actualiza la posición de la cabeza según ESTDCBZ
             MOVE.W  (ESTDCBZ),D0
@@ -52,18 +47,34 @@ HEADUPD
 
 SIGDER:
             ADD.W   #CBZVEL,(CBZPOSX)
-            BRA     CHKCOL
+            BRA     CHKBORDE
 
 SIGARR:
             SUB.W   #CBZVEL,(CBZPOSY)
-            BRA     CHKCOL
+            BRA     CHKBORDE
 
 SIGIZQ:
             SUB.W   #CBZVEL,(CBZPOSX)
-            BRA     CHKCOL
+            BRA     CHKBORDE
 
 SIGABA:
             ADD.W   #CBZVEL,(CBZPOSY)
+            
+CHKBORDE:
+            ; Verificar colisiones con los bordes
+            MOVE.W  (CBZPOSX),D1
+            CMP.W   #PANWIDTH,D1                 ; Si CBZPOSX < 0
+            BGT     GAMEOVER
+            CMP.W   #0,D1          ; Si CBZPOSX >= PANWIDTH
+            BLT     GAMEOVER
+
+            MOVE.W  (CBZPOSY),D1
+            CMP.W   #0,D1                 ; Si CBZPOSY < 0
+            BLT     GAMEOVER
+            CMP.W   #PANHEIGH,D1          ; Si CBZPOSY >= PANHEIGH
+            BGT     GAMEOVER
+
+            ;BRA     FIN
             
 CHKCOL:
             ; Verifica la colisión con la manzana
@@ -86,27 +97,28 @@ NOCOL:
             MOVE.W  (CBZPOSY),D2
             JSR     CINDMTRZ
             JSR     CBZOCPD                 ; Marca la celda como ocupada
+            
+            BRA     FIN
 
 *            ; Verificar colisiones
 *            JSR     CHECKCLD
 *            CMP.W   #0,D0                 ; Si celda está libre
 *            BEQ     MARKCLD
 *            BRA     GAMEOVER              ; Colisión consigo misma
-*            MOVE.B  #SNDGMOV,D7             ;PONER SONIDO GAME OVER
-*            TRAP    #SNDPLTN
+
 *
 *MARKCLD:
 *            ; Marcar nueva posición como ocupada por la cabeza
 *            JSR     CBZOCPD
 *            BRA     FIN
 *
-*GAMEOVER:
-*            ; Implementar lógica de fin de juego
-*            ; Por ahora, simplemente retornar
-*            BRA     FIN
+GAMEOVER:
+            MOVE.B  #SNDGMOV,D7             ;PONER SONIDO GAME OVER
+            TRAP    #SNDPLTN
+            MOVE.W  #3,(STANEXT)
 
 FIN:
-            MOVEM.W (A7)+,D0-D2
+            MOVEM.W (A7)+,D0-D2/D7
 
             RTS
             
@@ -181,42 +193,6 @@ HEADPLOT
             MOVE.W  (A7)+,D0
 
             RTS
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
