@@ -23,6 +23,7 @@ SGMPOSY2    DS.W    1                       ; COORDENADA Y SEGMENTO 2
 ; --- VARIABLES DEL MARCADOR -------------------------------------------------
 
 JGOPNTS     DS.W    1                       ; PUNTUACIÓN DEL JUEGO
+JGOTIM      DS.W    1                       ; TEMPORIZADOR DEL JUEGO
 
 ; --- INTRO STATE RELATED VARIABLES ------------------------------------------
 
@@ -40,6 +41,10 @@ GOVTIMER    DS.W    1
 STACUR      DS.W    1                       ; ESTADO ACTUAL
 STANEXT     DS.W    1                       ; ESTADO SIGUIENTE
 
+; --- VARIABLES PARA LEER/ESCRIBIR ARCHIVOS ----------------------------------
+
+FILEID      DS.W    1                       ; ID DEL ARCHIVO
+BFFLEC      DS.B    2                       ; BUFFER PARA LEER ARCHIVO
 
 
 

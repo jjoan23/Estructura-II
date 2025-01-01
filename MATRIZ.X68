@@ -347,6 +347,16 @@ MTZUPD
             JSR     MNZOCPD                 ; MARCAMOS LA POSICIÓN DE LA MANZANA
             
             
+            
+            SUBQ.W  #1,(JGOTIM)             ; RESTAMOS 1 AL TIMER
+            CMP     #0,(JGOTIM)             ; VEMOS SI HA ACABADO EL TIEMPO
+            BEQ     .GAMEOVER
+            BRA     .FIN                     ; SALTAMOS DEPENDIENDO DEL VALOR
+            
+.GAMEOVER    MOVE.W  #3,(STANEXT)
+
+            
+.FIN            
             MOVEM.W (A7)+,D0-D2/A0
 
             RTS
@@ -409,6 +419,7 @@ PLOTSEG:
 PLOTAPPLE:
             JSR     APPLEPLOT
             BRA     DONEPLOT            
+
 
 
 

@@ -40,8 +40,8 @@ STAUPD
             
             MOVEM.L (A7)+,D0/A0
             RTS
-.INITBL     DC.L    ISCINIT,INSINIT,GAMINIT,GOVINIT
-.UPDTBL     DC.L    ISCUPD,INSUPD,GAMUPD,GOVUPD
+.INITBL     DC.L    ISCINIT,INSINIT,GAMINIT,GOVINIT,TABINIT
+.UPDTBL     DC.L    ISCUPD,INSUPD,GAMUPD,GOVUPD,TABUPD
 
 ; -----------------------------------------------------------------------------
 STAPLOT
@@ -59,7 +59,7 @@ STAPLOT
             JSR     (A0)
             MOVEM.L (A7)+,D0/A0
             RTS
-.PLTTBL     DC.L    ISCPLOT,INSPLOT,GAMPLOT,GOVPLOT
+.PLTTBL     DC.L    ISCPLOT,INSPLOT,GAMPLOT,GOVPLOT,TABPLOT
 
 ; -----------------------------------------------------------------------------
 STAEMPTY
@@ -70,6 +70,7 @@ STAEMPTY
 ; NOTE     - JUST A PLACEHOLDER. NOTHING TO DO.
 ; -----------------------------------------------------------------------------
             RTS
+
 
 
 

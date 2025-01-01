@@ -57,6 +57,14 @@ ISCUPD
             BRA     .DONE            
             
 .CONT       
+
+            MOVE.B  #19,D0                  ; Tarea 19: Detectar teclas
+            MOVE.L  #'P',D1                 ; Código ASCII de la tecla P
+            TRAP    #15
+            BTST.L  #0,D1                   ; Verificar si la tecla P está presionada
+            BEQ     .END                    ; Si no está presionada, continuar
+            MOVE.W  #4,(STANEXT)            ; Cambiar STANEXT a 4 si la tecla P está presionada
+.END            
             ADDQ.W  #1,(ISCTIMER)
             CMP.W   #ISCMAXTM,(ISCTIMER)
             BLT     .DONE
@@ -89,7 +97,10 @@ ISCPLOT
             BEQ     .DONE
             
             LEA     .TXT2,A0
-            MOVE.B  #25,D0
+            MOVE.B  #23,D0
+            JSR     UTLPRINT
+            
+            LEA     .TXT3,A0
             JSR     UTLPRINT
             
 .DONE       MOVEM.L (A7)+,D0-D1/A0
@@ -97,8 +108,10 @@ ISCPLOT
             RTS
             
 .TXT1       DC.B    'SNAKE TIMER 68000',0
-.TXT2       DC.B    'PRESS TO START',0
+.TXT2       DC.B    'CLICK HERE TO START',0
+.TXT3       DC.B    'PRESS KEY P TO SEE SCORE TABLE',0
             DS.W    0
+
 
 
 

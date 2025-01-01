@@ -22,7 +22,9 @@
             INCLUDE 'INTRO.X68'
             INCLUDE 'INSTRUCTIONS.X68'
             INCLUDE 'GAMEOVER.X68'
+            INCLUDE 'TABLE.X68'
             INCLUDE 'STATES.X68'
+            
             
 START:
                 
@@ -73,6 +75,7 @@ START:
     
     
             END    START        
+
 
 
 
