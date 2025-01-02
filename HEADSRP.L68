@@ -1,6 +1,6 @@
-00001DFE Starting Address
+000021D2 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 01/01/2025 17:11:09
+Created On: 02/01/2025 22:57:34
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * MANEJO DE LA CABEZA DE LA SERPIENTE
@@ -32,7 +32,7 @@ Line 19 ERROR: Symbol value differs between first and second pass
 00000010                            23  ; MODIFIES : NONE
 00000010                            24  ; ------------------------------------------------------------------------------
 00000010                            25  
-00000010  48A7 E000                 26              MOVEM.W D0-D2,-(A7)
+00000010  48E7 F1C0                 26              MOVEM.L D0-D3/D7/A0-A1,-(A7)
 00000014                            27  
 00000014                            28              ; Marcar celda actual como vacía
 Line 29 ERROR: Undefined symbol
@@ -44,217 +44,403 @@ Line 31 ERROR: Undefined symbol
 Line 32 ERROR: Undefined symbol
 00000026  4EB9 004DBD16             32              JSR     MCLDVCIA
 0000002C                            33              
-0000002C                            34             
-0000002C                            35              
-0000002C                            36              ; Actualiza la posición de la cabeza según ESTDCBZ
-Line 37 ERROR: Undefined symbol
-0000002C  3039 004DBD16             37              MOVE.W  (ESTDCBZ),D0
-00000032  B07C 0000                 38              CMP.W   #0,D0
-00000036  6700 002E                 39              BEQ     SIGDER
-0000003A  B07C 0001                 40              CMP.W   #1,D0
-0000003E  6700 0032                 41              BEQ     SIGARR
-00000042  B07C 0002                 42              CMP.W   #2,D0
-00000046  6700 0036                 43              BEQ     SIGIZQ
-0000004A  B07C 0003                 44              CMP.W   #3,D0
-0000004E  6700 003A                 45              BEQ     SIGABA
-00000052                            46  
-00000052                            47              ; Si no hay dirección válida, sale
-00000052  6000 00BA                 48              BRA     FIN
-00000056                            49  
-Line 50 ERROR: Symbol value differs between first and second pass
-00000056                            50  SIGDER:
-Line 51 ERROR: Undefined symbol
-00000056  0679 BD16 005455B8        51              ADD.W   #CBZVEL,(CBZPOSX)
-0000005E  6000 005E                 52              BRA     CHKCOL
-00000062                            53  
-Line 54 ERROR: Symbol value differs between first and second pass
-00000062                            54  SIGARR:
-Line 55 ERROR: Undefined symbol
-00000062  0479 BD16 005455B8        55              SUB.W   #CBZVEL,(CBZPOSY)
-0000006A  6000 0052                 56              BRA     CHKCOL
-0000006E                            57  
-Line 58 ERROR: Symbol value differs between first and second pass
-0000006E                            58  SIGIZQ:
-Line 59 ERROR: Undefined symbol
-0000006E  0479 BD16 005455B8        59              SUB.W   #CBZVEL,(CBZPOSX)
-00000076  6000 0046                 60              BRA     CHKCOL
-0000007A                            61  
-Line 62 ERROR: Symbol value differs between first and second pass
-0000007A                            62  SIGABA:
-Line 63 ERROR: Undefined symbol
-0000007A  0679 BD16 005455B8        63              ADD.W   #CBZVEL,(CBZPOSY)
-00000082                            64              
-Line 65 ERROR: Symbol value differs between first and second pass
-00000082                            65  CHKBORDE:
-00000082                            66              ; Verificar colisiones con los bordes
-Line 67 ERROR: Undefined symbol
-00000082  3239 004DBD16             67              MOVE.W  (CBZPOSX),D1
-Line 68 ERROR: Undefined symbol
-00000088  B27C BD16                 68              CMP.W   #PANWIDTH,D1                 ; Si CBZPOSX < 0
-0000008C  6E00 007A                 69              BGT     GAMEOVER
-00000090  B27C 0000                 70              CMP.W   #0,D1          ; Si CBZPOSX >= PANWIDTH
-00000094  6D00 0072                 71              BLT     GAMEOVER
-00000098                            72  
-Line 73 ERROR: Undefined symbol
-00000098  3239 004DBD16             73              MOVE.W  (CBZPOSY),D1
-0000009E  B27C 0000                 74              CMP.W   #0,D1                 ; Si CBZPOSY < 0
-000000A2  6D00 0064                 75              BLT     GAMEOVER
-Line 76 ERROR: Undefined symbol
-000000A6  B27C BD16                 76              CMP.W   #PANHEIGH,D1          ; Si CBZPOSY >= PANHEIGH
-000000AA  6E00 005C                 77              BGT     GAMEOVER
-000000AE                            78  
-000000AE                            79              ;BRA     FIN
-000000AE                            80              
-Line 81 ERROR: Symbol value differs between first and second pass
-000000AE                            81  CHKCOL:
-000000AE                            82              ; Verifica la colisión con la manzana
+0000002C                            34              ; Actualiza la posición de la cabeza según ESTDCBZ
+Line 35 ERROR: Undefined symbol
+0000002C  3039 004DBD16             35              MOVE.W  (ESTDCBZ),D0
+00000032  B07C 0000                 36              CMP.W   #0,D0
+00000036  6700 002E                 37              BEQ     SIGDER
+0000003A  B07C 0001                 38              CMP.W   #1,D0
+0000003E  6700 0032                 39              BEQ     SIGARR
+00000042  B07C 0002                 40              CMP.W   #2,D0
+00000046  6700 0036                 41              BEQ     SIGIZQ
+0000004A  B07C 0003                 42              CMP.W   #3,D0
+0000004E  6700 003A                 43              BEQ     SIGABA
+00000052                            44  
+00000052                            45              ; Si no hay dirección válida, sale
+00000052  6000 01EC                 46              BRA     FIN
+00000056                            47  
+Line 48 ERROR: Symbol value differs between first and second pass
+00000056                            48  SIGDER:
+Line 49 ERROR: Undefined symbol
+00000056  0679 BD16 005455B8        49              ADD.W   #CBZVEL,(CBZPOSX)
+0000005E  6000 0032                 50              BRA     CHKBORDE
+00000062                            51  
+Line 52 ERROR: Symbol value differs between first and second pass
+00000062                            52  SIGARR:
+Line 53 ERROR: Undefined symbol
+00000062  0479 BD16 005455B8        53              SUB.W   #CBZVEL,(CBZPOSY)
+0000006A  6000 0026                 54              BRA     CHKBORDE
+0000006E                            55  
+Line 56 ERROR: Symbol value differs between first and second pass
+0000006E                            56  SIGIZQ:
+Line 57 ERROR: Undefined symbol
+0000006E  0479 BD16 005455B8        57              SUB.W   #CBZVEL,(CBZPOSX)
+00000076  6000 001A                 58              BRA     CHKBORDE
+0000007A                            59  
+Line 60 ERROR: Symbol value differs between first and second pass
+0000007A                            60  SIGABA:
+Line 61 ERROR: Undefined symbol
+0000007A  0679 BD16 005455B8        61              ADD.W   #CBZVEL,(CBZPOSY)
+00000082                            62              
+Line 63 ERROR: Symbol value differs between first and second pass
+00000082                            63  CHKBORDE:
+00000082                            64              ; Verificar colisiones con los bordes
+Line 65 ERROR: Undefined symbol
+00000082  3239 004DBD16             65              MOVE.W  (CBZPOSX),D1
+Line 66 ERROR: Undefined symbol
+00000088  B27C BD16                 66              CMP.W   #PANWIDTH,D1                 ; Si CBZPOSX < 0
+0000008C  6E00 007E                 67              BGT     GAMEOVER
+00000090  B27C 0000                 68              CMP.W   #0,D1          ; Si CBZPOSX >= PANWIDTH
+00000094  6D00 0076                 69              BLT     GAMEOVER
+00000098                            70  
+Line 71 ERROR: Undefined symbol
+00000098  3239 004DBD16             71              MOVE.W  (CBZPOSY),D1
+0000009E  B27C 0000                 72              CMP.W   #0,D1                 ; Si CBZPOSY < 0
+000000A2  6D00 0068                 73              BLT     GAMEOVER
+Line 74 ERROR: Undefined symbol
+000000A6  B27C BD16                 74              CMP.W   #PANHEIGH,D1          ; Si CBZPOSY >= PANHEIGH
+000000AA  6E00 0060                 75              BGT     GAMEOVER
+000000AE                            76  
+000000AE                            77              ;BRA     FIN
+000000AE                            78              
+Line 79 ERROR: Symbol value differs between first and second pass
+000000AE                            79  CHKCOL:
+000000AE                            80              ; Verifica la colisión con la manzana
+Line 81 ERROR: Undefined symbol
+000000AE  3239 004DBD16             81              MOVE.W  (CBZPOSX),D1
+Line 82 ERROR: Undefined symbol
+000000B4  3439 004DBD16             82              MOVE.W  (CBZPOSY),D2
 Line 83 ERROR: Undefined symbol
-000000AE  3239 004DBD16             83              MOVE.W  (CBZPOSX),D1
-Line 84 ERROR: Undefined symbol
-000000B4  3439 004DBD16             84              MOVE.W  (CBZPOSY),D2
+000000BA  B279 004DBD16             83              CMP.W   (MNZPOSX),D1
+000000C0  6600 002E                 84              BNE     NOCOL
 Line 85 ERROR: Undefined symbol
-000000BA  B279 004DBD16             85              CMP.W   (MNZPOSX),D1
-000000C0  6600 002E                 86              BNE     NOCOL
-Line 87 ERROR: Undefined symbol
-000000C4  B479 004DBD16             87              CMP.W   (MNZPOSY),D2
-000000CA  6600 0024                 88              BNE     NOCOL
-000000CE                            89              
-000000CE                            90              ; Colisión detectada
+000000C4  B479 004DBD16             85              CMP.W   (MNZPOSY),D2
+000000CA  6600 0024                 86              BNE     NOCOL
+000000CE                            87              
+000000CE                            88              ; Colisión detectada
+Line 89 ERROR: Undefined symbol
+000000CE  4EB9 004DBD16             89              JSR     APPLEUPD
+Line 90 ERROR: Undefined symbol
+000000D4  4EB9 004DBD16             90              JSR     SCOUPD
 Line 91 ERROR: Undefined symbol
-000000CE  4EB9 004DBD16             91              JSR     APPLEUPD
+000000DA  1E3C 0016                 91              MOVE.B  #SNDEAT,D7
 Line 92 ERROR: Undefined symbol
-000000D4  4EB9 004DBD16             92              JSR     SCOUPD
-Line 93 ERROR: Undefined symbol
-000000DA  1E3C 0016                 93              MOVE.B  #SNDEAT,D7
-Line 94 ERROR: Undefined symbol
-000000DE  4E46                      94              TRAP    #SNDPLTN
-000000E0                            95  
-Line 96 ERROR: Symbol value differs between first and second pass
-000000E0                            96  NOCOL:
-000000E0                            97              ; Convierte la posición nueva a índice
+000000DE  4E46                      92              TRAP    #SNDPLTN
+000000E0                            93  
+Line 94 ERROR: Symbol value differs between first and second pass
+000000E0                            94  NOCOL:
+000000E0                            95              ; Convierte la posición nueva a índice
+Line 96 ERROR: Undefined symbol
+000000E0  3239 004DBD16             96              MOVE.W  (CBZPOSX),D1
+Line 97 ERROR: Undefined symbol
+000000E6  3439 004DBD16             97              MOVE.W  (CBZPOSY),D2
 Line 98 ERROR: Undefined symbol
-000000E0  3239 004DBD16             98              MOVE.W  (CBZPOSX),D1
+000000EC  4EB9 004DBD16             98              JSR     CINDMTRZ
 Line 99 ERROR: Undefined symbol
-000000E6  3439 004DBD16             99              MOVE.W  (CBZPOSY),D2
-Line 100 ERROR: Undefined symbol
-000000EC  4EB9 004DBD16            100              JSR     CINDMTRZ
-Line 101 ERROR: Undefined symbol
-000000F2  4EB9 004DBD16            101              JSR     CBZOCPD                 ; Marca la celda como ocupada
-000000F8                           102  
-000000F8                           103  *            ; Verificar colisiones
-000000F8                           104  *            JSR     CHECKCLD
-000000F8                           105  *            CMP.W   #0,D0                 ; Si celda está libre
-000000F8                           106  *            BEQ     MARKCLD
-000000F8                           107  *            BRA     GAMEOVER              ; Colisión consigo misma
-000000F8                           108  
-000000F8                           109  *
-000000F8                           110  *MARKCLD:
-000000F8                           111  *            ; Marcar nueva posición como ocupada por la cabeza
-000000F8                           112  *            JSR     CBZOCPD
-000000F8                           113  *            BRA     FIN
-000000F8                           114  *
+000000F2  4EB9 004DBD16             99              JSR     CBZOCPD                 ; Marca la celda como ocupada
+000000F8                           100              
+000000F8  6000 0146                101              BRA     FIN
+000000FC                           102  
+000000FC                           103  *            ; Verificar colisiones
+000000FC                           104  *            JSR     CHECKCLD
+000000FC                           105  *            CMP.W   #0,D0                 ; Si celda está libre
+000000FC                           106  *            BEQ     MARKCLD
+000000FC                           107  *            BRA     GAMEOVER              ; Colisión consigo misma
+000000FC                           108  
+000000FC                           109  *
+000000FC                           110  *MARKCLD:
+000000FC                           111  *            ; Marcar nueva posición como ocupada por la cabeza
+000000FC                           112  *            JSR     CBZOCPD
+000000FC                           113  *            BRA     FIN
+000000FC                           114  *
 Line 115 ERROR: Symbol value differs between first and second pass
-000000F8                           115  GAMEOVER:
-000000F8                           116              ;MOVE.W  #3,(STANEXT)
+000000FC                           115  GAMEOVER:
+Line 116 ERROR: Undefined symbol
+000000FC  1E3C 0016                116              MOVE.B  #SNDGMOV,D7             ;PONER SONIDO GAME OVER
 Line 117 ERROR: Undefined symbol
-000000F8  1E3C 0016                117              MOVE.B  #SNDGMOV,D7             ;PONER SONIDO GAME OVER
+00000100  4E46                     117              TRAP    #SNDPLTN
 Line 118 ERROR: Undefined symbol
-000000FC  4E46                     118              TRAP    #SNDPLTN
-000000FE                           119  
-Line 120 ERROR: Symbol value differs between first and second pass
-000000FE                           120  FIN:
-000000FE  4C9F 0007                121              MOVEM.W (A7)+,D0-D2
-00000102                           122  
-00000102  4E75                     123              RTS
-00000104                           124              
-00000104                           125  ; ------------------------------------------------------------------------------
-Line 126 ERROR: Symbol value differs between first and second pass
-00000104                           126  HEADPLOT
-00000104                           127  ; DIBUJAR CABEZA.
-00000104                           128  ; INPUT    : NONE 
-00000104                           129  ; OUTPUT   : NONE
-00000104                           130  ; MODIFIES : NONE
-00000104                           131  ; ------------------------------------------------------------------------------
-00000104                           132                         
-00000104  3F00                     133              MOVE.W  D0,-(A7)               ; GUARDAMOS D0
-00000106  3003                     134              MOVE.W  D3,D0                  ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
-Line 135 ERROR: Undefined symbol
-00000108  4EB9 004DBD16            135              JSR     CNVICOOR
-0000010E  2F01                     136              MOVE.L  D1,-(A7)
-00000110                           137              
-00000110                           138              ; SET COLOR DEL CONTORNO CABEZA
-00000110  103C 0050                139              MOVE.B  #80,D0
-Line 140 ERROR: Undefined symbol
-00000114  223C 004DBD16            140              MOVE.L  #CBZPCOL,D1
-0000011A  4E4F                     141              TRAP    #15
-0000011C                           142              
-0000011C                           143              ; SET COLOR DEL RELLENO CABEZA
-0000011C  103C 0051                144              MOVE.B  #81,D0
-Line 145 ERROR: Undefined symbol
-00000120  223C 004DBD16            145              MOVE.L  #CBZFCOL,D1
-00000126  4E4F                     146              TRAP    #15
-00000128                           147              
-00000128                           148              ; DIBUJAR CABEZA
-00000128  103C 0057                149              MOVE.B  #87,D0
-0000012C  221F                     150              MOVE.L  (A7)+,D1
-0000012E  3F03                     151              MOVE.W  D3,-(A7)
-00000130  3601                     152              MOVE.W  D1,D3
+00000102  33FC 0003 005455B8       118              MOVE.W  #3,(STANEXT)
+0000010A                           119              
+0000010A  4280                     120              CLR.L   D0                      ; BORRAMOS LOS REGISTROS QUE VAMOS A UTILIZAR
+0000010C  4281                     121              CLR.L   D1
+0000010E  4282                     122              CLR.L   D2
+00000110  4283                     123              CLR.L   D3
+Line 124 ERROR: Undefined symbol
+00000112  42B9 004DBD16            124              CLR.L   (BFFLEC)
+00000118                           125              
+00000118                           126              ; ESCRIBIR PUNTUACIÓN
+00000118  103C 0032                127              MOVE.B  #50,D0                  ; CERRAMOS TODOS LOS ARCHIVOS
+0000011C  4E4F                     128              TRAP    #15
+0000011E                           129  
+0000011E                           130               ; Verificar si el archivo existe
+0000011E  43F9 00000278            131              LEA     FILE,A1                 ; Dirección del nombre del archivo
+00000124  103C 003B                132              MOVE.B  #59,D0                  ; Tarea 59: Verificar existencia del archivo
+00000128  4E4F                     133              TRAP    #15
+0000012A  B07C 0000                134              CMP.W   #0,D0                   ; Verificar si el archivo existe
+0000012E  6700 0016                135              BEQ     .ABRIR_ARCHIVO          ; Si existe, abrir archivo
+00000132  6000 0072                136              BRA     .CREAR_ARCHIVO          ; Si no existe, crear archivo
+00000136                           137  
+Line 138 ERROR: Symbol value differs between first and second pass
+00000136                           138  .ABRIR_ARCHIVO
+00000136                           139              ; Abrir archivo existente
+00000136  103C 0033                140              MOVE.B  #51,D0                  ; Abrir archivo existente
+0000013A  4E4F                     141              TRAP    #15
+0000013C  B07C 0000                142              CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+00000140  6600 0130                143              BNE     ERROR                   ; Si falla, ir a ERROR
+Line 144 ERROR: Undefined symbol
+00000144  23C1 005455D4            144              MOVE.L  D1,FILEID               ; Guardar el File-ID para operaciones posteriores
+0000014A                           145  
+0000014A                           146              ; Leer hasta encontrar el marcador `#`
+Line 147 ERROR: Undefined symbol
+0000014A  2239 004DBD16            147              MOVE.L  FILEID,D1               ; File-ID del archivo abierto
+00000150  7400                     148              MOVE.L  #0,D2                   ; Posicionarse al inicio del archivo
+00000152  103C 0037                149              MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
+00000156  4E4F                     150              TRAP    #15
+00000158                           151  
+Line 152 ERROR: Symbol value differs between first and second pass
+00000158                           152  .BUSCAR_FINAL
 Line 153 ERROR: Undefined symbol
-00000132  0643 BD16                153              ADD.W   #CBZWIDTH,D3
-00000136  3802                     154              MOVE.W  D2,D4
-Line 155 ERROR: Undefined symbol
-00000138  0644 BD16                155              ADD.W   #CBZHEIGH,D4
-0000013C  4E4F                     156              TRAP    #15
-0000013E                           157              
-0000013E  2F01                     158              MOVE.L  D1,-(A7)
-00000140                           159              
-00000140                           160              ; SET COLOR DEL CONTORNO OJO
-00000140  103C 0050                161              MOVE.B  #80,D0
-Line 162 ERROR: Undefined symbol
-00000144  223C 004DBD16            162              MOVE.L  #OJOPCOL,D1
-0000014A  4E4F                     163              TRAP    #15
-0000014C                           164              
-0000014C                           165              ; SET COLOR DEL RELLENO OJO
-0000014C  103C 0051                166              MOVE.B  #81,D0
-Line 167 ERROR: Undefined symbol
-00000150  223C 004DBD16            167              MOVE.L  #OJOFCOL,D1
-00000156  4E4F                     168              TRAP    #15
-00000158                           169              
-00000158                           170              ; DIBUJAR OJO
-00000158  103C 0058                171              MOVE.B  #88,D0
-0000015C  221F                     172              MOVE.L  (A7)+,D1
-0000015E  2F01                     173              MOVE.L  D1,-(A7)
-00000160  2F02                     174              MOVE.L  D2,-(A7)
-Line 175 ERROR: Comma expected
-00000162                           175              ADD.W   #OJOWIDTH/2,D1            
-00000162  3601                     176              MOVE.W  D1,D3
-Line 177 ERROR: Undefined symbol
-00000164  0643 BD16                177              ADD.W   #OJOWIDTH,D3
-Line 178 ERROR: Comma expected
-00000168                           178              ADD.W   #OJOHEIGH/2,D2
-00000168  3802                     179              MOVE.W  D2,D4
-Line 180 ERROR: Undefined symbol
-0000016A  0644 BD16                180              ADD.W   #OJOHEIGH,D4
-0000016E  4E4F                     181              TRAP    #15                     ; DIBUJAMOS EL PRIMER OJO
-00000170                           182              
-00000170                           183  
-00000170                           184              ; DEFINIR COORDENADAS IRIS
-00000170  241F                     185              MOVE.L  (A7)+,D2
-00000172  221F                     186              MOVE.L  (A7)+,D1
-Line 187 ERROR: Undefined symbol
-00000174  0641 BD16                187              ADD.W   #OJOWIDTH,D1
-Line 188 ERROR: Undefined symbol
-00000178  0642 BD16                188              ADD.W   #OJOHEIGH,D2
-0000017C  103C 0052                189              MOVE.B  #82,D0
-00000180  4E4F                     190              TRAP    #15                     ; DIBUJAMOS EL PRIMER IRIS
-00000182                           191              
-00000182  361F                     192              MOVE.W  (A7)+,D3
-00000184  301F                     193              MOVE.W  (A7)+,D0
-00000186                           194  
-00000186  4E75                     195              RTS
-Line 196 WARNING: END directive missing, starting address not set
+00000158  43F9 004DBD16            153              LEA     BFFLEC,A1               ; Buffer para leer datos
+Line 154 ERROR: Undefined symbol
+0000015E  2239 004DBD16            154              MOVE.L  FILEID,D1               ; File-ID del archivo abierto
+00000164  7401                     155              MOVE.L  #1,D2                   ; Leer 1 byte
+00000166  103C 0035                156              MOVE.B  #53,D0                  ; Tarea 53: Leer archivo
+0000016A  4E4F                     157              TRAP    #15
+0000016C  B07C 0001                158              CMP.W   #1,D0                   ; Verificar si alcanzamos EOF
+00000170  6700 004C                159              BEQ     .ESCRIBIR               ; Si alcanzamos EOF, escribir al final
+Line 160 ERROR: Undefined symbol
+00000174  0C39 0023 005455D0       160              CMP.B   #'#',(BFFLEC)           ; Comparar con el marcador `#`
+0000017C  6700 0016                161              BEQ     .POSICIONAR             ; Si encontramos el marcador, posicionarnos ahí
+00000180  5283                     162              ADDQ.L  #1,D3                   ; Incrementar contador de bytes leídos
+00000182  60E4                     163              BRA     .BUSCAR_FINAL           ; Continuar buscando el marcador
+00000184                           164  
+Line 165 ERROR: Symbol value differs between first and second pass
+00000184                           165  .POSICIONAR
+00000184                           166              ; Posicionarse al marcador para sobrescribir
+00000184  2403                     167              MOVE.L  D3,D2                   ; Cargar la posición del marcador desde el contador
+Line 168 ERROR: Undefined symbol
+00000186  2239 004DBD16            168              MOVE.L  FILEID,D1               ; File-ID del archivo abierto
+0000018C  103C 0037                169              MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
+00000190  4E4F                     170              TRAP    #15
+00000192  6000 002A                171              BRA     .ESCRIBIR               ; Ir a escribir datos
+00000196                           172  
+Line 173 ERROR: Symbol value differs between first and second pass
+00000196                           173  .CREAR_ARCHIVO
+00000196                           174              ; Crear archivo nuevo
+00000196  103C 0034                175              MOVE.B  #52,D0                  ; Tarea 52: Abrir o crear archivo
+0000019A  4E4F                     176              TRAP    #15
+0000019C  B07C 0000                177              CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+000001A0  6600 00D0                178              BNE     ERROR                   ; Si falla, ir a ERROR
+Line 179 ERROR: Undefined symbol
+000001A4  23C1 005455D4            179              MOVE.L  D1,FILEID               ; Guardar el File-ID para operaciones posteriores
+000001AA  6000 0012                180              BRA     .ESCRIBIR               ; Ir directamente a escribir datos
+000001AE                           181  
+Line 182 ERROR: Symbol value differs between first and second pass
+000001AE                           182  .ESCRIBIR
+000001AE                           183              ; Convertir el número en caracteres ASCII y escribirlos uno por uno
+Line 184 ERROR: Undefined symbol
+000001AE  41F9 004DBD16            184              LEA     JGOPNTS,A0              ; Dirección del número
+000001B4  3010                     185              MOVE.W  (A0),D0                 ; Cargar el número en D0
+000001B6  4EB9 00000246            186              JSR     CONVERTIR_NUMERO        ; Convertir número a ASCII en el buffer
+000001BC                           187  
+000001BC                           188              ; Escribir los caracteres del buffer
+Line 189 ERROR: Undefined symbol
+000001BC  41F9 004DBD16            189              LEA     ASCBFF,A0               ; Dirección del buffer de caracteres ASCII
+000001C2                           190              
+000001C2                           191  
+Line 192 ERROR: Symbol value differs between first and second pass
+000001C2                           192  .ESCRIBIR_BUCLE:
+000001C2  1010                     193              MOVE.B  (A0),D0                ; Leer carácter del buffer
+000001C4  6700 0038                194              BEQ     .ESCRIBIR_FIN_BLOQUE    ; Si terminador NULL, ir al delimitador
+000001C8  2403                     195              MOVE.L  D3,D2                   ; Cargar posición actual
+Line 196 ERROR: Undefined symbol
+000001CA  2239 004DBD16            196              MOVE.L  FILEID,D1               ; File-ID del archivo abierto
+000001D0  103C 0037                197              MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
+000001D4  4E4F                     198              TRAP    #15                     ; Posicionar antes de escribir
+000001D6  103C 0036                199              MOVE.B  #54,D0                  ; Tarea 54: Escribir archivo
+000001DA  43D0                     200              LEA     (A0),A1
+000001DC  7401                     201              MOVE.L  #1,D2
+000001DE  4E4F                     202              TRAP    #15                     ; Escribir carácter
+000001E0  B07C 0000                203              CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+000001E4  6600 008C                204              BNE     ERROR                   ; Si falla, ir a ERROR
+000001E8  5283                     205              ADDQ.L  #1,D3                   ; Incrementar posición
+000001EA  1018                     206              MOVE.B  (A0)+,D0                ; Restaurar carácter actual
+000001EC  60E4                     207              BRA     .ESCRIBIR_BUCLE         ; Continuar con el siguiente carácter
+000001EE                           208  
+Line 209 ERROR: Symbol value differs between first and second pass
+000001EE                           209  .ESCRIBIR_FIN_BLOQUE
+000001EE                           210              ; Escribir delimitador `?`
+000001EE  43F9 00000283            211              LEA     TXT1,A1
+000001F4  4EB9 0000021A            212              JSR     ESCRIBIR_CARACTER
+000001FA                           213              ; Escribir marcador `#`
+000001FA  43F9 00000285            214              LEA     TXT2,A1
+00000200  4EB9 0000021A            215              JSR     ESCRIBIR_CARACTER
+00000206  6000 002C                216              BRA     FINESC
+0000020A                           217  
+Line 218 ERROR: Symbol value differs between first and second pass
+0000020A                           218  ESCRIBIR_CARACTER:
+0000020A  2403                     219              MOVE.L  D3,D2                   ; Cargar posición actual
+Line 220 ERROR: Undefined symbol
+0000020C  2239 004DBD16            220              MOVE.L  FILEID,D1               ; File-ID del archivo
+00000212  103C 0037                221              MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
+00000216  4E4F                     222              TRAP    #15                     ; Posicionar antes de escribir
+00000218  103C 0036                223              MOVE.B  #54,D0                  ; Tarea 54: Escribir archivo
+0000021C  7401                     224              MOVE.L  #1,D2
+0000021E  4E4F                     225              TRAP    #15                     ; Escribir carácter
+00000220  5283                     226              ADDQ.L  #1,D3                   ; Incrementar posición
+00000222  4E75                     227              RTS                             ; Retornar
+00000224                           228  
+Line 229 ERROR: Symbol value differs between first and second pass
+00000224                           229  FINESC
+00000224                           230              ; Cerrar archivo
+Line 231 ERROR: Undefined symbol
+00000224  2239 004DBD16            231              MOVE.L  FILEID,D1               ; File-ID del archivo
+0000022A  103C 0038                232              MOVE.B  #56,D0                  ; Tarea 56: Cerrar archivo
+0000022E  4E4F                     233              TRAP    #15
+Line 234 ERROR: Symbol value differs between first and second pass
+00000230                           234  FIN
+00000230  4CDF 038F                235              MOVEM.L (A7)+,D0-D3/D7/A0-A1          ; Restaurar registros
+00000234  4E75                     236              RTS                             ; Retornar
+00000236                           237  
+Line 238 ERROR: Symbol value differs between first and second pass
+00000236                           238  CONVERTIR_NUMERO
+00000236  48E7 F040                239               MOVEM.L D0-D3/A1,-(A7)         ; Guardar registros usados en la pila
+0000023A                           240  
+0000023A                           241      ; Inicialización
+Line 242 ERROR: Undefined symbol
+0000023A  43F9 004DBD16            242      LEA     ASCBFF,A1              ; Dirección del buffer
+00000240  740A                     243      MOVEQ   #10,D2                 ; Base decimal (10)
+00000242                           244  
+00000242                           245      ; Convertir número hexadecimal a decimal y guardar dígitos
+Line 246 ERROR: Symbol value differs between first and second pass
+00000242                           246  .CONVERTDELO:
+00000242  80C2                     247      DIVU    D2,D0                  ; Dividir D0 por 10: cociente en D0, residuo en bits bajos
+00000244  3600                     248      MOVE.W  D0,D3
+00000246  C0BC 0000000F            249      AND.L   #$000F,D0              ; Asegurarnos de trabajar con el residuo (0-9)
+0000024C  0600 0030                250      ADD.B   #48,D0                 ; Convertir residuo a carácter ASCII ('0'-'9')
+00000250  12C0                     251      MOVE.B  D0,(A1)+               ; Almacenar carácter en el buffer
+00000252  3003                     252      MOVE.W  D3,D0
+00000254  4A43                     253      TST.W   D3                     ; Verificar si el cociente es 0
+00000256  66FA                     254      BNE     .CONVERTDELO           ; Si no es 0, continuar con el próximo dígito
+00000258                           255  
+00000258                           256              
+00000258                           257      ; Añadir terminador NULL al final
+00000258  12FC 0000                258      MOVE.B  #0,(A1)+               ; Finalizar cadena con NULL
+0000025C                           259  
+0000025C  4CDF 020F                260      MOVEM.L (A7)+,D0-D3/A1         ; Restaurar registros usados
+00000260  4E75                     261              RTS                         ; Retornar              
+Line 262 ERROR: Symbol value differs between first and second pass
+00000262                           262  ERROR
+00000262  103C 0009                263              MOVE.B  #9,D0                   ; Tarea 9: Terminar el programa
+00000266  4E4F                     264              TRAP    #15
+00000268                           265     
+00000268                           266              
+00000268                           267              
+Line 268 ERROR: Symbol value differs between first and second pass
+00000268= 50 55 4E 54 4F 53 ...    268  FILE        DC.B    'PUNTOS.TXT',0 
+Line 269 ERROR: Symbol value differs between first and second pass
+00000272= 3F                       269  TXT1        DC.B    '?',0
+Line 270 ERROR: Symbol value differs between first and second pass
+00000273= 23                       270  TXT2        DC.B    '#',0  
+00000274                           271              DS.W    0        
+00000274                           272  
+00000274                           273  
+00000274                           274              
+00000274                           275              
+00000274                           276  ; ------------------------------------------------------------------------------
+Line 277 ERROR: Symbol value differs between first and second pass
+00000274                           277  HEADPLOT
+00000274                           278  ; DIBUJAR CABEZA.
+00000274                           279  ; INPUT    : NONE 
+00000274                           280  ; OUTPUT   : NONE
+00000274                           281  ; MODIFIES : NONE
+00000274                           282  ; ------------------------------------------------------------------------------
+00000274                           283                         
+00000274  3F00                     284              MOVE.W  D0,-(A7)               ; GUARDAMOS D0
+00000276  3003                     285              MOVE.W  D3,D0                  ; PONEMOS EL INDICE DE LA CELDA EN D0 PARA CALCULAR SUS COORDENADAS
+Line 286 ERROR: Undefined symbol
+00000278  4EB9 004DBD16            286              JSR     CNVICOOR
+0000027E  2F01                     287              MOVE.L  D1,-(A7)
+00000280                           288              
+00000280                           289              ; SET COLOR DEL CONTORNO CABEZA
+00000280  103C 0050                290              MOVE.B  #80,D0
+Line 291 ERROR: Undefined symbol
+00000284  223C 004DBD16            291              MOVE.L  #CBZPCOL,D1
+0000028A  4E4F                     292              TRAP    #15
+0000028C                           293              
+0000028C                           294              ; SET COLOR DEL RELLENO CABEZA
+0000028C  103C 0051                295              MOVE.B  #81,D0
+Line 296 ERROR: Undefined symbol
+00000290  223C 004DBD16            296              MOVE.L  #CBZFCOL,D1
+00000296  4E4F                     297              TRAP    #15
+00000298                           298              
+00000298                           299              ; DIBUJAR CABEZA
+00000298  103C 0057                300              MOVE.B  #87,D0
+0000029C  221F                     301              MOVE.L  (A7)+,D1
+0000029E  3F03                     302              MOVE.W  D3,-(A7)
+000002A0  3601                     303              MOVE.W  D1,D3
+Line 304 ERROR: Undefined symbol
+000002A2  0643 BD16                304              ADD.W   #CBZWIDTH,D3
+000002A6  3802                     305              MOVE.W  D2,D4
+Line 306 ERROR: Undefined symbol
+000002A8  0644 BD16                306              ADD.W   #CBZHEIGH,D4
+000002AC  4E4F                     307              TRAP    #15
+000002AE                           308              
+000002AE  2F01                     309              MOVE.L  D1,-(A7)
+000002B0                           310              
+000002B0                           311              ; SET COLOR DEL CONTORNO OJO
+000002B0  103C 0050                312              MOVE.B  #80,D0
+Line 313 ERROR: Undefined symbol
+000002B4  223C 004DBD16            313              MOVE.L  #OJOPCOL,D1
+000002BA  4E4F                     314              TRAP    #15
+000002BC                           315              
+000002BC                           316              ; SET COLOR DEL RELLENO OJO
+000002BC  103C 0051                317              MOVE.B  #81,D0
+Line 318 ERROR: Undefined symbol
+000002C0  223C 004DBD16            318              MOVE.L  #OJOFCOL,D1
+000002C6  4E4F                     319              TRAP    #15
+000002C8                           320              
+000002C8                           321              ; DIBUJAR OJO
+000002C8  103C 0058                322              MOVE.B  #88,D0
+000002CC  221F                     323              MOVE.L  (A7)+,D1
+000002CE  2F01                     324              MOVE.L  D1,-(A7)
+000002D0  2F02                     325              MOVE.L  D2,-(A7)
+Line 326 ERROR: Comma expected
+000002D2                           326              ADD.W   #OJOWIDTH/2,D1            
+000002D2  3601                     327              MOVE.W  D1,D3
+Line 328 ERROR: Undefined symbol
+000002D4  0643 BD16                328              ADD.W   #OJOWIDTH,D3
+Line 329 ERROR: Comma expected
+000002D8                           329              ADD.W   #OJOHEIGH/2,D2
+000002D8  3802                     330              MOVE.W  D2,D4
+Line 331 ERROR: Undefined symbol
+000002DA  0644 BD16                331              ADD.W   #OJOHEIGH,D4
+000002DE  4E4F                     332              TRAP    #15                     ; DIBUJAMOS EL PRIMER OJO
+000002E0                           333              
+000002E0                           334  
+000002E0                           335              ; DEFINIR COORDENADAS IRIS
+000002E0  241F                     336              MOVE.L  (A7)+,D2
+000002E2  221F                     337              MOVE.L  (A7)+,D1
+Line 338 ERROR: Undefined symbol
+000002E4  0641 BD16                338              ADD.W   #OJOWIDTH,D1
+Line 339 ERROR: Undefined symbol
+000002E8  0642 BD16                339              ADD.W   #OJOHEIGH,D2
+000002EC  103C 0052                340              MOVE.B  #82,D0
+000002F0  4E4F                     341              TRAP    #15                     ; DIBUJAMOS EL PRIMER IRIS
+000002F2                           342              
+000002F2  361F                     343              MOVE.W  (A7)+,D3
+000002F4  301F                     344              MOVE.W  (A7)+,D0
+000002F6                           345  
+000002F6  4E75                     346              RTS
+000002F8                           347  
+000002F8                           348  
+000002F8                           349  
+000002F8                           350  
+000002F8                           351  
+Line 352 WARNING: END directive missing, starting address not set
 
-55 errors detected
+85 errors detected
 1 warning generated
 
 
@@ -263,13 +449,28 @@ Symbol-name         Value
 -------------------------
 CHKBORDE            92
 CHKCOL              BE
-FIN                 10E
-GAMEOVER            108
+CONVERTIR_NUMERO    246
+CONVERTIR_NUMERO:CONVERTDELO  252
+ERROR               272
+ESCRIBIR_CARACTER   21A
+FILE                278
+FIN                 240
+FINESC              234
+GAMEOVER            10C
+GAMEOVER:ABRIR_ARCHIVO  146
+GAMEOVER:BUSCAR_FINAL  168
+GAMEOVER:CREAR_ARCHIVO  1A6
+GAMEOVER:ESCRIBIR   1BE
+GAMEOVER:ESCRIBIR_BUCLE  1D2
+GAMEOVER:ESCRIBIR_FIN_BLOQUE  1FE
+GAMEOVER:POSICIONAR  194
 HEADINIT            0
-HEADPLOT            114
+HEADPLOT            288
 HEADUPD             20
 NOCOL               F0
 SIGABA              8A
 SIGARR              72
 SIGDER              66
 SIGIZQ              7E
+TXT1                283
+TXT2                285

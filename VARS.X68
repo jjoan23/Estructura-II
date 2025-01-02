@@ -43,8 +43,11 @@ STANEXT     DS.W    1                       ; ESTADO SIGUIENTE
 
 ; --- VARIABLES PARA LEER/ESCRIBIR ARCHIVOS ----------------------------------
 
-FILEID      DS.W    1                       ; ID DEL ARCHIVO
-BFFLEC      DS.B    2                       ; BUFFER PARA LEER ARCHIVO
+FILEID      DS.L    1                       ; ID DEL ARCHIVO
+BFFLEC      DS.B    1                       ; BUFFER PARA LEER ARCHIVO
+ASCBFF	DS.B	10	; BUFFER PARA CONVERTIR A ASCII
+	DS.W	0
+
 
 
 

@@ -11,7 +11,7 @@ SCOINIT
 ; ------------------------------------------------------------------------------
             CLR.W   (JGOPNTS)
             CLR.W   (JGOTIM)
-            MOVE.W  #400,(JGOTIM)
+            MOVE.W  #150,(JGOTIM)
             RTS
             
 ; ------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ SCOUPD
             
             ;Incrementa el marcador
             MOVE.W  (JGOPNTS),D0
-            ADD.W  #25,D0
+            ADD.W  #10,D0
             MOVE.W  D0,(JGOPNTS)
             
             MOVEM.L (A7)+,D0
@@ -76,6 +76,7 @@ SCOPLOT
 .TXT1       DC.B    'PUNTOS : ',0
 .TXT2       DC.B    'TIEMPO : ',0
             DS.W    0
+
 
 
 

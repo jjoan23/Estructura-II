@@ -310,7 +310,7 @@ MTZUPD
 ; ----------------------------------------------------------------------------
 
 
-            MOVEM.W D0-D2/A0,-(A7)
+            MOVEM.L D0-D3/D7/A0-A1,-(A7)
             
             LEA ESTDCLDS,A0       ; Apunta al inicio de ESTDCLDS
             MOVE.W #TCELDAS,D0    ; Número total de celdas
@@ -354,12 +354,160 @@ MTZUPD
             BRA     .FIN                     ; SALTAMOS DEPENDIENDO DEL VALOR
             
 .GAMEOVER    MOVE.W  #3,(STANEXT)
-
+ 	CLR.L   D0                      ; BORRAMOS LOS REGISTROS QUE VAMOS A UTILIZAR
+            CLR.L   D1
+            CLR.L   D2
+            CLR.L	D3
+            CLR.L	(BFFLEC)
             
-.FIN            
-            MOVEM.W (A7)+,D0-D2/A0
+            ; ESCRIBIR PUNTUACIÓN
+            MOVE.B  #50,D0                  ; CERRAMOS TODOS LOS ARCHIVOS
+            TRAP    #15
 
-            RTS
+             ; Verificar si el archivo existe
+            LEA     .FILE,A1                 ; Dirección del nombre del archivo
+            MOVE.B  #59,D0                  ; Tarea 59: Verificar existencia del archivo
+            TRAP    #15
+            CMP.W   #0,D0                   ; Verificar si el archivo existe
+            BEQ     .ABRIR_ARCHIVO          ; Si existe, abrir archivo
+            BRA     .CREAR_ARCHIVO          ; Si no existe, crear archivo
+
+.ABRIR_ARCHIVO
+            ; Abrir archivo existente
+            MOVE.B  #51,D0                  ; Abrir archivo existente
+            TRAP    #15
+            CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+            BNE     .ERROR                   ; Si falla, ir a ERROR
+            MOVE.L  D1,FILEID               ; Guardar el File-ID para operaciones posteriores
+
+            ; Leer hasta encontrar el marcador `#`
+            MOVE.L  FILEID,D1               ; File-ID del archivo abierto
+            MOVE.L  #0,D2                   ; Posicionarse al inicio del archivo
+            MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
+            TRAP    #15
+
+.BUSCAR_FINAL
+            LEA     BFFLEC,A1               ; Buffer para leer datos
+            MOVE.L  FILEID,D1               ; File-ID del archivo abierto
+            MOVE.L  #1,D2                   ; Leer 1 byte
+            MOVE.B  #53,D0                  ; Tarea 53: Leer archivo
+            TRAP    #15
+            CMP.W   #1,D0                   ; Verificar si alcanzamos EOF
+            BEQ     .ESCRIBIR               ; Si alcanzamos EOF, escribir al final
+            CMP.B   #'#',(BFFLEC)           ; Comparar con el marcador `#`
+            BEQ     .POSICIONAR             ; Si encontramos el marcador, posicionarnos ahí
+            ADDQ.L  #1,D3                   ; Incrementar contador de bytes leídos
+            BRA     .BUSCAR_FINAL           ; Continuar buscando el marcador
+
+.POSICIONAR
+            ; Posicionarse al marcador para sobrescribir
+            MOVE.L  D3,D2                   ; Cargar la posición del marcador desde el contador
+            MOVE.L  FILEID,D1               ; File-ID del archivo abierto
+            MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
+            TRAP    #15
+            BRA     .ESCRIBIR               ; Ir a escribir datos
+
+.CREAR_ARCHIVO
+            ; Crear archivo nuevo
+            MOVE.B  #52,D0                  ; Tarea 52: Abrir o crear archivo
+            TRAP    #15
+            CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+            BNE     .ERROR                   ; Si falla, ir a ERROR
+            MOVE.L  D1,FILEID               ; Guardar el File-ID para operaciones posteriores
+            BRA     .ESCRIBIR               ; Ir directamente a escribir datos
+
+.ESCRIBIR
+            ; Convertir el número en caracteres ASCII y escribirlos uno por uno
+            LEA     JGOPNTS,A0              ; Dirección del número
+            MOVE.W  (A0),D0                 ; Cargar el número en D0
+            JSR     .CONVERTIR_NUMERO        ; Convertir número a ASCII en el buffer
+
+            ; Escribir los caracteres del buffer
+            LEA     ASCBFF,A0         	; Dirección del buffer de caracteres ASCII
+            
+
+.ESCRIBIR_BUCLE:
+            MOVE.B  (A0),D0                ; Leer carácter del buffer
+            BEQ     .ESCRIBIR_FIN_BLOQUE    ; Si terminador NULL, ir al delimitador
+            MOVE.L  D3,D2                   ; Cargar posición actual
+            MOVE.L  FILEID,D1               ; File-ID del archivo abierto
+            MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
+            TRAP    #15                     ; Posicionar antes de escribir
+            MOVE.B  #54,D0                  ; Tarea 54: Escribir archivo
+	LEA	(A0),A1
+	MOVE.L	#1,D2
+            TRAP    #15                     ; Escribir carácter
+            CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+            BNE     .ERROR                   ; Si falla, ir a ERROR
+            ADDQ.L  #1,D3                   ; Incrementar posición
+	MOVE.B  (A0)+,D0                ; Restaurar carácter actual
+            BRA     .ESCRIBIR_BUCLE         ; Continuar con el siguiente carácter
+
+.ESCRIBIR_FIN_BLOQUE
+            ; Escribir delimitador `?`
+	LEA	.TXT1,A1
+            JSR     .ESCRIBIR_CARACTER
+            ; Escribir marcador `#`
+	LEA	.TXT2,A1
+            JSR     .ESCRIBIR_CARACTER
+            BRA     .FINESC
+
+.ESCRIBIR_CARACTER:
+            MOVE.L  D3,D2                   ; Cargar posición actual
+            MOVE.L  FILEID,D1               ; File-ID del archivo
+            MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
+            TRAP    #15                     ; Posicionar antes de escribir
+            MOVE.B  #54,D0                  ; Tarea 54: Escribir archivo
+	MOVE.L	#1,D2
+            TRAP    #15                     ; Escribir carácter
+            ADDQ.L  #1,D3                   ; Incrementar posición
+            RTS                             ; Retornar
+
+.FINESC
+            ; Cerrar archivo
+            MOVE.L  FILEID,D1               ; File-ID del archivo
+            MOVE.B  #56,D0                  ; Tarea 56: Cerrar archivo
+            TRAP    #15
+.FIN
+            MOVEM.L (A7)+,D0-D3/D7/A0-A1          ; Restaurar registros
+            RTS                             ; Retornar
+
+.CONVERTIR_NUMERO
+	 MOVEM.L D0-D3/A1,-(A7)         ; Guardar registros usados en la pila
+
+    ; Inicialización
+    LEA     ASCBFF,A1              ; Dirección del buffer
+    MOVEQ   #10,D2                 ; Base decimal (10)
+
+    ; Convertir número hexadecimal a decimal y guardar dígitos
+.CONVERTDELO:
+    DIVU    D2,D0                  ; Dividir D0 por 10: cociente en D0, residuo en bits bajos
+    MOVE.W	D0,D3
+    AND.L   #$000F,D0              ; Asegurarnos de trabajar con el residuo (0-9)
+    ADD.B   #48,D0                 ; Convertir residuo a carácter ASCII ('0'-'9')
+    MOVE.B  D0,(A1)+               ; Almacenar carácter en el buffer
+    MOVE.W	D3,D0
+    TST.W   D3                     ; Verificar si el cociente es 0
+    BNE     .CONVERTDELO           ; Si no es 0, continuar con el próximo dígito
+
+ 		
+    ; Añadir terminador NULL al final
+    MOVE.B  #0,(A1)+               ; Finalizar cadena con NULL
+
+    MOVEM.L (A7)+,D0-D3/A1         ; Restaurar registros usados
+            RTS                         ; Retornar              	
+.ERROR
+            MOVE.B  #9,D0                   ; Tarea 9: Terminar el programa
+            TRAP    #15
+   
+            
+            
+.FILE        DC.B    'PUNTOS.TXT',0 
+.TXT1	DC.B	'?',0
+.TXT2	DC.B	'#',0  
+            DS.W    0        
+
+
 
 
 
@@ -419,6 +567,7 @@ PLOTSEG:
 PLOTAPPLE:
             JSR     APPLEPLOT
             BRA     DONEPLOT            
+
 
 
 
