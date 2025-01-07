@@ -33,7 +33,6 @@ START:
             ORI.W   #$0700,SR
             JSR     SYSINIT
             JSR     UTLINIT
-            ;JSR     GAMINIT
             JSR     STAINIT
 
 
@@ -46,7 +45,6 @@ START:
             TRAP    #KBDUPTN
 
 ; ACTUALIZAR LÓGICA DEL JUEGO
-            ;JSR     GAMUPD
             JSR     STAUPD
             
 ; --- SINCRONIZACIÓN ---------------------------------------------------------
@@ -58,10 +56,7 @@ START:
 
 ; --- DIBUJAR ----------------------------------------------------------------
             
-            ;JSR     GAMPLOT
-            JSR     STAPLOT
-            
-            
+            JSR     STAPLOT            
             TRAP    #SCRUPTN                      ; ACTUALIZA DOBLE BUFFER
 
 
@@ -75,6 +70,7 @@ START:
     
     
             END    START        
+
 
 
 

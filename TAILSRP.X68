@@ -11,7 +11,7 @@ TAILINIT
 ; ------------------------------------------------------------------------------
 
             MOVE.W  #(PANWIDTH/2)-CBZWIDTH-SGMWIDTH+(COLWIDTH/2),(COLPOSX)
-            MOVE.W  #(PANHEIGH/2),(COLPOSY)
+            MOVE.W  #(PANHEIGH/2),(COLPOSY)	; Ponemos la cola después del segundo segmento
             
             RTS
             
@@ -25,17 +25,17 @@ TAILUPD
 ; ------------------------------------------------------------------------------
             MOVEM.W D1-D2,-(A7)
             
-            ; Marca la posición actual de la cola como vacía
+            		; Marca la posición actual de la cola como vacía
             MOVE.W  (COLPOSX),D1
             MOVE.W  (COLPOSY),D2
             JSR     CINDMTRZ
             JSR     MCLDVCIA
-*
-            ; Actualiza la posición de la cola para seguir al último segmento
+
+            		; Actualiza la posición de la cola para seguir al último segmento
             MOVE.W  (SGMPOSX2),(COLPOSX)
-            MOVE.W  (SGMPOSY2),(COLPOSY)    ; MARCAMOS LA COOORDENADA DE LA COLA COMO COORDENADA DEL SEGMENTO 2
-*            
-            ; Marca la nueva posición como cola
+            MOVE.W  (SGMPOSY2),(COLPOSY)    ; Marcamos la coordenada del segmento 2 como la cola
+            
+            		; Marca la nueva posición como cola
             MOVE.W  (COLPOSX),D1
             MOVE.W  (COLPOSY),D2
             JSR     CINDMTRZ
@@ -59,11 +59,11 @@ TAILPLOT
             MOVE.L  D1,-(A7)
             
             MOVE.B  #80,D0
-            MOVE.L  #COLPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DE LA COLA
+            MOVE.L  #COLPCOL,D1            ; Ponemos el color de dibujado a COLPCOL
             TRAP    #15
             
             MOVE.B  #81,D0
-            MOVE.L  #COLFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DE LA COLA
+            MOVE.L  #COLFCOL,D1            ; Ponemos el color de dibujado a COLFCOL
             TRAP    #15
             
             MOVE.B  #87,D0
@@ -73,12 +73,13 @@ TAILPLOT
             ADD.W   #SIZECLDA,D3
             MOVE.W  D2,D4                    
             ADD.W   #SIZECLDA,D4
-            TRAP    #15                    ; DIBUJAMOS EL CUADRADO 
+            TRAP    #15                    ; Dibujamos el cuadrado 
                         
             MOVE.W  (A7)+,D3  
             MOVE.W  (A7)+,D0
 
             RTS
+
 
 
 *~Font name~Courier New~

@@ -22,13 +22,13 @@ GOVUPD
 ; ------------------------------------------------------------------------------
             MOVEM.L D0-D1,-(A7)
             
-            MOVE.B  #19,D0                  ; Detectar teclas
-            MOVE.L  #'S',D1                 ; Código ASCII de la tecla S
+            MOVE.B  #19,D0                  ; Detectar la tecla S
+            MOVE.L  #'S',D1                 
             TRAP    #15
             BTST.L  #0,D1                   ; Verificar si la tecla S está presionada
             BEQ     CONT                    ; Si no está presionada, continuar
 
-            CLR.W (STANEXT)                 ; Cambiar STANEXT a 0 si la tecla P está presionada
+            CLR.W (STANEXT)                 ; Cambiar STANEXT a 0 si la tecla S está presionada
 
 
 CONT
@@ -53,15 +53,13 @@ GOVPLOT
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             MOVEM.L D0-D1/A0,-(A7)
-            
-            ;JSR     FONPLOT
-            
+                        
             CLR.L   D1
             MOVE.B  #81,D0
             TRAP    #15
             
             LEA     .TXT1,A0
-            MOVE.B  #10,D0
+            MOVE.B  #10,D0	; Enseñar pantalla game over
             JSR     UTLPRINT
             
             LEA     .TXT2,A0
@@ -74,6 +72,7 @@ GOVPLOT
 .TXT1       DC.B    'GAME OVER',0
 .TXT2       DC.B    'WAIT TO RETURN TO MAIN PAGE OR PRESS KEY S',0
             DS.W    0
+
 
 
 

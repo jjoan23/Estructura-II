@@ -10,7 +10,7 @@ SCOINIT
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             CLR.W   (JGOPNTS)
-            CLR.W   (JGOTIM)
+            CLR.W   (JGOTIM)	; Reiniciamos timer y puntuación
             MOVE.W  #150,(JGOTIM)
             RTS
             
@@ -40,33 +40,33 @@ SCOPLOT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-           MOVEM.L  D0-D1/A1,-(A7)
-           ; SET COLOR DE FONDO
-           MOVE.B   #81,D0
-           MOVE.L   #COLFND,D1
-           TRAP     #15
+            MOVEM.L  D0-D1/A1,-(A7)
+            		; Ponemos color del fondo
+            MOVE.B   #81,D0
+            MOVE.L   #COLFND,D1
+            TRAP     #15
          
-           ; PONEMOS EN LA ESQUINA EL APUNTADOR
-           CLR.W    D1
-           MOVE.B   #11,D0
-           TRAP     #15
-           ; DIBUJAR LINEA DE PUNTUACIÓN
+            		; Ponemos en la esquina superior izquierda
+            CLR.W    D1
+            MOVE.B   #11,D0
+            TRAP     #15
+            		; Dibujar linea de puntuación
             LEA     .TXT1,A1
             CLR.L   D1
             MOVE.W  (JGOPNTS),D1
             MOVE.B  #17,D0
             TRAP    #15
             
-           ; BAJAMOS UNA LÍNEA 
-           MOVE.W   #1,D1
-           MOVE.B   #11,D0
-           TRAP     #15
-            ; DIBUJAR LINEA DE TIEMPO
+            		; Bajamos una linea 
+            MOVE.W   #1,D1
+            MOVE.B   #11,D0
+            TRAP     #15
+            		; Dibujar linea timer
             LEA     .TXT2,A1
             CLR.L   D1
             MOVE.W  (JGOTIM),D1
             MOVE.B  #17,D0
-            TRAP    #15
+	TRAP    #15
 
             
             MOVEM.L (A7)+,D0-D1/A1
@@ -76,6 +76,7 @@ SCOPLOT
 .TXT1       DC.B    'PUNTOS : ',0
 .TXT2       DC.B    'TIEMPO : ',0
             DS.W    0
+
 
 
 

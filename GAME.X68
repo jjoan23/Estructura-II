@@ -11,7 +11,7 @@ GAMINIT
 ; ------------------------------------------------------------------------------
             JSR     MTZINIT
             JSR     HEADINIT
-            JSR     SEGINIT
+            JSR     SEGINIT	; Inicializar todos los componentes del juego
             JSR     TAILINIT
             JSR     SCOINIT
             BRA     APPLEINIT
@@ -24,7 +24,7 @@ GAMUPD
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             JSR     TAILUPD
-            JSR     SEGUPD
+            JSR     SEGUPD	; Actualizar componentes del juego
             JSR     HEADUPD
             BRA     MTZUPD       
 
@@ -37,10 +37,11 @@ GAMPLOT
 ; ------------------------------------------------------------------------------
             JSR    HEADPLOT
             JSR    SEGPLOT
-            JSR    TAILPLOT
+            JSR    TAILPLOT	; Dibujar componentes del juego
             JSR    APPLEPLOT
             JSR    MTZPLOT
             BRA    SCOPLOT
+
 
 
 

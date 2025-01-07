@@ -10,9 +10,7 @@ INSINIT
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
 
-            CLR.W   (INSTIMER)
-            ;INSMAXTM
-
+            CLR.W   (INSTIMER)	; Reseteamos el timer
             RTS
 
 ; ------------------------------------------------------------------------------
@@ -24,7 +22,7 @@ INSUPD
 ; ------------------------------------------------------------------------------
 
             ADDQ.W  #1,(INSTIMER)
-            CMP.W   #INSMAXTM,(INSTIMER)
+            CMP.W   #INSMAXTM,(INSTIMER)	; Miramos si hay que seguir en instrucciones
             BLT     .DONE
             CLR.W   (STANEXT)
 .DONE
@@ -45,7 +43,7 @@ INSPLOT
             MOVE.B  #11,D0
             LEA     .TXTLST,A1
 .LOOP       MOVE.L  (A1)+,D1
-            BEQ     .DONE
+            BEQ     .DONE	; Dibujamos la pantalla de instrucciones
             MOVE.L  D1,A0
             JSR     UTLPRINT
             BRA     .LOOP
@@ -60,6 +58,7 @@ INSPLOT
 .TXT6       DC.B    'IT IS EASY: JUST USE THE UP, DOWN, LEFT, RIGHT KEYS TO MOVE THE SNAKE',0
 .TXT7       DC.B    'BE CAREFUL WITH THE WALLS! TRY NOT TO HIT THEM.',0
 .TXTLST     DC.L    .TXT1,.TXT2,.TXT3,.TXT4,.TXT5,.TXT6,.TXT7,0
+
 
 
 

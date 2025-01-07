@@ -11,7 +11,7 @@ SEGINIT
 ; ------------------------------------------------------------------------------
             MOVE.W  #(PANWIDTH/2)-CBZWIDTH,(SGMPOSX)
             MOVE.W  #PANHEIGH/2,(SGMPOSY)
-            MOVE.W  (SGMPOSX),(SGMPOSX2)
+            MOVE.W  (SGMPOSX),(SGMPOSX2)	; Iniciamos los dos segmentos después de la cabeza
             MOVE.W  (SGMPOSY),(SGMPOSY2)
             SUB.W   #SGMWIDTH,(SGMPOSX2)
             RTS
@@ -27,46 +27,37 @@ SEGUPD
             MOVEM.W D1-D2,-(A7)
             
             ; Marcar posición anterior del segmento como vacía
-            MOVE.W  (SGMPOSX),D1             ; Cargar posición X actual del segmento2
-            MOVE.W  (SGMPOSY),D2             ; Cargar posición Y actual del segmento2
+            MOVE.W  (SGMPOSX),D1	; Cargar posición X actual del segmento2
+            MOVE.W  (SGMPOSY),D2            ; Cargar posición Y actual del segmento2
             JSR     CINDMTRZ                ; Obtener índice de celda en D0
             JSR     MCLDVCIA                ; Marcar celda como vacía
             
             ; Marcar posición anterior del segmento como vacía
-            MOVE.W  (SGMPOSX2),D1             ; Cargar posición X actual del segmento2
-            MOVE.W  (SGMPOSY2),D2             ; Cargar posición Y actual del segmento2
+            MOVE.W  (SGMPOSX2),D1           ; Cargar posición X actual del segmento2
+            MOVE.W  (SGMPOSY2),D2           ; Cargar posición Y actual del segmento2
             JSR     CINDMTRZ                ; Obtener índice de celda en D0
             JSR     MCLDVCIA                ; Marcar celda como vacía
             
             ; Actualizar posición del segmento para seguir a la cabeza
             MOVE.W  (SGMPOSX),(SGMPOSX2)    ; MARCAMOS LOS SEGMENTOS COMO SEGUNDA COORDENADA X
             MOVE.W  (SGMPOSY),(SGMPOSY2)    ; MARCAMOS LOS SEGMENTOS COMO SEGUNDA COORDENADA Y
-            MOVE.W  (CBZPOSX),(SGMPOSX)        ; Actualizar X del segmento con la X de la cabeza
-            MOVE.W  (CBZPOSY),(SGMPOSY)        ; Actualizar Y del segmento con la Y de la cabeza
+            MOVE.W  (CBZPOSX),(SGMPOSX)     ; Actualizar X del segmento con la X de la cabeza
+            MOVE.W  (CBZPOSY),(SGMPOSY)     ; Actualizar Y del segmento con la Y de la cabeza
 
             ; Marcar nueva posición del segmento como ocupada
-            MOVE.W  (SGMPOSX),D1             ; Cargar nueva posición X
-            MOVE.W  (SGMPOSY),D2             ; Cargar nueva posición Y
+            MOVE.W  (SGMPOSX),D1            ; Cargar nueva posición X
+            MOVE.W  (SGMPOSY),D2            ; Cargar nueva posición Y
             JSR     CINDMTRZ                ; Obtener índice de celda en D0
             JSR     SGMOCPD                 ; Marcar celda como ocupada por segmento
             
-            MOVE.W  (SGMPOSX2),D1             ; Cargar nueva posición X DEL SEGMENTO 2
-            MOVE.W  (SGMPOSY2),D2             ; Cargar nueva posición Y DEL SEGMENTO 2
+            MOVE.W  (SGMPOSX2),D1	; Cargar nueva posición X DEL SEGMENTO 2
+            MOVE.W  (SGMPOSY2),D2           ; Cargar nueva posición Y DEL SEGMENTO 2
             JSR     CINDMTRZ                ; Obtener índice de celda en D0
             JSR     SGMOCPD                 ; Marcar celda como ocupada por segmento
             
             MOVEM.W (A7)+,D1-D2            
             RTS
-*            
-;CODIGO ANTIGUO
-*            MOVE.W  SGMPOSX,D1
-*            MOVE.W  D1,COLPOSX
-*            MOVE.W  SGMPOSY,D2
-*            MOVE.W  D2,COLPOSY
-*            JSR     CINDMTRZ
-*            JSR     RSTCLD
-            
-            
+         
             
 ; ------------------------------------------------------------------------------
 SEGPLOT
@@ -81,11 +72,11 @@ SEGPLOT
             MOVE.L  D1,-(A7)
             
             MOVE.B  #80,D0
-            MOVE.L  #SGMPCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL CONTORNO DEL SEGMENTO
+            MOVE.L  #SGMPCOL,D1            ; Ponemos el color de dibujado al color de SGMPCOL
             TRAP    #15
             
             MOVE.B  #81,D0
-            MOVE.L  #SGMFCOL,D1            ; PONEMOS EL COLOR DE DIBUJADO AL COLOR DEL RELLENO DEL SEGMENTO
+            MOVE.L  #SGMFCOL,D1            ; Ponemos el color de dibujado al color SGMFCOL
             TRAP    #15
             
             MOVE.B  #87,D0
@@ -93,7 +84,7 @@ SEGPLOT
             MOVE.W  D3,-(A7)
             MOVE.W  D1,D3
             ADD.W   #SIZECLDA,D3
-            MOVE.W  D2,D4                    ; DIBUJAMOS EL CUADRADO
+            MOVE.W  D2,D4                    ; Dibujamos el cuadrado
             ADD.W   #SIZECLDA,D4
             TRAP    #15                     
                         
@@ -101,6 +92,7 @@ SEGPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
 
 *~Font name~Courier New~
 *~Font size~10~

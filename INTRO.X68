@@ -24,41 +24,41 @@ ISCUPD
 
             MOVEM.L D0-D5,-(A7)
             
-            MOVE.W  #$0107,D1               ;HABILITAR IRQ
+            MOVE.W  #$0107,D1               ;Habilitar IRQ
             MOVE.W  #60,D0
             TRAP    #15
             
 .MAINLOOP            
-            MOVE.B  #0,D1                   ;LEER ESTADO ACTUAL RATON
+            MOVE.B  #0,D1	; Leer estado actual del ratón
             MOVE.   #61,D0
             TRAP    #15
             
-            MOVE.L  D1,D2                   ;GUARDAR COORDENADAS RATON EN D2
-            ANDI.B  #1,D0                   ;COMPROBAR click izquierdo
+            MOVE.L  D1,D2                   ; Guardar coordenadas en D2
+            ANDI.B  #1,D0                   ; Comprobar click izquierdo
             TST     D0
             BEQ     .CONT
             
-            ;MIRAMOS SI SE HA PULSADO EN EL TEXTO CORRESPONDIENTE
-            MOVE.L  #$108,D3                 ;(640 - 112) / 2 = 264 PIXELES -> COORDENADA X
-            MOVE.L  #$19,D4                  ;COORDENADA Y DEL TEXTO 25
+            ; Miramos si se ha pulsado el texto correspondiente
+            MOVE.L  #$108,D3                 ; (640 - 112) / 2 = 264 PIXELES -> COORDENADA X
+            MOVE.L  #$19,D4                  ; Coordenada Y del texto 25
             
-            MOVE.L  D2,D5                   ;COORDENADA Y RATON
+            MOVE.L  D2,D5                   ; Coordenada Y del ratón
             ANDI.L  #$0000FFFF,D5
             CMP.L   D4,D5
-            BLT     .CONT                   ;SI Y < TEXTO
+            BLT     .CONT                   ; Si Y < TEXTO
 
-            MOVE.L  D2,D5                   ;COORDENADA X RATON
-            ANDI.L  #$FFFF,D5               ;EXTRAER X (BITS BAJOS)
+            MOVE.L  D2,D5                   ; Coordenada X del ratón
+            ANDI.L  #$FFFF,D5               ; Extraer X (bits bajos)
             CMP.L   D3,D5
-            BLT     .CONT                   ;SI X < TEXTO
+            BLT     .CONT                   ; Si X < TEXTO
             
-            ;SI EL CLICK ESTA DENTRO DEL AREA DEL TEXTO
-            MOVE.W  #2,(STANEXT)            ; SI COINCIDE INICIAR JUEGO
+            ; Si el click está dentro del area de texto
+            MOVE.W  #2,(STANEXT)            ; Si coincide iniciar juego
             BRA     .DONE            
             
 .CONT       
 
-            MOVE.B  #19,D0                  ; Tarea 19: Detectar teclas
+            MOVE.B  #19,D0                  ; Detectar teclas
             MOVE.L  #'P',D1                 ; Código ASCII de la tecla P
             TRAP    #15
             BTST.L  #0,D1                   ; Verificar si la tecla P está presionada
@@ -82,9 +82,7 @@ ISCPLOT
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             MOVEM.L D0-D1/A0,-(A7)
-            
-            ;JSR     FONPLOT
-            
+                        
             CLR.L   D1
             MOVE.B  #81,D0
             TRAP    #15
@@ -94,7 +92,7 @@ ISCPLOT
             JSR     UTLPRINT
             
             BTST.B  #4,(SCRCYCCT)
-            BEQ     .DONE
+            BEQ     .DONE	; Dibujamos la pantalla de introducción
             
             LEA     .TXT2,A0
             MOVE.B  #23,D0
@@ -111,6 +109,7 @@ ISCPLOT
 .TXT2       DC.B    'CLICK HERE TO START',0
 .TXT3       DC.B    'PRESS KEY P TO SEE SCORE TABLE',0
             DS.W    0
+
 
 
 

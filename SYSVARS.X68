@@ -4,8 +4,8 @@
 
 ; --- VARIABLES DE LA MATRIZ -------------------------------------------------
 
-ESTDCLDS    DS.B    TCELDAS                 ; ESTADO DE LAS CELDAS 0=VACÍO  1=COLA   2=SEGMENTO  TRZPLOT=CABEZA  4?=MANZANA    
-ESTDCBZ     DS.B    1                       ; 0= DERECHA, 1=ARRIBA, 2=IZQUIERDA, 3=ABAJO
+ESTDCLDS    DS.B    TCELDAS                 ; ESTADO DE LAS CELDAS 0=VACÍO  1=COLA   2=SEGMENTO  TRZPLOT=CABEZA  4=MANZANA    
+ESTDCBZ     DS.B    1                       ; 0 = DERECHA, 1 = ARRIBA, 2 = IZQUIERDA, 3 = ABAJO
 
 ; --- VARIABLES DE TECLADO ---------------------------------------------------
 
@@ -16,8 +16,9 @@ LASTKEY     DS.L    1
 ;--- TIMED INTERRUPT RELATED VARIABLES ---------------------------------------
             
 SCRINTCT    DS.B    1                       ; INTERRUPT COUNTER
-SCRCYCCT    DS.B    1                       ;CYCLE COUNTER
+SCRCYCCT    DS.B    1                       ; CYCLE COUNTER
             DS.W    0
+
 
 
 
