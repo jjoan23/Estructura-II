@@ -1,46 +1,48 @@
-; ==============================================================================
-; GAME MANAGEMENT
-; ==============================================================================
+; ----------------------------------------------------------------------------
+; GESTIÓN DEL JUEGO
+; ----------------------------------------------------------------------------
 
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 GAMINIT
-; INITIALIZES GAME.
+; Inicializa el juego
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
             JSR     MTZINIT
             JSR     HEADINIT
-            JSR     SEGINIT	; Inicializar todos los componentes del juego
+            JSR     SEGINIT
             JSR     TAILINIT
             JSR     SCOINIT
             BRA     APPLEINIT
 
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 GAMUPD
-; UPDATES THE GAME
+; Actualiza el juego
 ; INPUT    : NONE
 ; OUTPUT   : NONE
-; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; MODIFIES : Variables de las subrutinas llamadas
+; ----------------------------------------------------------------------------
             JSR     TAILUPD
-            JSR     SEGUPD	; Actualizar componentes del juego
+            JSR     SEGUPD
             JSR     HEADUPD
             BRA     MTZUPD       
 
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 GAMPLOT
-; PLOTS THE GAME
+; Dibuja el juego
 ; INPUT    : NONE
 ; OUTPUT   : NONE
-; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; MODIFIES : Variables de las subrutinas llamadas
+; ----------------------------------------------------------------------------
             JSR    HEADPLOT
             JSR    SEGPLOT
-            JSR    TAILPLOT	; Dibujar componentes del juego
+            JSR    TAILPLOT
             JSR    APPLEPLOT
             JSR    MTZPLOT
             BRA    SCOPLOT
+
+
 
 
 

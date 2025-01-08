@@ -4,7 +4,7 @@
 
 ;-----------------------------------------------------------------------------
 MTZINIT
-; INICIALIZA LA MATRIZ, AL PRINCIPIO ESTÁ VACÍA
+; Inicializa la matriz, al principio vacía
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
@@ -24,17 +24,17 @@ CLNCLDS:
             MOVE.W  (CBZPOSX),D1            ; Vemos la posición de la cabeza             
             MOVE.W  (CBZPOSY),D2
             JSR     CINDMTRZ
-            JSR     CBZOCPD                 ; Marcamos la posición de la cabeza
+            JSR     CBZOCPD                 ; Marca la posición de la cabeza
             
             MOVE.W  (SGMPOSX),D1
             MOVE.W  (SGMPOSY),D2            ; Vemos la posición del segmento
             JSR     CINDMTRZ
-            JSR     SGMOCPD                 ; Marcamos la posición del segmento
+            JSR     SGMOCPD                 ; Marca la posición del segmento
             
             MOVE.W  (SGMPOSX2),D1
-            MOVE.W  (SGMPOSY2),D2           ; Vemos la posición del segmento 2
+            MOVE.W  (SGMPOSY2),D2           ; Ve la posición del segmento 2
             JSR     CINDMTRZ
-            JSR     SGMOCPD                 ; Marcamos la posición del segmento 2
+            JSR     SGMOCPD                 ; Marca la posición del segmento 2
             
             MOVE.W  (COLPOSX),D1            ; Vemos la posición de la cola
             MOVE.W  (COLPOSY),D2
@@ -44,7 +44,7 @@ CLNCLDS:
             MOVE.W  (MNZPOSX),D1            ; Vemos la posicion de la manzana
             MOVE.W  (MNZPOSY),D2
             JSR     CINDMTRZ
-            JSR     MNZOCPD                 ; Marcamos la posición de la manzana
+            JSR     MNZOCPD                 ; Marca la posición de la manzana
             
             
             MOVEM.W (A7)+,D0-D2/A0
@@ -53,20 +53,20 @@ CLNCLDS:
 
 ;-----------------------------------------------------------------------------
 CINDMTRZ
-; CALCULA EL ÍNDICE DE UNA CELDA
+; Calcula el índice de una celda
 ; INPUT    : D1 = coordenada X pantalla, D2 = coordenada Y pantalla
 ; OUTPUT   : D0 = índice de la celda en ESTDCLDS
 ; MODIFIES : NONE
 ; ----------------------------------------------------------------------------
 
-             MOVEM.W D1-D3,-(A7)     	; Guarda los registros D1-D3 en la pila
+             MOVEM.W D1-D3,-(A7)
 
             ; Divide X por SIZECLDA
             MOVE.W  D1,D3          	; Copia X a D3
             CLR.W   D1              	; Inicializa el cociente de X
 
 DIVX:       CMP.W   #SIZECLDA,D3    	; Compara D3 con SIZECLDA
-            BLT     ENDDIVX         	; Si D3 < SIZECLDA, salta a ENDDIVX
+            BLT     ENDDIVX         	; Si D3 < SIZECLDA,salta a ENDDIVX
             SUB.W   #SIZECLDA,D3   	; Resta SIZECLDA de D3
             ADDQ.W  #1,D1          	; Incrementa el cociente de X
             BRA     DIVX            	; Repite el bucle
@@ -78,7 +78,7 @@ ENDDIVX:
             CLR.W   D2              	; Inicializa el cociente de Y
 
 DIVY:       CMP.W   #SIZECLDA,D3    	; Compara D3 con SIZECLDA
-            BLT     ENDDIVY         	; Si D3 < SIZECLDA, salta a ENDDIVY
+            BLT     ENDDIVY         	; Si D3 < SIZECLDA,salta a ENDDIVY
             SUB.W   #SIZECLDA,D3   	; Resta SIZECLDA de D3
             ADDQ.W  #1, D2          	; Incrementa el cociente de Y
             BRA     DIVY            	; Repite el bucle
@@ -91,13 +91,13 @@ ENDDIVY:
             ASL.W   #5, D0          	; D0 = Y_CELDA * NUMCLMNS (32 = 2^5)
             ADD.W   D1, D0          	; D0 = Y_CELDA * NUMCLMNS + X_CELDA
 
-            MOVEM.W (A7)+,D1-D3     	; Restaura los registros D1-D3 desde la pila
+            MOVEM.W (A7)+,D1-D3
 
             RTS  
             
 ;-----------------------------------------------------------------------------
 CBZOCPD
-; MARCA UNA CELDA COMO OCUPADA POR LA CABEZA
+; Marca una celda ocupada por la cabeza
 ; INPUT    : D0 = índice de la celda en ESTDCLDS
 ; OUTPUT   : NONE
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
@@ -116,7 +116,7 @@ CBZOCPD
                        
 ;-----------------------------------------------------------------------------
 MCLDVCIA
-; MARCA UNA CELDA COMO VACÍA
+; Marca una celda como vacía
 ; INPUT    : D0 = índice de la celda en ESTDCLDS
 ; OUTPUT   : NONE
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
@@ -133,7 +133,7 @@ MCLDVCIA
 
 ;-----------------------------------------------------------------------------
 SGMOCPD
-; MARCA UNA CELDA COMO OCUPADA POR EL SEGMENTO
+; Marca una celda ocupada por el segmento
 ; INPUT    : D0 = índice de la celda en ESTDCLDS
 ; OUTPUT   : NONE
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
@@ -150,7 +150,7 @@ SGMOCPD
             
 ;-----------------------------------------------------------------------------
 COLOCPD
-; MARCA UNA CELDA COMO OCUPADA POR LA COLA
+; Marca una celda ocupada por la cola
 ; INPUT    : D0 = índice de la celda en ESTDCLDS
 ; OUTPUT   : NONE
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
@@ -168,7 +168,7 @@ COLOCPD
 
 ;-----------------------------------------------------------------------------
 MNZOCPD
-; MARCA UNA CELDA COMO OCUPADA POR LA MANZANA
+; Marca una celda ocupada por la manzana
 ; INPUT    : D0 = índice de la celda en ESTDCLDS
 ; OUTPUT   : NONE
 ; MODIFIES : Estado de la celda en la variable ESTDCLDS
@@ -194,10 +194,10 @@ CNVICOOR
 
             MOVEM.W D0/D3-D4,-(A7)
 
-            MOVE.W  D0,D2         	; Copia índice a D2 para calcular la fila
-            LSR.W   #5,D2         	; D2 = índice / NUM_COLUMNAS (32 = 2^5)
-            MOVE.W  D0,D1         	; Copia índice a D1 para calcular la columna
-            AND.W   #$1F,D1       	; D1 = índice % NUM_COLUMNAS (31 = 0x1F) (CREO)
+            MOVE.W  D0,D2         	; Copia índice a D2
+            LSR.W   #5,D2         	; D2 = índice/NUMCLMNS(32 = 2^5)
+            MOVE.W  D0,D1         	; Copia índice a D1
+            AND.W   #$1F,D1       	; D1 = índice%NUMCLMNS(31 = 0x1F)
 
             ; Multiplica por TAMAÑO_CELDA = 10
             MOVE.W  #SIZECLDA, D3
@@ -208,7 +208,7 @@ CNVICOOR
 MULTLOOPX: 
             CMP.W   #0,D4        	; ¿Quedan iteraciones?
             BEQ     ENDMULTX
-            ADD.W   D3,D1         	; Suma TAMANO_CELDA (10) repetidamente
+            ADD.W   D3,D1         	; Suma TAMANO_CELDA repetidamente
 
             SUBQ.W  #1,D4         	; Cuenta las iteraciones restantes
             BRA     MULTLOOPX     	; Repite mientras no sea 0
@@ -219,7 +219,7 @@ ENDMULTX:
 MULTLOOPY: 
             CMP.W   #0,D4        	; ¿Quedan iteraciones?
             BEQ     ENDMULTY
-            ADD.W   D3,D2         	; Suma TAMANO_CELDA (10) repetidamente
+            ADD.W   D3,D2         	; Suma TAMANO_CELDA repetidamente
             SUBQ.W  #1,D4         	; Cuenta las iteraciones restantes
             BRA     MULTLOOPY     	; Repite mientras no sea 0
 ENDMULTY:
@@ -229,16 +229,17 @@ ENDMULTY:
 
 ; ----------------------------------------------------------------------------
 CHECKCLD
-; INPUT: D0 = índice de la celda
-; OUTPUT: D0 = 0 si está vacía, 1 si está ocupada
-; MODIFIES: Ninguno
+; Verifica si una celda está ocupada o no
+; INPUT     : D0 = índice de la celda
+; OUTPUT    : D0 = 0 si está vacía, 1 si está ocupada
+; MODIFIES  : NONE
 ; ----------------------------------------------------------------------------
 
-            LEA     ESTDCLDS,A0    	; Carga la dirección de la matriz ESTDCLDS
-            MOVE.B  (A0,D0.W),D1   	; Carga el estado de la celda en D1
+            LEA     ESTDCLDS,A0
+            MOVE.B  (A0,D0.W),D1
             CMP.B   #0,D1          	; Compara si está vacía (0)
             BEQ     CLDFREE         	; Si está vacía
-            MOVE.W  #1,D0          	; Si está ocupada, devuelve 1 (ocupada)
+            MOVE.W  #1,D0          	; Si está ocupada, devuelve 1
 
             RTS
 
@@ -250,10 +251,10 @@ CLDFREE:
 
 ;-----------------------------------------------------------------------------
 FONPLOT
-; DIBUJADO DEL FONDO
+; Dibujado del fondo
 ; INPUT    : NONE
-; OUTPUT   : NONE
-; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
+; OUTPUT   : Fondo verde
+; MODIFIES : NONE
 ; ----------------------------------------------------------------------------
 
             MOVE.W  D0,-(A7)
@@ -262,11 +263,11 @@ FONPLOT
             MOVE.L  D1,-(A7)
             
             MOVE.B  #80,D0
-            MOVE.L  #COLFND,D1            	; Ponemos el color de dibujado a COLFND
+            MOVE.L  #COLFND,D1            	; Ponemos el color de dibujado
             TRAP    #15
             
             MOVE.B  #81,D0
-            MOVE.L  #COLFND,D1            	; Ponemos el color del relleno a COLFND
+            MOVE.L  #COLFND,D1            	; Ponemos el color del relleno
             TRAP    #15
             
             MOVE.B  #87,D0
@@ -274,7 +275,7 @@ FONPLOT
             MOVE.W  D3,-(A7)
             MOVE.W  D1,D3
             ADD.W   #SIZECLDA,D3
-            MOVE.W  D2,D4                    ; Dibujamos el cuadrado
+            MOVE.W  D2,D4                   ; Dibujamos el cuadrado
             ADD.W   #SIZECLDA,D4
             TRAP    #15                     
                         
@@ -286,7 +287,7 @@ FONPLOT
 
 ;-----------------------------------------------------------------------------
 MTZUPD
-; ACTUALIZA LA MATRIZ CASILLA A CASILLA
+; Actualiza la matriz casilla a casilla
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : Variable ESTCLDS que contiene el estado de las celdas
@@ -300,24 +301,24 @@ MTZUPD
 
 .CLNCLDS:
             CLR.B (A0)+            	; Coloca 0 en cada celda
-            SUBI.W #1,D0          	; Decrementa el contador de celdas
+            SUBI.W #1,D0          	; Decrementa el contador
             BNE .CLNCLDS           	; Repite hasta que esten vacías
             
             
             MOVE.W  (CBZPOSX),D1            ; Vemos la posición de la cabexa             
             MOVE.W  (CBZPOSY),D2
             JSR     CINDMTRZ
-            JSR     CBZOCPD                 ; Marcamos la posición de la cabeza
+            JSR     CBZOCPD                 ; Marca la posición de la cabeza
             
             MOVE.W  (SGMPOSX),D1
             MOVE.W  (SGMPOSY),D2            ; Vemos la posición del segmento
             JSR     CINDMTRZ
-            JSR     SGMOCPD                 ; Marcamos la posición del segmento
+            JSR     SGMOCPD                 ; Marca la posición del segmento
             
             MOVE.W  (SGMPOSX2),D1
             MOVE.W  (SGMPOSY2),D2           ; Vemos la posición del segmento 2
             JSR     CINDMTRZ
-            JSR     SGMOCPD                 ; Marcamos la posición del segmento 2
+            JSR     SGMOCPD                 ; Marca la posición del segmento 2
             
             MOVE.W  (COLPOSX),D1            ; Vemos la posicion de la cola
             MOVE.W  (COLPOSY),D2
@@ -327,45 +328,48 @@ MTZUPD
             MOVE.W  (MNZPOSX),D1            ; Vemos la posición de la manzana
             MOVE.W  (MNZPOSY),D2
             JSR     CINDMTRZ
-            JSR     MNZOCPD                 ; Marcamos la posición de la manzana
-            
-            
+            JSR     MNZOCPD                 ; Marca la posición de la manzana
             
             SUBQ.W  #1,(JGOTIM)             ; Restamos 1 al timer
-            CMP     #0,(JGOTIM)             ; Miramos si ha terminado el tiempo
+            CMP     #0,(JGOTIM)             ; Mira si ha terminado el tiempo
             BEQ     .GAMEOVER
             BRA     .FIN                    ; Saltamos si no ha acabado
             
-.GAMEOVER    MOVE.W  #3,(STANEXT)
- 	CLR.L   D0                      ; Borramos los registros que vamos a utilizar
+.GAMEOVER   
+            MOVE.B  #SNDGMOV,D7             ; Pone el sonido game over
+            TRAP    #SNDPLTN
+            MOVE.W  #3,(STANEXT)
+            
+
+ 	CLR.L   D0                      ; Borra los registros
             CLR.L   D1
             CLR.L   D2
             CLR.L	D3
             CLR.L	(BFFLEC)
             
-            ; Escribir puntuación
+            ; Escribe la puntuación
             MOVE.B  #50,D0                  ; Cerramos todos los archivos
             TRAP    #15
 
-             ; Verificar si el archivo existe
+             ; Verifica si el archivo existe
             LEA     .FILE,A1                ; Dirección del nombre del archivo
-            MOVE.B  #59,D0                  ; Verificar existencia del archivo
+            MOVE.B  #59,D0                  ; Verifica si existe el archivo
             TRAP    #15
-            CMP.W   #0,D0                   ; Verificar si el archivo existe
+            CMP.W   #0,D0                   ; Verifica si el archivo existe
             BEQ     .ABRIR_ARCHIVO          ; Si existe, abrir archivo
             BRA     .CREAR_ARCHIVO          ; Si no existe, crear archivo
 
 .ABRIR_ARCHIVO
-            ; Abrir archivo existente
-            MOVE.B  #51,D0                  ; Abrir archivo existente
+            ; Abre el archivo existente
+            MOVE.B  #51,D0                  ; Abre el archivo existente
             TRAP    #15
-            CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+            CMP.W   #0,D0                   ; Verifica si ha funcionado
             BNE     .ERROR                  ; Si falla, ir a ERROR
-            MOVE.L  D1,FILEID               ; Guardar el File-ID para operaciones posteriores
+            MOVE.L  D1,FILEID               ; Guardar el File-ID
 
-            ; Leer hasta encontrar el marcador `#`
+            ; Lee hasta encontrar el marcador `#`
             MOVE.L  FILEID,D1               ; File-ID del archivo abierto
-            MOVE.L  #0,D2                   ; Posicionarse al inicio del archivo
+            MOVE.L  #0,D2                   ; Posiciona al inicio del archivo
             MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
             TRAP    #15
 
@@ -376,116 +380,115 @@ MTZUPD
             MOVE.B  #53,D0                  ; Leer archivo
             TRAP    #15
             CMP.W   #1,D0                   ; Verificar si alcanzamos EOF
-            BEQ     .ESCRIBIR               ; Si alcanzamos EOF, escribir al final
+            BEQ     .ESCRIBIR               ; Si alcanzamos EOF
             CMP.B   #'#',(BFFLEC)           ; Comparar con el marcador `#`
-            BEQ     .POSICIONAR             ; Si encontramos el marcador, posicionarnos ahí
-            ADDQ.L  #1,D3                   ; Incrementar contador de bytes leídos
+            BEQ     .POSICIONAR             ; Si encontramos el marcador
+            ADDQ.L  #1,D3                   ; Incrementar contador de bytes
             BRA     .BUSCAR_FINAL           ; Continuar buscando el marcador
 
 .POSICIONAR
             ; Posicionarse al marcador para sobrescribir
-            MOVE.L  D3,D2                   ; Cargar la posición del marcador desde el contador
+            MOVE.L  D3,D2                   ; Cargar la posición del marcador
             MOVE.L  FILEID,D1               ; File-ID del archivo abierto
             MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
             TRAP    #15
             BRA     .ESCRIBIR               ; Ir a escribir datos
 
 .CREAR_ARCHIVO
-            ; Crear archivo nuevo
+            ; Crea un archivo nuevo
             MOVE.B  #52,D0                  ; Abrir o crear archivo
             TRAP    #15
-            CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+            CMP.W   #0,D0                   ; Verifica si ha funcionado
             BNE     .ERROR                  ; Si falla, ir a ERROR
-            MOVE.L  D1,FILEID               ; Guardar el File-ID para operaciones posteriores
+            MOVE.L  D1,FILEID               ; Guardar el File-ID
             BRA     .ESCRIBIR               ; Ir directamente a escribir datos
 
 .ESCRIBIR
-            ; Convertir el número en caracteres ASCII y escribirlos uno por uno
+            ; Convierte el número en caracteres ASCI y los escribe uno por uno
             LEA     JGOPNTS,A0              ; Dirección del número
-            MOVE.W  (A0),D0                 ; Cargar el número en D0
-            JSR     .CONVERTIR_NUMERO       ; Convertir número a ASCII en el buffer
+            MOVE.W  (A0),D0                 ; Carga el número en D0
+            JSR     .CONVERTIR_NUMERO       ; Convierte el número a ASCII
 
-            ; Escribir los caracteres del buffer
-            LEA     ASCBFF,A0         	; Dirección del buffer de caracteres ASCII
+            ; Escribe los caracteres del buffer
+            LEA     ASCBFF,A0         	; Dirección del buffer
             
 
 .ESCRIBIR_BUCLE:
-            MOVE.B  (A0),D0                	; Leer carácter del buffer
-            BEQ     .ESCRIBIR_FIN_BLOQUE    ; Si terminador NULL, ir al delimitador
-            MOVE.L  D3,D2                   ; Cargar posición actual
+            MOVE.B  (A0),D0                	; Lee el carácter del buffer
+            BEQ     .ESCRIBIR_FIN_BLOQUE    ; Si terminador NULL
+            MOVE.L  D3,D2                   ; Carga la posición actual
             MOVE.L  FILEID,D1               ; File-ID del archivo abierto
             MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
             TRAP    #15                     ; Posicionar antes de escribir
             MOVE.B  #54,D0                  ; Tarea 54: Escribir archivo
 	LEA	(A0),A1
 	MOVE.L	#1,D2
-            TRAP    #15                     ; Escribir carácter
-            CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+            TRAP    #15                     ; Escribe el carácter
+            CMP.W   #0,D0                   ; Verifica si ha funcionado
             BNE     .ERROR                  ; Si falla, ir a ERROR
-            ADDQ.L  #1,D3                   ; Incrementar posición
-	MOVE.B  (A0)+,D0                ; Restaurar carácter actual
-            BRA     .ESCRIBIR_BUCLE         ; Continuar con el siguiente carácter
+            ADDQ.L  #1,D3                   ; Incrementa la posición
+	MOVE.B  (A0)+,D0                ; Restaura el carácter actual
+            BRA     .ESCRIBIR_BUCLE         ; Continua con el siguiente
 
 .ESCRIBIR_FIN_BLOQUE
-            ; Escribir delimitador `?`
+            ; Escribe delimitador `?`
 	LEA	.TXT1,A1
             JSR     .ESCRIBIR_CARACTER
-            ; Escribir marcador `#`
+            ; Escribe marcador `#`
 	LEA	.TXT2,A1
             JSR     .ESCRIBIR_CARACTER
             BRA     .FINESC
 
 .ESCRIBIR_CARACTER:
-            MOVE.L  D3,D2                   ; Cargar posición actual
+            MOVE.L  D3,D2                   ; Carga la posición actual
             MOVE.L  FILEID,D1               ; File-ID del archivo
             MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
             TRAP    #15                     ; Posicionar antes de escribir
             MOVE.B  #54,D0                  ; Tarea 54: Escribir archivo
 	MOVE.L	#1,D2
-            TRAP    #15                     ; Escribir carácter
-            ADDQ.L  #1,D3                   ; Incrementar posición
-            RTS                             ; Retornar
+            TRAP    #15                     ; Escribe el carácter
+            ADDQ.L  #1,D3                   ; Incrementa la posición
+            RTS
 
 .FINESC
-            ; Cerrar archivo
+            ; Cierra el archivo
             MOVE.L  FILEID,D1               ; File-ID del archivo
             MOVE.B  #56,D0                  ; Cerrar archivo
             TRAP    #15
 .FIN
-            MOVEM.L (A7)+,D0-D3/D7/A0-A1    ; Restaurar registros
-            RTS                             ; Retornar
+            MOVEM.L (A7)+,D0-D3/D7/A0-A1
+            RTS
 
 .CONVERTIR_NUMERO
-	 MOVEM.L D0-D3/A1,-(A7)         ; Guardar registros usados en la pila
+	 MOVEM.L D0-D3/A1,-(A7)
 
-    ; Inicialización
-    LEA     ASCBFF,A1              ; Dirección del buffer
-    MOVEQ   #10,D2                 ; Base decimal (10)
-
-    ; Convertir número hexadecimal a decimal y guardar dígitos
+            ; Inicialización
+            LEA     ASCBFF,A1              ; Dirección del buffer
+            MOVEQ   #10,D2                 ; Base decimal (10)
+            
+            ; Convierte el número hexadecimal a decimal y guarda dígitos
 .CONVERTDELO:
-    DIVU    D2,D0                  ; Dividir D0 por 10: cociente en D0, residuo en bits bajos
-    MOVE.W	D0,D3
-    AND.L   #$000F,D0              ; Asegurarnos de trabajar con el residuo (0-9)
-    ADD.B   #48,D0                 ; Convertir residuo a carácter ASCII ('0'-'9')
-    MOVE.B  D0,(A1)+               ; Almacenar carácter en el buffer
-    MOVE.W	D3,D0
-    TST.W   D3                     ; Verificar si el cociente es 0
-    BNE     .CONVERTDELO           ; Si no es 0, continuar con el próximo dígito
-
- 		
-    ; Añadir terminador NULL al final
-    MOVE.B  #0,(A1)+               ; Finalizar cadena con NULL
-
-    MOVEM.L (A7)+,D0-D3/A1         ; Restaurar registros usados
-            RTS                    ; Retornar              	
+            DIVU    D2,D0             ; Divide D0 por 10: cociente en D0,
+            MOVE.W	D0,D3             ; residuo en bits bajos
+            AND.L   #$000F,D0         ; Trabaja con el residuo (0-9)
+            ADD.B   #48,D0            ; Convertir residuo a carácter ASCII
+            MOVE.B  D0,(A1)+          ; Almacena el carácter en el buffer
+            MOVE.W	D3,D0
+            TST.W   D3                ; Verifica si el cociente es 0
+            BNE     .CONVERTDELO      ; Si no es 0, continuar con el próximo
+            	
+            ; Añade terminador NULL al final
+            MOVE.B  #0,(A1)+               ; Finalizar cadena con NULL
+            
+            MOVEM.L (A7)+,D0-D3/A1
+            RTS           	
 .ERROR
             MOVE.B  #9,D0          ; Terminar el programa
             TRAP    #15
    
             
             
-.FILE        DC.B    'PUNTOS.TXT',0 
+.FILE       DC.B    'PUNTOS.TXT',0 
 .TXT1	DC.B	'?',0
 .TXT2	DC.B	'#',0  
             DS.W    0        
@@ -550,6 +553,8 @@ PLOTSEG:
 PLOTAPPLE:
             JSR     APPLEPLOT
             BRA     DONEPLOT            
+
+
 
 
 

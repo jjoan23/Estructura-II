@@ -1,31 +1,32 @@
-*-----------------------------------------------------------
+*-----------------------------------------------------------------------------
 * MANEJO DE LA CABEZA DE LA SERPIENTE
-*-----------------------------------------------------------
+*-----------------------------------------------------------------------------
 
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 HEADINIT
-; INICIALIZAR CABEZA.
+; Inicializa la cabeza
 ; INPUT    : NONE 
 ; OUTPUT   : NONE
-; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; MODIFIES : ESTDCBZ
+; ----------------------------------------------------------------------------
             MOVE.W  #PANWIDTH/2,(CBZPOSX)
             MOVE.W  #PANHEIGH/2,(CBZPOSY)
-            CLR.W   (ESTDCBZ)	; Inizializar la cabeza en el centro
+            CLR.W   (ESTDCBZ)            ; Inicializar la cabeza en el centro
             MOVE.W  #0,(ESTDCBZ)
             RTS
             
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 HEADUPD
-; ACTUALIZAR CABEZA.
+; Actualiza la cabeza
 ; INPUT    : NONE 
-; OUTPUT   : NONE
-; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; OUTPUT   : Sonidos de comer y game over
+; MODIFIES : Posiciones de la cabeza, posición de la manzana, STANEXT,
+;            fichero de puntuaciones
+; ----------------------------------------------------------------------------
 
             MOVEM.L D0-D3/D7/A0-A1,-(A7)
 
-            ; Marcar celda actual como vacía
+            ; Marca la celda actual como vacía
             MOVE.W  (CBZPOSX),D1
             MOVE.W  (CBZPOSY),D2
             JSR     CINDMTRZ
@@ -45,6 +46,7 @@ HEADUPD
             ; Si no hay dirección válida, sale
             BRA     FIN
 
+            ; Mueve la cabeza
 SIGDER:
             ADD.W   #CBZVEL,(CBZPOSX)
             BRA     CHKBORDE
@@ -61,7 +63,7 @@ SIGABA:
             ADD.W   #CBZVEL,(CBZPOSY)
             
 CHKBORDE:
-            ; Verificar colisiones con los bordes
+            ; Verifica las colisiones con los bordes
             MOVE.W  (CBZPOSX),D1
             CMP.W   #PANWIDTH,D1	; Si CBZPOSX < 0
             BGT     GAMEOVER
@@ -101,7 +103,7 @@ NOCOL:
 
 
 GAMEOVER:
-            MOVE.B  #SNDGMOV,D7             ; Poner sonido game over
+            MOVE.B  #SNDGMOV,D7             ; Pone el sonido game over
             TRAP    #SNDPLTN
             MOVE.W  #3,(STANEXT)
             
@@ -111,30 +113,30 @@ GAMEOVER:
             CLR.L	D3
             CLR.L	(BFFLEC)
             
-            ; Escribir puntuación
+            ; Escribie la puntuación
             MOVE.B  #50,D0                  ; Cerramos todos los archivos
             TRAP    #15
 
-             ; Verificar si el archivo existe
+             ; Verifica si el archivo existe
             LEA     FILE,A1                 ; Dirección del nombre del archivo
-            MOVE.B  #59,D0                  ; Verificar existencia del archivo
+            MOVE.B  #59,D0
             TRAP    #15
-            CMP.W   #0,D0                   ; Verificar si el archivo existe
+            CMP.W   #0,D0
             BEQ     .ABRIR_ARCHIVO          ; Si existe, abrir archivo
             BRA     .CREAR_ARCHIVO          ; Si no existe, crear archivo
 
 .ABRIR_ARCHIVO
-            ; Abrir archivo existente
-            MOVE.B  #51,D0                  ; Abrir archivo existente
+            ; Abre el archivo existente
+            MOVE.B  #51,D0
             TRAP    #15
-            CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+            CMP.W   #0,D0                   ; Verifica si ha funcionado
             BNE     ERROR                   ; Si falla, ir a ERROR
-            MOVE.L  D1,FILEID               ; Guardar el File-ID para operaciones posteriores
+            MOVE.L  D1,FILEID               ; Guarda el File-ID
 
-            ; Leer hasta encontrar el marcador `#`
+            ; Lee hasta encontrar el marcador `#`
             MOVE.L  FILEID,D1               ; File-ID del archivo abierto
-            MOVE.L  #0,D2                   ; Posicionarse al inicio del archivo
-            MOVE.B  #55,D0                  ; Posicionar archivo
+            MOVE.L  #0,D2                   ; Se pone al inicio del archivo
+            MOVE.B  #55,D0                  ; Pone el archivo
             TRAP    #15
 
 .BUSCAR_FINAL
@@ -143,56 +145,56 @@ GAMEOVER:
             MOVE.L  #1,D2                   ; Leer 1 byte
             MOVE.B  #53,D0                  ; Tarea 53: Leer archivo
             TRAP    #15
-            CMP.W   #1,D0                   ; Verificar si alcanzamos EOF
-            BEQ     .ESCRIBIR               ; Si alcanzamos EOF, escribir al final
-            CMP.B   #'#',(BFFLEC)           ; Comparar con el marcador `#`
-            BEQ     .POSICIONAR             ; Si encontramos el marcador, posicionarnos ahí
-            ADDQ.L  #1,D3                   ; Incrementar contador de bytes leídos
-            BRA     .BUSCAR_FINAL           ; Continuar buscando el marcador
+            CMP.W   #1,D0                   ; Verifica si alcanzamos EOF
+            BEQ     .ESCRIBIR               ; Si alcanza EOF, escribe al final
+            CMP.B   #'#',(BFFLEC)           ; Compara con el marcador `#`
+            BEQ     .POSICIONAR             ; Si encuentra el marcador
+            ADDQ.L  #1,D3                   ; Incrementa el contador de bytes
+            BRA     .BUSCAR_FINAL           ; Continua buscando el marcador
 
 .POSICIONAR
-            ; Posicionarse al marcador para sobrescribir
-            MOVE.L  D3,D2                   ; Cargar la posición del marcador desde el contador
+            ; Posicionarse en el marcador para sobrescribir
+            MOVE.L  D3,D2                   ; Carga la posición del marcador
             MOVE.L  FILEID,D1               ; File-ID del archivo abierto
             MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
             TRAP    #15
-            BRA     .ESCRIBIR               ; Ir a escribir datos
+            BRA     .ESCRIBIR
 
 .CREAR_ARCHIVO
-            ; Crear archivo nuevo
+            ; Crea un archivo nuevo
             MOVE.B  #52,D0                  ; Abrir o crear archivo
             TRAP    #15
-            CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+            CMP.W   #0,D0                   ; Verifica si ha funcionado
             BNE     ERROR                   ; Si falla, ir a ERROR
-            MOVE.L  D1,FILEID               ; Guardar el File-ID para operaciones posteriores
-            BRA     .ESCRIBIR               ; Ir directamente a escribir datos
+            MOVE.L  D1,FILEID               ; Guarda el File-ID
+            BRA     .ESCRIBIR               ; Va directamente a escribir datos
 
 .ESCRIBIR
-            ; Convertir el número en caracteres ASCII y escribirlos uno por uno
+            ; Convierte el número en caracteres ASCI y los escribe uno por uno
             LEA     JGOPNTS,A0              ; Dirección del número
-            MOVE.W  (A0),D0                 ; Cargar el número en D0
-            JSR     CONVERTIR_NUMERO        ; Convertir número a ASCII en el buffer
+            MOVE.W  (A0),D0                 ; Carga el número en D0
+            JSR     CONVERTIR_NUMERO        ; Lo convierte a ASCII en el buffer
 
-            ; Escribir los caracteres del buffer
-            LEA     ASCBFF,A0         	; Dirección del buffer de caracteres ASCII
+            ; Escribe los caracteres del buffer
+            LEA     ASCBFF,A0         	; Dirección del buffer
             
 
 .ESCRIBIR_BUCLE:
-            MOVE.B  (A0),D0                	; Leer carácter del buffer
-            BEQ     .ESCRIBIR_FIN_BLOQUE    ; Si terminador NULL, ir al delimitador
-            MOVE.L  D3,D2                   ; Cargar posición actual
+            MOVE.B  (A0),D0                	; Lee el carácter del buffer
+            BEQ     .ESCRIBIR_FIN_BLOQUE    ; Si terminador NULL
+            MOVE.L  D3,D2                   ; Carga la posición actual
             MOVE.L  FILEID,D1               ; File-ID del archivo abierto
             MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
-            TRAP    #15                     ; Posicionar antes de escribir
+            TRAP    #15                     ; Posiciona antes de escribir
             MOVE.B  #54,D0                  ; Tarea 54: Escribir archivo
 	LEA	(A0),A1
 	MOVE.L	#1,D2
-            TRAP    #15                     ; Escribir carácter
-            CMP.W   #0,D0                   ; Verificar si la operación fue exitosa
+            TRAP    #15                     ; Escribe el carácter
+            CMP.W   #0,D0                   ; Verifica si ha funcionado
             BNE     ERROR                   ; Si falla, ir a ERROR
-            ADDQ.L  #1,D3                   ; Incrementar posición
-	MOVE.B  (A0)+,D0                ; Restaurar carácter actual
-            BRA     .ESCRIBIR_BUCLE         ; Continuar con el siguiente carácter
+            ADDQ.L  #1,D3                   ; Incrementa la posición
+	MOVE.B  (A0)+,D0                ; Restaura el carácter actual
+            BRA     .ESCRIBIR_BUCLE         ; Continua con el siguiente
 
 .ESCRIBIR_FIN_BLOQUE
             ; Escribir delimitador `?`
@@ -204,49 +206,49 @@ GAMEOVER:
             BRA     FINESC
 
 ESCRIBIR_CARACTER:
-            MOVE.L  D3,D2                   ; Cargar posición actual
+            MOVE.L  D3,D2                   ; Carga la posición actual
             MOVE.L  FILEID,D1               ; File-ID del archivo
             MOVE.B  #55,D0                  ; Tarea 55: Posicionar archivo
-            TRAP    #15                     ; Posicionar antes de escribir
+            TRAP    #15                     ; Posiciona antes de escribir
             MOVE.B  #54,D0                  ; Tarea 54: Escribir archivo
 	MOVE.L	#1,D2
-            TRAP    #15                     ; Escribir carácter
-            ADDQ.L  #1,D3                   ; Incrementar posición
-            RTS                             ; Retornar
+            TRAP    #15                     ; Escribe el carácter
+            ADDQ.L  #1,D3                   ; Incrementa la posición
+            RTS
 
 FINESC
-            ; Cerrar archivo
+            ; Cierra el archivo
             MOVE.L  FILEID,D1               ; File-ID del archivo
             MOVE.B  #56,D0                  ; Tarea 56: Cerrar archivo
             TRAP    #15
 FIN
-            MOVEM.L (A7)+,D0-D3/D7/A0-A1    ; Restaurar registros
-            RTS                             ; Retornar
+            MOVEM.L (A7)+,D0-D3/D7/A0-A1
+            RTS
 
 CONVERTIR_NUMERO
-	 MOVEM.L D0-D3/A1,-(A7)         ; Guardar registros usados en la pila
+	 MOVEM.L D0-D3/A1,-(A7)
 
-    ; Inicialización
-    LEA     ASCBFF,A1              	; Dirección del buffer
-    MOVEQ   #10,D2                 	; Base decimal (10)
+            ; Inicialización
+            LEA     ASCBFF,A1              	; Dirección del buffer
+            MOVEQ   #10,D2                 	; Base decimal (10)
 
-    ; Convertir número hexadecimal a decimal y guardar dígitos
+            ; Convierte el número hexadecimal a decimal y guarda los dígitos
 .CONVERTDELO:
-    DIVU    D2,D0                  	; Dividir D0 por 10: cociente en D0, residuo en bits bajos
-    MOVE.W	D0,D3
-    AND.L   #$000F,D0              	; Asegurarnos de trabajar con el residuo (0-9)
-    ADD.B   #48,D0                 	; Convertir residuo a carácter ASCII ('0'-'9')
-    MOVE.B  D0,(A1)+               	; Almacenar carácter en el buffer
-    MOVE.W	D3,D0
-    TST.W   D3                     	; Verificar si el cociente es 0
-    BNE     .CONVERTDELO           	; Si no es 0, continuar con el próximo dígito
-
+            DIVU    D2,D0          ; Dividie D0 por 10: cociente en D0,
+            MOVE.W	D0,D3          ; residuo en bits bajos
+            AND.L   #$000F,D0      ; Asegura de trabajar con el residuo (0-9)
+            ADD.B   #48,D0         ; Convierte el residuo a carácter ASCII
+            MOVE.B  D0,(A1)+       ; Almacena el carácter en el buffer
+            MOVE.W	D3,D0
+            TST.W   D3             ; Verifica si el cociente es 0
+            BNE     .CONVERTDELO   ; Si no es 0, continua con el próximo dígito
+            
  		
-    ; Añadir terminador NULL al final
-    MOVE.B  #0,(A1)+               	; Finalizar cadena con NULL
-
-    MOVEM.L (A7)+,D0-D3/A1         	; Restaurar registros usados
-            RTS                         	; Retornar              	
+            ; Añade el terminador NULL al final
+            MOVE.B  #0,(A1)+               	; Finaliza la cadena con NULL
+            
+            MOVEM.L (A7)+,D0-D3/A1
+            RTS          	
 ERROR
             MOVE.B  #9,D0                   ; Tarea 9: Terminar el programa
             TRAP    #15
@@ -261,13 +263,13 @@ TXT2	DC.B	'#',0
 
             
             
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 HEADPLOT
-; DIBUJAR CABEZA.
+; Dibuja la cabeza
 ; INPUT    : NONE 
-; OUTPUT   : NONE
+; OUTPUT   : NONE aparte de la salida del buffer
 ; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
                        
             MOVE.W  D0,-(A7)               ; Guardamos D0
             MOVE.W  D3,D0                  ; Calculamos las coordenadas
@@ -317,10 +319,9 @@ HEADPLOT
             ADD.W   #OJOHEIGH/2,D2
             MOVE.W  D2,D4
             ADD.W   #OJOHEIGH,D4
-            TRAP    #15                     
-            
+            TRAP    #15
 
-            ; Definir y dibujar iris
+            ; Define y dibuja el iris
             MOVE.L  (A7)+,D2
             MOVE.L  (A7)+,D1
             ADD.W   #OJOWIDTH,D1
@@ -332,6 +333,7 @@ HEADPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
 
 
 

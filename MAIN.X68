@@ -1,8 +1,8 @@
 *-----------------------------------------------------------------------------
 * Title      : MAIN
-* Written by :
-* Date       :
-* Description:
+* Written by : Maria Kupriyenko Chupaida y Joan Jiménez Rigo
+* Date       : 10/1/2025
+* Description: SNAKE TIMER GAME
 *-----------------------------------------------------------------------------
 
             ORG    $1000
@@ -45,6 +45,7 @@ START:
             TRAP    #KBDUPTN
 
 ; ACTUALIZAR LÓGICA DEL JUEGO
+
             JSR     STAUPD
             
 ; --- SINCRONIZACIÓN ---------------------------------------------------------
@@ -57,7 +58,7 @@ START:
 ; --- DIBUJAR ----------------------------------------------------------------
             
             JSR     STAPLOT            
-            TRAP    #SCRUPTN                      ; ACTUALIZA DOBLE BUFFER
+            TRAP    #SCRUPTN                      ; ACTUALIZAR DOBLE BUFFER
 
 
             BRA     .LOOP
@@ -70,6 +71,10 @@ START:
     
     
             END    START        
+
+
+
+
 
 
 

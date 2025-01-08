@@ -2,9 +2,9 @@
 * SISTEMA
 *-----------------------------------------------------------------------------
  
- 
+; ----------------------------------------------------------------------------
 SYSINIT
-; INICIA EL  SISTEMA
+; Inicia el sistema
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
@@ -16,7 +16,7 @@ SYSINIT
             MOVE.L  #SCRTIM,($60+SCRINTN*4)
             
             JSR     SCRINIT	; Inicializamos las interrupciones
-            JSR     KBDINIT	; La pantalla, el teclado y el sonido
+            JSR     KBDINIT
             JSR     SNDINIT
             
             MOVE.W  SR,-(A7)
@@ -26,7 +26,7 @@ SYSINIT
             
 ; ----------------------------------------------------------------------------
 SNDINIT
-; SOUND SYSTEM INIT
+; Inicializa el sonido del sistema
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
@@ -53,8 +53,8 @@ SNDINIT
             
 ; ----------------------------------------------------------------------------
 SNDPLAY
-; PLAY SOUND
-; INPUT    : D7 SOUND ID
+; Play sonido
+; INPUT    : D7 sonido ID
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ----------------------------------------------------------------------------            
@@ -71,8 +71,7 @@ SNDPLAY
             
 ; ----------------------------------------------------------------------------
 SCRINIT
-; INIT SCREEN. SET SCREEN RESOLUTION, SET WINDOWED MODE, CLEAR SCREEN,
-; ENABLE DOUBLE BUFFER, ENABLED TIMED INTERRUPT.
+; Inicializa la pantalla
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
@@ -80,33 +79,33 @@ SCRINIT
 
             MOVEM.L D0-D1,-(A7)
 
-            ; SET SCREEN RESOLUTION
+            ; Establece la resolución de la pantalla
             MOVE.B  #33,D0
             MOVE.L  #PANWIDTH<<16|PANHEIGH,D1
             TRAP    #15
             
-            ; SET WINDOWED MODE
+            ; Establece modo ventana
             MOVE.L  #1,D1
             TRAP    #15
             
-            ; CLEAR SCREEN
+            ; Limpia la pantalla
             MOVE.B  #11,D0
             MOVE.W  #$FF00,D1
             TRAP    #15
             
-            ; ENABLE DOUBLE BUFFER
+            ; Habilita doble buffer
             MOVE.B  #92,D0
             MOVE.B  #17,D1
             TRAP    #15
             
-            ; ENABLE TIMED INTERRUPT
+            ; Habilita la temporización de las interrupciones
             MOVE.B  #32,D0
             MOVE.B  #6,D1
             MOVE.B  #$80|SCRINTN,D2
-            MOVE.L  #1000/SCRFPS,D3                  ; Ponemos los FPS segun SCRFPS
+            MOVE.L  #1000/SCRFPS,D3        ; Ponemos los FPS segun SCRFPS
             TRAP    #15
             
-            ; CLEAR INTERRUPT COUNTER
+            ; Limpia el contador de interrupciones
             CLR.W   (SCRINTCT)
             
             MOVEM.L (A7)+,D0-D1
@@ -115,7 +114,7 @@ SCRINIT
             
 ; ------------------------------------------------------------------------------
 SCRTIM
-; TIMED INTERRUPT SERVICE ROUTINE
+; Rutina de servicio de interrupción temporizada
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
@@ -127,7 +126,7 @@ SCRTIM
 
 ; ------------------------------------------------------------------------------
 SCRPLOT
-; UPDATES DOUBLE BUFFER
+; Actualiza el doble buffer
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
@@ -135,11 +134,11 @@ SCRPLOT
 
             MOVEM.W D0-D1,-(A7)
             
-            ; SWITCH BUFFERS
+            ; Cambia los buffers
             MOVE.B  #94,D0
             TRAP    #15
             
-            ; CLEAR HIDDEN BUFFER
+            ; Limpia el buffer escondido
             MOVE.B  #11,D0
             MOVE.W  #$FF00,D1
             TRAP    #15
@@ -148,37 +147,29 @@ SCRPLOT
             
             RTE
         
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 KBDINIT
-; INIT KEYBOARD
+; Inicializa el teclado
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 
             CLR.B   (KBDVAL)
-            CLR.B   (KBDEDGE)	; Reseteamos los valores del teclado
+            CLR.B   (KBDEDGE)             ; Reseteamos los valores del teclado
             RTS
 
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 KBDUPD
-; UPDATE KEYBOARD INFO.  
-; 7 -> PAUSE
-; 6 -> FIRE 3
-; 5 -> FIRE 2
-; 4 -> FIRE 1
-; 3 -> DOWN
-; 2 -> RIGHT
-; 1 -> UP
-; 0 -> LEFT
+; Actualiza la info del teclado
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 
             MOVEM.L D0-D1,-(A7)
 
-            ; LEE ESTADO DEL TECLADO
+            ; Lee el estado del teclado
             MOVE.B  #19,D0
             MOVE.L  #KBDLEFT<<24|KBDUP<<16|KBDRIGHT<<8|KBDDOWN,D1
             TRAP    #15	; Lee las teclas y guarda en D1
@@ -194,7 +185,7 @@ KBDUPD
             CMP.L   #$FF000000,D1
             BEQ     IZQ
 
-            ; Si no hay pulsaciones, mantener estado
+            ; Si no hay pulsaciones, mantiene el estado
             BRA     CONTINU
 
 DER:        MOVE.W  #0,(ESTDCBZ)           ; Actualiza estado a DERECHA
@@ -212,6 +203,7 @@ CONTINU:
             MOVEM.L (A7)+,D0-D1
             RTE
  
+
 
 *~Font name~Courier New~
 *~Font size~10~

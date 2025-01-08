@@ -1,6 +1,6 @@
-*-----------------------------------------------------------
+*-----------------------------------------------------------------------------
 * MANEJO DE LA MANZANA
-*-----------------------------------------------------------
+*-----------------------------------------------------------------------------
    
 ; ----------------------------------------------------------------------------
 APPLEINIT
@@ -88,11 +88,11 @@ APPLEPLOT
             MOVE.L  D1,-(A7)	; Primero debemos dibujar el fondo
             
             MOVE.B  #80,D0
-            MOVE.L  #COLFND,D1            	; Ponemos el color de dibujado a COLFND
+            MOVE.L  #COLFND,D1            	; Ponemos el color de dibujado
             TRAP    #15
             
             MOVE.B  #81,D0
-            MOVE.L  #COLFND,D1            	; Ponemos el color de relleno a COLFND
+            MOVE.L  #COLFND,D1            	; Ponemos el color de relleno
             TRAP    #15
             
             MOVE.B  #87,D0
@@ -100,8 +100,8 @@ APPLEPLOT
             MOVE.W  D3,-(A7)
             MOVE.W  D1,D3
             ADD.W   #SIZECLDA,D3
-            MOVE.W  D2,D4                	; Dibujamos el cuadrado del fondo donde irá la manzana
-            ADD.W   #SIZECLDA,D4
+            MOVE.W  D2,D4                	; Dibujamos el cuadrado del 
+            ADD.W   #SIZECLDA,D4            ; fondo donde irá la manzana
             TRAP    #15                     
                         
             MOVE.W  (A7)+,D3  
@@ -146,20 +146,21 @@ GENPOSMNZ
 
             ; Genera la coordenada X aleatoria
             JSR     UTLRAND
-            ANDI.W  #NUMCLMNS-1, D0       	; Asegura que esté en [0, NUMCLMNS-1]
-            MULU    #SIZECLDA, D0         	; Escala al tamaño real de las celdas
+            ANDI.W  #NUMCLMNS-1, D0       	; [0, NUMCLMNS-1]
+            MULU    #SIZECLDA, D0         	; Escala al tamaño de las celdas
             MOVE.W  D0,D1
-            MOVE.W  D0, MNZPOSX           	; Guarda la coordenada X generada
+            MOVE.W  D0, MNZPOSX           	; Guarda la coordenada X
             
-            ; Generar coordenada Y aleatoria
+            ; Genera la coordenada Y aleatoria
             JSR     UTLRAND
-            ANDI.W  #NUMFILAS-1, D0       	; Asegura que esté en el rango [0, NUMFILAS-1]
-            MULU    #SIZECLDA, D0         	; Escala al tamaño real de las celdas
+            ANDI.W  #NUMFILAS-1, D0       	; [0, NUMFILAS-1]
+            MULU    #SIZECLDA, D0         	; Escala al tamaño de las celdas
             MOVE.W  D0,D2
-            MOVE.W  D0, MNZPOSY           	; Guarda la coordenada Y generada
+            MOVE.W  D0, MNZPOSY           	; Guarda la coordenada Y
             
             MOVEM.L (A7)+,D0
             RTS 
+
 
 
 

@@ -1,26 +1,26 @@
-*-----------------------------------------------------------
+*-----------------------------------------------------------------------------
 * MANEJO DEL MARCADOR
-*-----------------------------------------------------------
+*-----------------------------------------------------------------------------
    
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 SCOINIT
-; INICIALIZAR MARCADOR.
+; Inicializar marcador
 ; INPUT    : NONE 
 ; OUTPUT   : NONE
-; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; MODIFIES : JGOTIM,JGOPNTS
+; ----------------------------------------------------------------------------
             CLR.W   (JGOPNTS)
             CLR.W   (JGOTIM)	; Reiniciamos timer y puntuación
             MOVE.W  #150,(JGOTIM)
             RTS
             
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 SCOUPD
-; ACTUALIZAR MARCADOR.
+; Actualiza el marcador
 ; INPUT    : NONE 
 ; OUTPUT   : NONE
-; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; MODIFIES : JGPNTS
+; ----------------------------------------------------------------------------
             
             MOVEM.L D0,-(A7)
             
@@ -33,24 +33,24 @@ SCOUPD
 
             RTS
             
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 SCOPLOT
-; DIBUJAR MARCADOR.
+; Dibuja el marcador
 ; INPUT    : NONE 
-; OUTPUT   : NONE
+; OUTPUT   : Marcador
 ; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
             MOVEM.L  D0-D1/A1,-(A7)
             		; Ponemos color del fondo
             MOVE.B   #81,D0
             MOVE.L   #COLFND,D1
             TRAP     #15
          
-            		; Ponemos en la esquina superior izquierda
+            		; Esquina superior izquierda
             CLR.W    D1
             MOVE.B   #11,D0
             TRAP     #15
-            		; Dibujar linea de puntuación
+            		; Dibuja la linea de puntuación
             LEA     .TXT1,A1
             CLR.L   D1
             MOVE.W  (JGOPNTS),D1
@@ -61,7 +61,7 @@ SCOPLOT
             MOVE.W   #1,D1
             MOVE.B   #11,D0
             TRAP     #15
-            		; Dibujar linea timer
+            		; Dibuja la linea timer
             LEA     .TXT2,A1
             CLR.L   D1
             MOVE.W  (JGOTIM),D1
@@ -76,6 +76,7 @@ SCOPLOT
 .TXT1       DC.B    'PUNTOS : ',0
 .TXT2       DC.B    'TIEMPO : ',0
             DS.W    0
+
 
 
 

@@ -1,69 +1,69 @@
-; ==============================================================================
-; INTRO SCREEN
-; ==============================================================================
+; ----------------------------------------------------------------------------
+; PANTALLA INTRO
+; ----------------------------------------------------------------------------
 
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 ISCINIT
-; INTRO SCREEN INIT
+; Inicializa la pantalla INTRO
 ; INPUT    : NONE
 ; OUTPUT   : NONE
-; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; MODIFIES : ISCTIMER
+; ----------------------------------------------------------------------------
 
             CLR.W   (ISCTIMER)
             
             RTS
 
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 ISCUPD
-; INTRO SCREEN UPDATE
+; Actualiza la pantalla INTRO
 ; INPUT    : NONE
 ; OUTPUT   : NONE
-; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; MODIFIES : STANEXT, ISCTIMER
+; ----------------------------------------------------------------------------
 
             MOVEM.L D0-D5,-(A7)
             
-            MOVE.W  #$0107,D1               ;Habilitar IRQ
+            MOVE.W  #$0107,D1               ; Habilita IRQ
             MOVE.W  #60,D0
             TRAP    #15
             
 .MAINLOOP            
-            MOVE.B  #0,D1	; Leer estado actual del ratón
+            MOVE.B  #0,D1	; Lee el estado actual del ratón
             MOVE.   #61,D0
             TRAP    #15
             
-            MOVE.L  D1,D2                   ; Guardar coordenadas en D2
-            ANDI.B  #1,D0                   ; Comprobar click izquierdo
+            MOVE.L  D1,D2                   ; Guarda las coordenadas en D2
+            ANDI.B  #1,D0                   ; Comprueba el click izquierdo
             TST     D0
             BEQ     .CONT
             
             ; Miramos si se ha pulsado el texto correspondiente
-            MOVE.L  #$108,D3                 ; (640 - 112) / 2 = 264 PIXELES -> COORDENADA X
-            MOVE.L  #$19,D4                  ; Coordenada Y del texto 25
+            MOVE.L  #$108,D3                 ; (640-112)/2=264 -> Coordenada x
+            MOVE.L  #$19,D4                  ; Coordenada Y del texto
             
             MOVE.L  D2,D5                   ; Coordenada Y del ratón
             ANDI.L  #$0000FFFF,D5
             CMP.L   D4,D5
-            BLT     .CONT                   ; Si Y < TEXTO
+            BLT     .CONT                   ; Si Y < Texto
 
             MOVE.L  D2,D5                   ; Coordenada X del ratón
-            ANDI.L  #$FFFF,D5               ; Extraer X (bits bajos)
+            ANDI.L  #$FFFF,D5               ; Extrae X (bits bajos)
             CMP.L   D3,D5
-            BLT     .CONT                   ; Si X < TEXTO
+            BLT     .CONT                   ; Si X < Texto
             
             ; Si el click está dentro del area de texto
-            MOVE.W  #2,(STANEXT)            ; Si coincide iniciar juego
+            MOVE.W  #2,(STANEXT)            ; Iniciar el juego
             BRA     .DONE            
             
 .CONT       
 
-            MOVE.B  #19,D0                  ; Detectar teclas
+            MOVE.B  #19,D0                  ; Detecta las teclas
             MOVE.L  #'P',D1                 ; Código ASCII de la tecla P
             TRAP    #15
-            BTST.L  #0,D1                   ; Verificar si la tecla P está presionada
-            BEQ     .END                    ; Si no está presionada, continuar
-            MOVE.W  #4,(STANEXT)            ; Cambiar STANEXT a 4 si la tecla P está presionada
+            BTST.L  #0,D1                   ; Verifica si la tecla P pulsada
+            BEQ     .END                    ; Si no está presionada, continua
+            MOVE.W  #4,(STANEXT)            ; Cambia STANEXT a 4 si se pulsa P
 .END            
             ADDQ.W  #1,(ISCTIMER)
             CMP.W   #ISCMAXTM,(ISCTIMER)
@@ -74,13 +74,13 @@ ISCUPD
             MOVEM.L (A7)+,D0-D5
             RTS
 
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 ISCPLOT
-; INTRO SCREEN PLOT
+; Dibuja la pantalla de INTRO
 ; INPUT    : NONE
-; OUTPUT   : NONE
+; OUTPUT   : Pantalla de INTRO
 ; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
             MOVEM.L D0-D1/A0,-(A7)
                         
             CLR.L   D1
@@ -92,7 +92,7 @@ ISCPLOT
             JSR     UTLPRINT
             
             BTST.B  #4,(SCRCYCCT)
-            BEQ     .DONE	; Dibujamos la pantalla de introducción
+            BEQ     .DONE
             
             LEA     .TXT2,A0
             MOVE.B  #23,D0
@@ -109,6 +109,7 @@ ISCPLOT
 .TXT2       DC.B    'CLICK HERE TO START',0
 .TXT3       DC.B    'PRESS KEY P TO SEE SCORE TABLE',0
             DS.W    0
+
 
 
 

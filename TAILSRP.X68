@@ -1,41 +1,40 @@
-*-----------------------------------------------------------
+*-----------------------------------------------------------------------------
 * MANEJO DE LA COLA DE LA SERPIENTE
-*-----------------------------------------------------------
+*-----------------------------------------------------------------------------
    
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 TAILINIT
-; INICIALIZAR COLA.
+; Inicializa la cola
 ; INPUT    : NONE 
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 
             MOVE.W  #(PANWIDTH/2)-CBZWIDTH-SGMWIDTH+(COLWIDTH/2),(COLPOSX)
-            MOVE.W  #(PANHEIGH/2),(COLPOSY)	; Ponemos la cola después del segundo segmento
+            MOVE.W  #(PANHEIGH/2),(COLPOSY)
             
             RTS
             
-            
-; ------------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
 TAILUPD
-; ACTUALIZAR COLA.
+; Actualiza la cola
 ; INPUT    : NONE 
 ; OUTPUT   : NONE
-; MODIFIES : NONE
-; ------------------------------------------------------------------------------
+; MODIFIES : Posición de la cola
+; ----------------------------------------------------------------------------
             MOVEM.W D1-D2,-(A7)
             
-            		; Marca la posición actual de la cola como vacía
+            ; Marca la posición actual de la cola como vacía
             MOVE.W  (COLPOSX),D1
             MOVE.W  (COLPOSY),D2
             JSR     CINDMTRZ
             JSR     MCLDVCIA
 
-            		; Actualiza la posición de la cola para seguir al último segmento
+            ; Actualiza la posición de la cola para seguir al último segmento
             MOVE.W  (SGMPOSX2),(COLPOSX)
-            MOVE.W  (SGMPOSY2),(COLPOSY)    ; Marcamos la coordenada del segmento 2 como la cola
+            MOVE.W  (SGMPOSY2),(COLPOSY)
             
-            		; Marca la nueva posición como cola
+            ; Marca la nueva posición como cola
             MOVE.W  (COLPOSX),D1
             MOVE.W  (COLPOSY),D2
             JSR     CINDMTRZ
@@ -47,9 +46,9 @@ FINUPD
             
 ; ------------------------------------------------------------------------------
 TAILPLOT
-; DIBUJAR COLA
+; Dibuja la cola
 ; INPUT    : NONE 
-; OUTPUT   : NONE
+; OUTPUT   : Cola de la serpiente
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
 
@@ -59,11 +58,11 @@ TAILPLOT
             MOVE.L  D1,-(A7)
             
             MOVE.B  #80,D0
-            MOVE.L  #COLPCOL,D1            ; Ponemos el color de dibujado a COLPCOL
+            MOVE.L  #COLPCOL,D1            ; Ponemos el color de dibujado
             TRAP    #15
             
             MOVE.B  #81,D0
-            MOVE.L  #COLFCOL,D1            ; Ponemos el color de dibujado a COLFCOL
+            MOVE.L  #COLFCOL,D1            ; Ponemos el color de dibujado
             TRAP    #15
             
             MOVE.B  #87,D0
@@ -79,6 +78,7 @@ TAILPLOT
             MOVE.W  (A7)+,D0
 
             RTS
+
 
 
 
