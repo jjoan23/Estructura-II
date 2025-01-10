@@ -41,7 +41,7 @@ STAUPD
             MOVEM.L (A7)+,D0/A0
             RTS
             
-.INITBL     DC.L    ISCINIT,INSINIT,GAMINIT,GOVINIT,TABINIT
+.INITBL     DC.L    ISCINIT,INSINIT,GAMINIT,GOVINIT,STAEMPTY
 .UPDTBL     DC.L    ISCUPD,INSUPD,GAMUPD,GOVUPD,TABUPD
 
 ; ----------------------------------------------------------------------------
@@ -72,6 +72,7 @@ STAEMPTY
 ; NOTE     - JUST A PLACEHOLDER. NOTHING TO DO.
 ; ----------------------------------------------------------------------------
             RTS
+
 
 
 
